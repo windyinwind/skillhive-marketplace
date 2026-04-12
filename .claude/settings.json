@@ -1,0 +1,65 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/weiliang/Code/SWARM-Marketplace/.claude/hooks/security-guard.sh",
+            "timeout": 5,
+            "statusMessage": "Checking SWARM security constraints..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/weiliang/Code/SWARM-Marketplace/.claude/hooks/secret-scan.sh",
+            "timeout": 5,
+            "statusMessage": "Scanning for hardcoded secrets..."
+          },
+          {
+            "type": "command",
+            "command": "bash /Users/weiliang/Code/SWARM-Marketplace/.claude/hooks/ts-typecheck.sh",
+            "timeout": 60,
+            "asyncRewake": true,
+            "statusMessage": "Type-checking TypeScript..."
+          },
+          {
+            "type": "command",
+            "command": "bash /Users/weiliang/Code/SWARM-Marketplace/.claude/hooks/rust-fmt.sh",
+            "timeout": 30,
+            "asyncRewake": true,
+            "statusMessage": "Checking Rust formatting..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/weiliang/Code/SWARM-Marketplace/.claude/hooks/build-notify.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"SWARM security constraints to preserve across compaction: (1) endpoint/system_prompt/tool_config must never appear in API responses or on-chain — use skills_public view; (2) SUPABASE_SERVICE_ROLE_KEY must never have NEXT_PUBLIC_ prefix; (3) SkillAccount Rust struct has NO endpoint field; (4) supabaseServiceRole client is server-side API routes only; (5) platform fee = 500 bps. See CLAUDE.md for full rules.\"}'",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}

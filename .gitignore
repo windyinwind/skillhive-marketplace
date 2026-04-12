@@ -1,0 +1,31 @@
+# Environment variables — never commit secrets
+.env
+.env.local
+.env.*.local
+apps/web/.env.local
+# apps/indexer is eliminated — Helius webhooks replaced it
+
+# Claude Code local settings (personal overrides)
+.claude/settings.local.json
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js build output
+apps/web/.next/
+apps/web/out/
+
+# Anchor / Rust build artifacts
+packages/contracts/target/
+packages/contracts/.anchor/
+**/*.so
+**/*.keypair
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Misc
+.DS_Store
+*.log

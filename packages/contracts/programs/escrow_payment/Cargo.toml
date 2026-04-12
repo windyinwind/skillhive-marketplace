@@ -1,0 +1,21 @@
+[package]
+name = "escrow_payment"
+version = "0.1.0"
+description = "SWARM Marketplace — escrow payment for skill calls"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "escrow_payment"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build"]
+
+[dependencies]
+anchor-lang = "1.0.0"
+skill_registry = { path = "../skill_registry", features = ["cpi"] }

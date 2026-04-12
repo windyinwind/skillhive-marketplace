@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* SWARM Design Tokens — Solana-inspired palette */
+    --swarm-purple: #9945FF;
+    --swarm-green: #14F195;
+    --swarm-gradient: linear-gradient(135deg, #9945FF, #14F195);
+    --bg-base: #0f1117;
+    --bg-card: #161b27;
+    --bg-elevated: #1e2435;
+    --border-subtle: #2a3147;
+    --border-active: #9945FF40;
+    --text-primary: #F8FAFC;
+    --text-secondary: #8B9BB4;
+    --text-tertiary: #4A5568;
+
+    /* shadcn/ui CSS vars — mapped to SWARM tokens */
+    --background: 222 47% 7%;       /* #0f1117 */
+    --foreground: 210 40% 98%;      /* #F8FAFC */
+    --card: 222 30% 12%;            /* #161b27 */
+    --card-foreground: 210 40% 98%;
+    --popover: 222 30% 15%;         /* #1e2435 */
+    --popover-foreground: 210 40% 98%;
+    --primary: 265 100% 64%;        /* #9945FF */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 222 30% 15%;       /* #1e2435 */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 30% 15%;
+    --muted-foreground: 215 20% 65%;  /* #8B9BB4 */
+    --accent: 159 91% 65%;          /* #14F195 */
+    --accent-foreground: 222 47% 7%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 26% 23%;          /* #2a3147 */
+    --input: 222 26% 23%;
+    --ring: 265 100% 64%;           /* #9945FF */
+    --radius: 0.75rem;              /* 12px cards */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-body), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  /* Skill card hover micro-interaction */
+  .skill-card {
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  }
+  .skill-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px #9945FF40;
+    border-color: #9945FF40;
+  }
+
+  /* SWARM gradient text */
+  .text-swarm-gradient {
+    background: var(--swarm-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* SWARM gradient background */
+  .bg-swarm-gradient {
+    background: var(--swarm-gradient);
+  }
+
+  /* Subtle purple glow for active elements */
+  .glow-purple {
+    box-shadow: 0 0 20px #9945FF20;
+  }
+}

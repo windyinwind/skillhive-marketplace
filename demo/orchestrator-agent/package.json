@@ -1,0 +1,18 @@
+{
+  "name": "@swarm/orchestrator-agent",
+  "version": "0.1.0",
+  "description": "SWARM demo — orchestrator agent that discovers and calls 3 skills to answer 'Should I invest in NVIDIA?'",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

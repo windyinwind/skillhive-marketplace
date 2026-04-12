@@ -1,0 +1,30 @@
+{
+  "name": "@swarm/plugin-swarm",
+  "version": "0.1.0",
+  "description": "ElizaOS plugin — SWARM Marketplace skill discovery, calling, listening, and completing on Solana",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --project tsconfig.json --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.0",
+    "@solana/web3.js": "^1.95.0",
+    "@triton-one/yellowstone-grpc": "^1.0.0",
+    "bs58": "^6.0.0",
+    "eventsource": "^2.0.2",
+    "tweetnacl": "^1.0.3"
+  },
+  "peerDependencies": {
+    "@elizaos/core": "^1.7.0"
+  },
+  "devDependencies": {
+    "@elizaos/core": "^1.7.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
