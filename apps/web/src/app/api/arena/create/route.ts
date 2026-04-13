@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateText } from 'ai'
+import { tavily } from '@tavily/core'
 import { supabaseAnon, supabaseServiceRole } from '@/lib/supabase'
 import { getModel } from '@/lib/ai-providers'
 import { checkRateLimit } from '@/lib/security'
@@ -39,6 +40,176 @@ async function extractTags(query: string): Promise<string[]> {
   } catch {
     return query.toLowerCase().split(/\W+/).filter((w) => w.length > 3).slice(0, 5)
   }
+}
+
+// ── Live data helpers (shared with /api/chat) ─────────────────────────────────
+
+async function fetchStockQuote(symbol: string): Promise<Record<string, unknown>> {
+  try {
+    const res = await fetch(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`,
+      { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) }
+    )
+    if (!res.ok) return { symbol, error: `HTTP ${res.status}` }
+    const json = await res.json() as { chart?: { result?: { meta?: Record<string, unknown> }[] } }
+    const meta = json?.chart?.result?.[0]?.meta ?? {}
+    return {
+      symbol,
+      price: meta['regularMarketPrice'],
+      previousClose: meta['previousClose'],
+      change: meta['regularMarketPrice'] != null && meta['previousClose'] != null
+        ? Number(((meta['regularMarketPrice'] as number) - (meta['previousClose'] as number)).toFixed(2))
+        : null,
+      changePct: meta['regularMarketPrice'] != null && meta['previousClose'] != null
+        ? Number((((meta['regularMarketPrice'] as number) - (meta['previousClose'] as number)) / (meta['previousClose'] as number) * 100).toFixed(2))
+        : null,
+      currency: meta['currency'],
+      exchange: meta['exchangeName'],
+      marketState: meta['marketState'],
+    }
+  } catch (e) {
+    return { symbol, error: (e as Error).message }
+  }
+}
+
+const CRYPTO_ID_MAP: Record<string, string> = {
+  btc: 'bitcoin', bitcoin: 'bitcoin',
+  eth: 'ethereum', ethereum: 'ethereum',
+  sol: 'solana', solana: 'solana',
+  bnb: 'binancecoin', xrp: 'ripple',
+  ada: 'cardano', avax: 'avalanche-2',
+  dot: 'polkadot', link: 'chainlink',
+  matic: 'matic-network', pol: 'matic-network',
+}
+
+async function fetchCryptoPrice(coinId: string): Promise<Record<string, unknown>> {
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(coinId)}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true`,
+      { signal: AbortSignal.timeout(8000) }
+    )
+    if (!res.ok) return { coinId, error: `HTTP ${res.status}` }
+    const json = await res.json() as Record<string, { usd?: number; usd_24h_change?: number; usd_market_cap?: number }>
+    const data = json[coinId]
+    return {
+      coinId,
+      price_usd: data?.usd,
+      change_24h_pct: data?.usd_24h_change != null ? Number(data.usd_24h_change.toFixed(2)) : null,
+      market_cap_usd: data?.usd_market_cap,
+    }
+  } catch (e) {
+    return { coinId, error: (e as Error).message }
+  }
+}
+
+// Detect tickers/crypto symbols mentioned in the query
+function detectFinancialSymbols(query: string): { stocks: string[]; cryptos: string[] } {
+  const upper = query.toUpperCase()
+  const lower = query.toLowerCase()
+
+  // Uppercase stock tickers: 2-5 capital letters, optionally preceded by $
+  const stockMatches = upper.match(/\$?([A-Z]{2,5})\b/g) ?? []
+  const stocks = [...new Set(stockMatches.map((s) => s.replace('$', '')))]
+    .filter((s) => !['AI', 'OR', 'THE', 'AND', 'FOR', 'NOT', 'USE', 'NEW'].includes(s))
+
+  // Known crypto names/symbols in the query
+  const cryptos = Object.keys(CRYPTO_ID_MAP).filter((k) => {
+    const word = new RegExp(`\\b${k}\\b`, 'i')
+    return word.test(lower)
+  }).map((k) => CRYPTO_ID_MAP[k])
+
+  return { stocks, cryptos: [...new Set(cryptos)] }
+}
+
+// Determine if the query needs web search (current events, news, recent info)
+function needsWebSearch(query: string): boolean {
+  const triggers = [
+    /\b(latest|recent|current|today|this week|this month|new|news|update|just|announced|released)\b/i,
+    /\b(2024|2025|2026)\b/,
+    /\b(price|stock|market|earnings|ipo|acquisition|merger)\b/i,
+    /\b(who won|who is|what happened|breaking)\b/i,
+  ]
+  return triggers.some((r) => r.test(query))
+}
+
+interface LiveContext {
+  prices: Record<string, unknown>
+  webResults: { title: string; url: string; snippet: string; publishedDate?: string }[]
+  fetchedAt: string
+}
+
+/**
+ * Enrich the user query with real-time data before passing it to skills.
+ * - Fetches stock/crypto prices for any detected symbols (no API key needed)
+ * - Runs a Tavily web search if query touches current events (requires TAVILY_API_KEY)
+ */
+async function fetchLiveContext(query: string): Promise<LiveContext> {
+  const ctx: LiveContext = { prices: {}, webResults: [], fetchedAt: new Date().toISOString() }
+
+  const { stocks, cryptos } = detectFinancialSymbols(query)
+
+  // Fetch prices in parallel (best-effort — never throws)
+  await Promise.allSettled([
+    ...stocks.map(async (sym) => {
+      ctx.prices[sym] = await fetchStockQuote(sym)
+    }),
+    ...cryptos.map(async (coinId) => {
+      ctx.prices[coinId] = await fetchCryptoPrice(coinId)
+    }),
+  ])
+
+  // Web search (best-effort — skip if no API key)
+  if (needsWebSearch(query) && process.env.TAVILY_API_KEY) {
+    try {
+      const client = tavily({ apiKey: process.env.TAVILY_API_KEY })
+      const res = await client.search(query, {
+        searchDepth: 'basic',
+        topic: 'general',
+        maxResults: 5,
+        includeAnswer: false,
+      })
+      ctx.webResults = (res.results ?? []).map((r) => ({
+        title: r.title ?? '',
+        url: r.url ?? '',
+        snippet: r.content ?? '',
+        publishedDate: r.publishedDate ?? undefined,
+      }))
+    } catch {
+      // Silently skip — skills still run without web context
+    }
+  }
+
+  return ctx
+}
+
+/**
+ * Build the enriched input string passed to each skill.
+ * Skills receive the user's question PLUS any live prices/search results injected as context.
+ */
+function buildEnrichedInput(query: string, ctx: LiveContext): string {
+  const parts: string[] = [`User question: ${query}`]
+
+  const priceEntries = Object.entries(ctx.prices)
+  if (priceEntries.length > 0) {
+    parts.push(
+      '\n--- REAL-TIME MARKET DATA (fetched at ' + ctx.fetchedAt + ') ---',
+      ...priceEntries.map(([k, v]) => `${k}: ${JSON.stringify(v)}`),
+      '---'
+    )
+  }
+
+  if (ctx.webResults.length > 0) {
+    parts.push(
+      '\n--- LIVE WEB SEARCH RESULTS (fetched at ' + ctx.fetchedAt + ') ---',
+      ...ctx.webResults.map((r, i) =>
+        `[${i + 1}] ${r.title}${r.publishedDate ? ` (${r.publishedDate})` : ''}\n${r.snippet}\nSource: ${r.url}`
+      ),
+      '---',
+      'Use the above search results and prices to answer accurately. Cite sources where relevant.'
+    )
+  }
+
+  return parts.join('\n')
 }
 
 interface SkillCallResult { result?: string; error?: string; responseMs: number; skillId?: string }
@@ -181,18 +352,23 @@ export async function POST(req: NextRequest) {
       if (ep) urlMap[ps.id] = ep.startsWith('/') ? `${baseUrl}${ep}` : ep
     }
 
-    // ── 4. Call all skills in parallel (platform-subsidized) ─────────────────
+    // ── 4. Fetch live context (prices + web search) ───────────────────────────
+    // Best-effort: never blocks round creation if external APIs fail
+    const liveCtx = await fetchLiveContext(query)
+    const enrichedInput = buildEnrichedInput(query, liveCtx)
+
+    // ── 5. Call all skills in parallel with enriched input ────────────────────
     const callResults = await Promise.allSettled(
       skills.map(async (skill): Promise<SkillCallResult> => {
         const url = urlMap[skill.id]
         if (!url) return { skillId: skill.id, result: undefined, error: 'No endpoint registered', responseMs: 0 }
         const callId = `arena-${roundId}-${skill.id}`
-        const res = await callSkillEndpoint(url, query, callId)
+        const res = await callSkillEndpoint(url, enrichedInput, callId)
         return { skillId: skill.id, ...res }
       })
     )
 
-    // ── 5. Insert entries ─────────────────────────────────────────────────────
+    // ── 6. Insert entries ─────────────────────────────────────────────────────
     const entries = skills.map((skill, i) => {
       const r = callResults[i]
       const outcome: SkillCallResult = r.status === 'fulfilled'
@@ -213,7 +389,7 @@ export async function POST(req: NextRequest) {
 
     await supabaseServiceRole.from('arena_entries').insert(entries)
 
-    // ── 6. Open round for voting ──────────────────────────────────────────────
+    // ── 7. Open round for voting ──────────────────────────────────────────────
     await supabaseServiceRole
       .from('arena_rounds')
       .update({ status: 'open' })
