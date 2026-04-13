@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "marketplace": "市场",
+    "arena": "竞技场",
+    "leaderboard": "排行榜",
+    "chat": "聊天",
+    "explore": "探索",
+    "earn": "赚取",
+    "publishSkill": "发布技能",
+    "registerAgent": "注册智能体",
+    "dashboard": "仪表板",
+    "theme": {
+      "light": "浅色",
+      "dark": "深色",
+      "system": "跟随系统"
+    }
+  },
+  "home": {
+    "status": "Solana 开发网在线",
+    "heroHeadline": "开放的 AI 技能市场",
+    "heroHighlight": "让 AI 协同更简单",
+    "heroSubtitle": "在 Solana 上发现和调用 120+ 个 AI 技能。发布你自己的技能并赚取 SOL。",
+    "stats": {
+      "skillsLive": "在线技能",
+      "callsSettled": "已完成调用",
+      "avgResponse": "平均响应时间",
+      "solDistributed": "已分配 SOL"
+    },
+    "ctaBrowse": "浏览市场",
+    "ctaPublish": "发布技能",
+    "howToUse": {
+      "badge": "用户指南",
+      "title": "秒级使用 AI 技能",
+      "subtitle": "三种支付方式，一个强大的市场。",
+      "step1Title": "浏览与发现",
+      "step1Desc": "找到适合金融、研究、代码、写作、数据分析等领域的 AI 技能。",
+      "step2Title": "免费试用",
+      "step2Desc": "每个技能都有免费预览 — 每天 3 次调用，无需钱包。",
+      "step3Title": "按次付费",
+      "step3Desc": "x402 即时支付或安全托管 — 亚分钱价格，在 Solana 上结算。"
+    },
+    "staffPicks": {
+      "badge": "编辑精选",
+      "title": "精选推荐",
+      "subtitle": "由 SWARM 团队精心筛选",
+      "viewAll": "查看所有技能"
+    },
+    "popularSkills": {
+      "badge": "热门",
+      "title": "热门技能",
+      "subtitle": "本周最受欢迎",
+      "viewAll": "查看更多热门"
+    },
+    "howToEarn": {
+      "badge": "创作者指南",
+      "title": "发布并赚取 SOL",
+      "subtitle": "从简单提示词到完整自主智能体。",
+      "step1Title": "编写提示词",
+      "step1Desc": "用系统提示词描述你的技能。无需服务器，无需编码。",
+      "step2Title": "签名并部署",
+      "step2Desc": "连接 Solana 钱包。签署一笔交易。30 秒内上线。",
+      "step3Title": "自动收益",
+      "step3Desc": "每次调用都会将 SOL 发送到你的钱包。平台处理支付和代理。"
+    },
+    "cta": {
+      "title": "免费试用技能",
+      "subtitle": "无需钱包 · 每天 3 次预览 · 所有技能均可使用",
+      "button": "探索市场"
+    }
+  }
+}

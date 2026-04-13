@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Star, Zap } from 'lucide-react'
 import { lamportsToSol, reputationToStars } from '@/lib/format'
 
 interface Skill {
@@ -26,23 +27,43 @@ const TIER_LABELS: Record<number, string> = {
 }
 
 export function SkillCard({ skill, featured = false }: { skill: Skill; featured?: boolean }) {
-  // Prefer off-chain user ratings; fall back to on-chain reputation
   const displayRating = skill.rating_count > 0 ? skill.rating_avg : reputationToStars(skill.reputation_score)
   const fullStars = Math.floor(displayRating)
 
   return (
-    <Link href={`/skill/${skill.id}`} className="block">
-      <div className={`skill-card group flex h-full flex-col rounded-xl border bg-[#161b27] p-6 ${featured ? 'border-[#9945FF]/30 shadow-[0_0_0_1px_#9945FF20]' : 'border-[#2a3147]'}`}>
+    <Link href={`/skill/${skill.id}`} className="block h-full">
+      <div
+        className="skill-card group flex h-full flex-col rounded-xl p-6 transition-all"
+        style={{
+          background: 'var(--bg-card)',
+          border: featured
+            ? '1px solid rgba(153,69,255,0.3)'
+            : '1px solid var(--border-subtle)',
+          boxShadow: featured ? '0 0 0 1px rgba(153,69,255,0.1)' : 'none',
+        }}
+      >
         {/* Header */}
         <div className="mb-3 flex items-start justify-between gap-2">
-          <h3 className="font-heading font-semibold text-[#F8FAFC] line-clamp-1">{skill.name}</h3>
-          <span className="shrink-0 rounded-md border border-[#2a3147] bg-[#1e2435] px-2 py-0.5 text-xs text-[#8B9BB4]">
+          <h3
+            className="font-heading font-semibold line-clamp-1"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            {skill.name}
+          </h3>
+          <span
+            className="shrink-0 rounded-md px-2 py-0.5 text-xs"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
+          >
             {TIER_LABELS[skill.tier] ?? `Tier ${skill.tier}`}
           </span>
         </div>
 
         {/* Description */}
-        <p className="mb-4 flex-1 text-sm text-[#8B9BB4] line-clamp-2">
+        <p className="mb-4 flex-1 text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
           {skill.description ?? 'No description provided.'}
         </p>
 
@@ -52,7 +73,12 @@ export function SkillCard({ skill, featured = false }: { skill: Skill; featured?
             {skill.tags.slice(0, 4).map((tag) => (
               <span
                 key={tag}
-                className="rounded-md border border-[#2a3147] bg-[#0f1117] px-2 py-0.5 text-xs text-[#4A5568] transition-opacity hover:opacity-80"
+                className="rounded-md px-2 py-0.5 text-xs transition-opacity hover:opacity-80"
+                style={{
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-tertiary)',
+                }}
               >
                 {tag}
               </span>
@@ -61,21 +87,43 @@ export function SkillCard({ skill, featured = false }: { skill: Skill; featured?
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-[#2a3147] pt-4">
+        <div
+          className="flex items-center justify-between pt-4"
+          style={{ borderTop: '1px solid var(--border-subtle)' }}
+        >
           <div>
-            <span className="font-semibold text-[#14F195]">{lamportsToSol(skill.price_lamports)} SOL</span>
-            <span className="ml-1 text-xs text-[#4A5568]">/ call</span>
+            <span className="font-semibold text-[#14F195]">
+              {lamportsToSol(skill.price_lamports)} SOL
+            </span>
+            <span className="ml-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+              / call
+            </span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-[#4A5568]">
+          <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
             {skill.rating_count > 0 ? (
-              <span className="flex items-center gap-0.5">
-                <span className="text-[#9945FF]">{'★'.repeat(fullStars)}{'☆'.repeat(5 - fullStars)}</span>
-                <span className="ml-1">({skill.rating_count})</span>
+              <span className="flex items-center gap-1">
+                <Star className="h-3 w-3 fill-[#9945FF] text-[#9945FF]" />
+                <span style={{ color: 'var(--text-secondary)' }}>
+                  {displayRating.toFixed(1)}
+                </span>
+                <span>({skill.rating_count})</span>
               </span>
             ) : (
-              <span className="rounded-md border border-[#2a3147] bg-[#1e2435] px-1.5 py-0.5 text-xs text-[#4A5568]">New</span>
+              <span
+                className="rounded-md px-1.5 py-0.5 text-xs"
+                style={{
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-tertiary)',
+                }}
+              >
+                New
+              </span>
             )}
-            <span>{skill.total_calls.toLocaleString()} calls</span>
+            <span className="flex items-center gap-1">
+              <Zap className="h-3 w-3" />
+              {skill.total_calls.toLocaleString()}
+            </span>
           </div>
         </div>
       </div>

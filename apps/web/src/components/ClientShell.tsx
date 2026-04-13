@@ -1,22 +1,9 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-
-const Providers = dynamic(
-  () => import('@/components/providers').then((mod) => mod.Providers),
-  { ssr: false }
-)
-
-const Navbar = dynamic(
-  () => import('@/components/layout/Navbar').then((mod) => mod.Navbar),
-  { ssr: false }
-)
+// ClientShell is kept for backwards compatibility but is no longer used
+// for the main layout. The locale layout uses NavShell instead.
+// Providers and ThemeProvider are now in RootShell (root layout).
 
 export function ClientShell({ children }: { children: React.ReactNode }) {
-  return (
-    <Providers>
-      <Navbar />
-      <main className="min-h-screen">{children}</main>
-    </Providers>
-  )
+  return <>{children}</>
 }

@@ -1,18 +1,6 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk, Inter } from 'next/font/google'
-import { ClientShell } from '@/components/ClientShell'
+import { RootShell } from '@/components/RootShell'
 import './globals.css'
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-heading',
-  weight: ['400', '500', '600', '700'],
-})
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-body',
-})
 
 export const metadata: Metadata = {
   title: 'SWARM Marketplace',
@@ -25,9 +13,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning className={`${spaceGrotesk.variable} ${inter.variable} bg-[#0f1117] text-[#F8FAFC] antialiased`}>
-        <ClientShell>{children}</ClientShell>
+    <html suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+        <style>{`
+          :root {
+            --font-heading: 'Space Grotesk', system-ui, sans-serif;
+            --font-body: 'Inter', system-ui, sans-serif;
+          }
+        `}</style>
+      </head>
+      <body suppressHydrationWarning className="antialiased">
+        <RootShell>{children}</RootShell>
       </body>
     </html>
   )

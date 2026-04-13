@@ -3,41 +3,79 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* SWARM Design Tokens — Solana-inspired palette */
+  /* ── Light theme (default) ─────────────────────────────────────────── */
+  :root,
+  .light {
     --swarm-purple: #9945FF;
     --swarm-green: #14F195;
     --swarm-gradient: linear-gradient(135deg, #9945FF, #14F195);
+
+    --bg-base: #FFFFFF;
+    --bg-card: #F8FAFC;
+    --bg-elevated: #EEF2F8;
+    --border-subtle: #E2E8F0;
+    --border-active: rgba(153, 69, 255, 0.3);
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-tertiary: #94A3B8;
+
+    /* shadcn/ui CSS vars — light */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 7%;
+    --card: 210 40% 98%;
+    --card-foreground: 222 47% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 7%;
+    --primary: 265 100% 64%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 7%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 159 91% 52%;
+    --accent-foreground: 222 47% 7%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 265 100% 64%;
+    --radius: 0.75rem;
+    color-scheme: light;
+  }
+
+  /* ── Dark theme ────────────────────────────────────────────────────── */
+  .dark {
     --bg-base: #0f1117;
     --bg-card: #161b27;
     --bg-elevated: #1e2435;
     --border-subtle: #2a3147;
-    --border-active: #9945FF40;
+    --border-active: rgba(153, 69, 255, 0.25);
     --text-primary: #F8FAFC;
     --text-secondary: #8B9BB4;
     --text-tertiary: #4A5568;
 
-    /* shadcn/ui CSS vars — mapped to SWARM tokens */
-    --background: 222 47% 7%;       /* #0f1117 */
-    --foreground: 210 40% 98%;      /* #F8FAFC */
-    --card: 222 30% 12%;            /* #161b27 */
+    /* shadcn/ui CSS vars — dark */
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 30% 12%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 30% 15%;         /* #1e2435 */
+    --popover: 222 30% 15%;
     --popover-foreground: 210 40% 98%;
-    --primary: 265 100% 64%;        /* #9945FF */
+    --primary: 265 100% 64%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 222 30% 15%;       /* #1e2435 */
+    --secondary: 222 30% 15%;
     --secondary-foreground: 210 40% 98%;
     --muted: 222 30% 15%;
-    --muted-foreground: 215 20% 65%;  /* #8B9BB4 */
-    --accent: 159 91% 65%;          /* #14F195 */
+    --muted-foreground: 215 20% 65%;
+    --accent: 159 91% 65%;
     --accent-foreground: 222 47% 7%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 222 26% 23%;          /* #2a3147 */
+    --border: 222 26% 23%;
     --input: 222 26% 23%;
-    --ring: 265 100% 64%;           /* #9945FF */
-    --radius: 0.75rem;              /* 12px cards */
+    --ring: 265 100% 64%;
+    --radius: 0.75rem;
+    color-scheme: dark;
   }
 }
 
@@ -46,16 +84,13 @@
     @apply border-border;
   }
 
-  html {
-    color-scheme: dark;
-  }
-
   body {
     background-color: var(--bg-base);
     color: var(--text-primary);
     font-family: var(--font-body), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -70,8 +105,8 @@
   }
   .skill-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 0 1px #9945FF40;
-    border-color: #9945FF40;
+    box-shadow: 0 0 0 1px rgba(153, 69, 255, 0.25);
+    border-color: rgba(153, 69, 255, 0.25);
   }
 
   /* SWARM gradient text */
@@ -89,6 +124,15 @@
 
   /* Subtle purple glow for active elements */
   .glow-purple {
-    box-shadow: 0 0 20px #9945FF20;
+    box-shadow: 0 0 20px rgba(153, 69, 255, 0.12);
   }
+
+  /* Semantic token utilities */
+  .bg-token-base    { background-color: var(--bg-base); }
+  .bg-token-card    { background-color: var(--bg-card); }
+  .bg-token-elevated{ background-color: var(--bg-elevated); }
+  .border-token     { border-color: var(--border-subtle); }
+  .text-token-primary   { color: var(--text-primary); }
+  .text-token-secondary { color: var(--text-secondary); }
+  .text-token-tertiary  { color: var(--text-tertiary); }
 }

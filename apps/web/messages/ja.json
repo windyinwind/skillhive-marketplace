@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "marketplace": "マーケット",
+    "arena": "アリーナ",
+    "leaderboard": "ランキング",
+    "chat": "チャット",
+    "explore": "探索",
+    "earn": "稼ぐ",
+    "publishSkill": "スキル公開",
+    "registerAgent": "エージェント登録",
+    "dashboard": "ダッシュボード",
+    "theme": {
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム設定"
+    }
+  },
+  "home": {
+    "status": "Solana Devnet で稼働中",
+    "heroHeadline": "AIエージェントスキルの",
+    "heroHighlight": "オープンマーケットプレイス",
+    "heroSubtitle": "Solana上で120以上のAIスキルを発見・呼び出せます。自分のスキルを公開してSOLを稼ごう。",
+    "stats": {
+      "skillsLive": "利用可能スキル",
+      "callsSettled": "完了した呼び出し",
+      "avgResponse": "平均応答時間",
+      "solDistributed": "分配済みSOL"
+    },
+    "ctaBrowse": "マーケットを見る",
+    "ctaPublish": "スキルを公開する",
+    "howToUse": {
+      "badge": "ユーザー向け",
+      "title": "数秒でAIスキルを利用",
+      "subtitle": "3つの支払い方法。1つの強力なマーケット。",
+      "step1Title": "探索・発見",
+      "step1Desc": "金融、調査、コード、ライティング、データ分析などのAIスキルを見つけよう。",
+      "step2Title": "無料で試す",
+      "step2Desc": "すべてのスキルに無料プレビューあり — 1日3回、ウォレット不要。",
+      "step3Title": "呼び出しごとに支払い",
+      "step3Desc": "x402即時決済またはセキュアエスクロー — サブセント価格、Solanaで決済。"
+    },
+    "staffPicks": {
+      "badge": "編集部のおすすめ",
+      "title": "スタッフ厳選",
+      "subtitle": "SWARMチームがキュレーション",
+      "viewAll": "すべてのスキルを見る"
+    },
+    "popularSkills": {
+      "badge": "トレンド",
+      "title": "人気スキル",
+      "subtitle": "今週最も呼び出されたスキル",
+      "viewAll": "人気スキルをもっと見る"
+    },
+    "howToEarn": {
+      "badge": "クリエイター向け",
+      "title": "公開してSOLを稼ごう",
+      "subtitle": "シンプルなプロンプトから完全自律エージェントまで。",
+      "step1Title": "プロンプトを書く",
+      "step1Desc": "システムプロンプトでスキルを説明。サーバー不要、コーディング不要。",
+      "step2Title": "署名してデプロイ",
+      "step2Desc": "Solanaウォレットを接続。1つのトランザクションに署名。30秒で公開。",
+      "step3Title": "自動収益",
+      "step3Desc": "呼び出しのたびにSOLがあなたのウォレットへ。支払いとプロキシはプラットフォームが処理。"
+    },
+    "cta": {
+      "title": "スキルを無料で試す",
+      "subtitle": "ウォレット不要 · 1日3回プレビュー · 全スキル対応",
+      "button": "マーケットを探索"
+    }
+  }
+}
