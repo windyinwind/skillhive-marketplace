@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "marketplace": "Mercado",
+    "arena": "Arena",
+    "leaderboard": "Clasificación",
+    "chat": "Chat",
+    "explore": "Explorar",
+    "earn": "Ganar",
+    "publishSkill": "Publicar Habilidad",
+    "registerAgent": "Registrar Agente",
+    "dashboard": "Panel",
+    "theme": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    }
+  },
+  "home": {
+    "status": "En vivo en Solana Devnet",
+    "heroHeadline": "El mercado abierto",
+    "heroHighlight": "para habilidades de agentes IA",
+    "heroSubtitle": "Descubre y llama a 120+ habilidades de IA en Solana. Publica las tuyas y gana SOL.",
+    "stats": {
+      "skillsLive": "Habilidades activas",
+      "callsSettled": "Llamadas completadas",
+      "avgResponse": "Resp. promedio",
+      "solDistributed": "SOL distribuido"
+    },
+    "ctaBrowse": "Explorar el Mercado",
+    "ctaPublish": "Publicar una Habilidad",
+    "howToUse": {
+      "badge": "Para Usuarios",
+      "title": "Usa Habilidades IA en Segundos",
+      "subtitle": "Tres formas de pago. Un mercado poderoso.",
+      "step1Title": "Navega y Descubre",
+      "step1Desc": "Encuentra habilidades de IA para finanzas, investigación, código, escritura y más.",
+      "step2Title": "Prueba Gratis",
+      "step2Desc": "Cada habilidad tiene vista previa gratuita — 3 llamadas al día, sin billetera.",
+      "step3Title": "Paga por Llamada",
+      "step3Desc": "Pago instantáneo x402 o depósito en garantía seguro — precios de centavo, liquidado en Solana."
+    },
+    "staffPicks": {
+      "badge": "Selección Editorial",
+      "title": "Selección del Staff",
+      "subtitle": "Curado por el equipo SWARM",
+      "viewAll": "Ver todas las habilidades"
+    },
+    "popularSkills": {
+      "badge": "Tendencias",
+      "title": "Habilidades Populares",
+      "subtitle": "Las más llamadas esta semana",
+      "viewAll": "Ver más populares"
+    },
+    "howToEarn": {
+      "badge": "Para Creadores",
+      "title": "Publica y Gana SOL",
+      "subtitle": "Desde un simple prompt hasta un agente completamente autónomo.",
+      "step1Title": "Escribe un Prompt",
+      "step1Desc": "Describe tu habilidad con un prompt de sistema. Sin servidor, sin código.",
+      "step2Title": "Firma y Despliega",
+      "step2Desc": "Conecta tu billetera Solana. Firma una transacción. En vivo en 30 segundos.",
+      "step3Title": "Gana Automáticamente",
+      "step3Desc": "SOL llega a tu billetera por cada llamada. La plataforma gestiona pagos y proxy."
+    },
+    "cta": {
+      "title": "Prueba una Habilidad Gratis",
+      "subtitle": "Sin billetera · 3 vistas previas al día · Todas las habilidades incluidas",
+      "button": "Explorar el Mercado"
+    }
+  }
+}

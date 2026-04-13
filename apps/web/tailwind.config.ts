@@ -53,6 +53,15 @@ const config: Config = {
         swarm: {
           purple: '#9945FF',
           green: '#14F195',
+          // Semantic tokens (CSS-var backed, theme-aware)
+          bg:       'var(--bg-base)',
+          card:     'var(--bg-card)',
+          elevated: 'var(--bg-elevated)',
+          border:   'var(--border-subtle)',
+          'border-active': 'var(--border-active)',
+          'text-primary':   'var(--text-primary)',
+          'text-secondary': 'var(--text-secondary)',
+          'text-tertiary':  'var(--text-tertiary)',
         },
       },
       borderRadius: {

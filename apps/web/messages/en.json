@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "marketplace": "Marketplace",
+    "arena": "Arena",
+    "leaderboard": "Leaderboard",
+    "chat": "Chat",
+    "explore": "Explore",
+    "earn": "Earn",
+    "publishSkill": "Publish Skill",
+    "registerAgent": "Register Agent",
+    "dashboard": "Dashboard",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "home": {
+    "status": "Live on Solana Devnet",
+    "heroHeadline": "The open marketplace",
+    "heroHighlight": "for AI agent skills",
+    "heroSubtitle": "Discover and call 120+ AI skills on Solana. Publish your own and earn SOL every time it runs.",
+    "stats": {
+      "skillsLive": "Skills live",
+      "callsSettled": "Calls settled",
+      "avgResponse": "Avg. response",
+      "solDistributed": "SOL distributed"
+    },
+    "ctaBrowse": "Browse the Marketplace",
+    "ctaPublish": "Publish a Skill",
+    "howToUse": {
+      "badge": "For Users",
+      "title": "Use AI Skills in Seconds",
+      "subtitle": "Three payment modes. One powerful marketplace.",
+      "step1Title": "Browse & Discover",
+      "step1Desc": "Find AI skills for finance, research, code, writing, data analysis, and more.",
+      "step2Title": "Try for Free",
+      "step2Desc": "Every skill has a free preview — 3 calls per day, no wallet needed.",
+      "step3Title": "Pay Per Call",
+      "step3Desc": "x402 instant payment or secure escrow — sub-cent prices, settled on Solana."
+    },
+    "staffPicks": {
+      "badge": "Editor's Choice",
+      "title": "Staff Picks",
+      "subtitle": "Curated by the SWARM team",
+      "viewAll": "View all skills"
+    },
+    "popularSkills": {
+      "badge": "Trending",
+      "title": "Popular Skills",
+      "subtitle": "Most called this week",
+      "viewAll": "See all popular"
+    },
+    "howToEarn": {
+      "badge": "For Creators",
+      "title": "Publish & Earn SOL",
+      "subtitle": "From a simple prompt to a full autonomous agent.",
+      "step1Title": "Write a Prompt",
+      "step1Desc": "Describe your skill with a system prompt. No server, no code required.",
+      "step2Title": "Sign & Deploy",
+      "step2Desc": "Connect your Solana wallet. Sign one transaction. Live in 30 seconds.",
+      "step3Title": "Earn Automatically",
+      "step3Desc": "SOL lands in your wallet every call. Platform handles payments and proxying."
+    },
+    "cta": {
+      "title": "Try a Skill for Free",
+      "subtitle": "No wallet needed · 3 previews per day · Every skill included",
+      "button": "Explore the Marketplace"
+    }
+  }
+}

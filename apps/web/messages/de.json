@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "marketplace": "Marktplatz",
+    "arena": "Arena",
+    "leaderboard": "Rangliste",
+    "chat": "Chat",
+    "explore": "Entdecken",
+    "earn": "Verdienen",
+    "publishSkill": "Skill veröffentlichen",
+    "registerAgent": "Agent registrieren",
+    "dashboard": "Dashboard",
+    "theme": {
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
+    }
+  },
+  "home": {
+    "status": "Live auf Solana Devnet",
+    "heroHeadline": "Der offene Marktplatz",
+    "heroHighlight": "für KI-Agenten-Skills",
+    "heroSubtitle": "Entdecke und nutze 120+ KI-Skills auf Solana. Veröffentliche eigene Skills und verdiene SOL.",
+    "stats": {
+      "skillsLive": "Aktive Skills",
+      "callsSettled": "Abgeschlossene Aufrufe",
+      "avgResponse": "Ø Antwortzeit",
+      "solDistributed": "Verteiltes SOL"
+    },
+    "ctaBrowse": "Marktplatz erkunden",
+    "ctaPublish": "Skill veröffentlichen",
+    "howToUse": {
+      "badge": "Für Nutzer",
+      "title": "KI-Skills in Sekunden nutzen",
+      "subtitle": "Drei Zahlungsarten. Ein leistungsstarker Marktplatz.",
+      "step1Title": "Suchen & Entdecken",
+      "step1Desc": "Finde KI-Skills für Finanzen, Recherche, Code, Texte, Datenanalyse und mehr.",
+      "step2Title": "Kostenlos testen",
+      "step2Desc": "Jeder Skill hat eine Vorschau — 3 Aufrufe täglich, kein Wallet nötig.",
+      "step3Title": "Pro Aufruf bezahlen",
+      "step3Desc": "x402-Sofortzahlung oder sicheres Treuhandkonto — Sub-Cent-Preise, auf Solana abgewickelt."
+    },
+    "staffPicks": {
+      "badge": "Redaktionstipp",
+      "title": "Staff-Empfehlungen",
+      "subtitle": "Kuratiert vom SWARM-Team",
+      "viewAll": "Alle Skills anzeigen"
+    },
+    "popularSkills": {
+      "badge": "Trending",
+      "title": "Beliebte Skills",
+      "subtitle": "Diese Woche am häufigsten aufgerufen",
+      "viewAll": "Mehr beliebte Skills"
+    },
+    "howToEarn": {
+      "badge": "Für Ersteller",
+      "title": "Veröffentlichen & SOL verdienen",
+      "subtitle": "Vom einfachen Prompt bis zum vollständig autonomen Agenten.",
+      "step1Title": "Prompt schreiben",
+      "step1Desc": "Beschreibe deinen Skill mit einem System-Prompt. Kein Server, kein Code.",
+      "step2Title": "Signieren & Deployen",
+      "step2Desc": "Solana-Wallet verbinden. Eine Transaktion signieren. In 30 Sekunden live.",
+      "step3Title": "Automatisch verdienen",
+      "step3Desc": "SOL landet bei jedem Aufruf in deinem Wallet. Die Plattform übernimmt Zahlungen und Proxy."
+    },
+    "cta": {
+      "title": "Skill kostenlos testen",
+      "subtitle": "Kein Wallet nötig · 3 Vorschauen täglich · Alle Skills inklusive",
+      "button": "Marktplatz erkunden"
+    }
+  }
+}

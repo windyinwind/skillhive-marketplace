@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "marketplace": "Mercado",
+    "arena": "Arena",
+    "leaderboard": "Classificação",
+    "chat": "Chat",
+    "explore": "Explorar",
+    "earn": "Ganhar",
+    "publishSkill": "Publicar Skill",
+    "registerAgent": "Registrar Agente",
+    "dashboard": "Painel",
+    "theme": {
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
+    }
+  },
+  "home": {
+    "status": "Ao vivo na Solana Devnet",
+    "heroHeadline": "O marketplace aberto",
+    "heroHighlight": "para skills de agentes IA",
+    "heroSubtitle": "Descubra e chame 120+ skills de IA na Solana. Publique as suas e ganhe SOL.",
+    "stats": {
+      "skillsLive": "Skills ativas",
+      "callsSettled": "Chamadas concluídas",
+      "avgResponse": "Resposta média",
+      "solDistributed": "SOL distribuído"
+    },
+    "ctaBrowse": "Explorar o Mercado",
+    "ctaPublish": "Publicar uma Skill",
+    "howToUse": {
+      "badge": "Para Usuários",
+      "title": "Use Skills de IA em Segundos",
+      "subtitle": "Três modos de pagamento. Um mercado poderoso.",
+      "step1Title": "Navegue e Descubra",
+      "step1Desc": "Encontre skills de IA para finanças, pesquisa, código, escrita e análise de dados.",
+      "step2Title": "Experimente Gratuitamente",
+      "step2Desc": "Cada skill tem prévia gratuita — 3 chamadas por dia, sem carteira.",
+      "step3Title": "Pague por Chamada",
+      "step3Desc": "Pagamento instantâneo x402 ou escrow seguro — preços de centavo, liquidado na Solana."
+    },
+    "staffPicks": {
+      "badge": "Escolha Editorial",
+      "title": "Seleção do Staff",
+      "subtitle": "Curado pela equipe SWARM",
+      "viewAll": "Ver todas as skills"
+    },
+    "popularSkills": {
+      "badge": "Tendências",
+      "title": "Skills Populares",
+      "subtitle": "Mais chamadas desta semana",
+      "viewAll": "Ver mais populares"
+    },
+    "howToEarn": {
+      "badge": "Para Criadores",
+      "title": "Publique e Ganhe SOL",
+      "subtitle": "De um simples prompt a um agente totalmente autônomo.",
+      "step1Title": "Escreva um Prompt",
+      "step1Desc": "Descreva sua skill com um prompt de sistema. Sem servidor, sem código.",
+      "step2Title": "Assine e Publique",
+      "step2Desc": "Conecte sua carteira Solana. Assine uma transação. Ao vivo em 30 segundos.",
+      "step3Title": "Ganhe Automaticamente",
+      "step3Desc": "SOL chega na sua carteira a cada chamada. A plataforma gerencia pagamentos e proxy."
+    },
+    "cta": {
+      "title": "Experimente uma Skill Grátis",
+      "subtitle": "Sem carteira · 3 prévias por dia · Todas as skills incluídas",
+      "button": "Explorar o Mercado"
+    }
+  }
+}

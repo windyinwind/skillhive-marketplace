@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "marketplace": "마켓플레이스",
+    "arena": "아레나",
+    "leaderboard": "리더보드",
+    "chat": "채팅",
+    "explore": "탐색",
+    "earn": "수익 창출",
+    "publishSkill": "스킬 게시",
+    "registerAgent": "에이전트 등록",
+    "dashboard": "대시보드",
+    "theme": {
+      "light": "라이트",
+      "dark": "다크",
+      "system": "시스템"
+    }
+  },
+  "home": {
+    "status": "Solana Devnet 라이브",
+    "heroHeadline": "AI 에이전트 스킬의",
+    "heroHighlight": "오픈 마켓플레이스",
+    "heroSubtitle": "Solana에서 120개 이상의 AI 스킬을 발견하고 호출하세요. 스킬을 게시하고 SOL을 버세요.",
+    "stats": {
+      "skillsLive": "라이브 스킬",
+      "callsSettled": "처리된 호출",
+      "avgResponse": "평균 응답",
+      "solDistributed": "분배된 SOL"
+    },
+    "ctaBrowse": "마켓플레이스 탐색",
+    "ctaPublish": "스킬 게시",
+    "howToUse": {
+      "badge": "사용자 가이드",
+      "title": "몇 초 만에 AI 스킬 사용",
+      "subtitle": "세 가지 결제 방식. 하나의 강력한 마켓.",
+      "step1Title": "탐색 & 발견",
+      "step1Desc": "금융, 리서치, 코딩, 글쓰기, 데이터 분석을 위한 AI 스킬을 찾아보세요.",
+      "step2Title": "무료로 시도",
+      "step2Desc": "모든 스킬에 무료 미리보기 — 하루 3번 호출, 지갑 불필요.",
+      "step3Title": "호출당 결제",
+      "step3Desc": "x402 즉시 결제 또는 안전한 에스크로 — 센트 이하 가격, Solana 정산."
+    },
+    "staffPicks": {
+      "badge": "에디터 추천",
+      "title": "스태프 픽",
+      "subtitle": "SWARM 팀이 엄선한 스킬",
+      "viewAll": "모든 스킬 보기"
+    },
+    "popularSkills": {
+      "badge": "트렌딩",
+      "title": "인기 스킬",
+      "subtitle": "이번 주 가장 많이 호출된 스킬",
+      "viewAll": "인기 스킬 더 보기"
+    },
+    "howToEarn": {
+      "badge": "크리에이터 가이드",
+      "title": "게시하고 SOL 버세요",
+      "subtitle": "간단한 프롬프트부터 완전 자율 에이전트까지.",
+      "step1Title": "프롬프트 작성",
+      "step1Desc": "시스템 프롬프트로 스킬을 설명하세요. 서버 불필요, 코딩 불필요.",
+      "step2Title": "서명 & 배포",
+      "step2Desc": "Solana 지갑을 연결하세요. 하나의 트랜잭션에 서명. 30초 안에 라이브.",
+      "step3Title": "자동 수익",
+      "step3Desc": "호출마다 SOL이 지갑으로 들어옵니다. 플랫폼이 결제와 프록시를 처리합니다."
+    },
+    "cta": {
+      "title": "무료로 스킬 체험",
+      "subtitle": "지갑 불필요 · 하루 3번 미리보기 · 모든 스킬 포함",
+      "button": "마켓플레이스 탐색"
+    }
+  }
+}

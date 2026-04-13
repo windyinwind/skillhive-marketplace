@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "marketplace": "Marché",
+    "arena": "Arène",
+    "leaderboard": "Classement",
+    "chat": "Chat",
+    "explore": "Explorer",
+    "earn": "Gagner",
+    "publishSkill": "Publier un Skill",
+    "registerAgent": "Enregistrer un Agent",
+    "dashboard": "Tableau de bord",
+    "theme": {
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
+    }
+  },
+  "home": {
+    "status": "En ligne sur Solana Devnet",
+    "heroHeadline": "La marketplace ouverte",
+    "heroHighlight": "pour les skills d'agents IA",
+    "heroSubtitle": "Découvrez et appelez 120+ skills IA sur Solana. Publiez les vôtres et gagnez du SOL.",
+    "stats": {
+      "skillsLive": "Skills actifs",
+      "callsSettled": "Appels traités",
+      "avgResponse": "Réponse moy.",
+      "solDistributed": "SOL distribué"
+    },
+    "ctaBrowse": "Parcourir le Marché",
+    "ctaPublish": "Publier un Skill",
+    "howToUse": {
+      "badge": "Pour les Utilisateurs",
+      "title": "Utilisez des Skills IA en Secondes",
+      "subtitle": "Trois modes de paiement. Un marché puissant.",
+      "step1Title": "Parcourez et Découvrez",
+      "step1Desc": "Trouvez des skills IA pour la finance, la recherche, le code, la rédaction et plus.",
+      "step2Title": "Essayez Gratuitement",
+      "step2Desc": "Chaque skill a un aperçu gratuit — 3 appels par jour, sans portefeuille.",
+      "step3Title": "Payez par Appel",
+      "step3Desc": "Paiement instantané x402 ou séquestre sécurisé — prix infimes, réglé sur Solana."
+    },
+    "staffPicks": {
+      "badge": "Choix de la Rédaction",
+      "title": "Sélection du Staff",
+      "subtitle": "Sélectionné par l'équipe SWARM",
+      "viewAll": "Voir tous les skills"
+    },
+    "popularSkills": {
+      "badge": "Tendances",
+      "title": "Skills Populaires",
+      "subtitle": "Les plus appelés cette semaine",
+      "viewAll": "Voir plus de populaires"
+    },
+    "howToEarn": {
+      "badge": "Pour les Créateurs",
+      "title": "Publiez et Gagnez du SOL",
+      "subtitle": "D'un simple prompt à un agent entièrement autonome.",
+      "step1Title": "Rédigez un Prompt",
+      "step1Desc": "Décrivez votre skill avec un prompt système. Sans serveur, sans code.",
+      "step2Title": "Signez et Déployez",
+      "step2Desc": "Connectez votre portefeuille Solana. Signez une transaction. En ligne en 30 secondes.",
+      "step3Title": "Gagnez Automatiquement",
+      "step3Desc": "SOL arrive dans votre portefeuille à chaque appel. La plateforme gère paiements et proxy."
+    },
+    "cta": {
+      "title": "Essayez un Skill Gratuitement",
+      "subtitle": "Sans portefeuille · 3 aperçus par jour · Tous les skills inclus",
+      "button": "Explorer le Marché"
+    }
+  }
+}

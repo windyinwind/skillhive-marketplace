@@ -1,4 +1,7 @@
 import type { NextConfig } from 'next'
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 const nextConfig: NextConfig = {
   transpilePackages: [
@@ -7,9 +10,7 @@ const nextConfig: NextConfig = {
     '@solana/wallet-adapter-react-ui',
     '@solana/wallet-adapter-wallets',
   ],
-  // Webpack config (used in dev and production builds)
   webpack: (config) => {
-    // Required for Anchor / borsh serialization
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
@@ -21,4 +22,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default withNextIntl(nextConfig)
