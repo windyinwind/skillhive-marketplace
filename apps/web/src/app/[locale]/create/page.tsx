@@ -105,15 +105,15 @@ export default function CreatePage() {
   const canProceed2 = systemPrompt.trim().length > 0 && priceLamports > 0 && (tier === 1 || mcpUrl.trim().length > 0)
   const canSubmit = canProceed1 && canProceed2 && connected
 
-  const inputCls = 'w-full rounded-lg border border-[#2a3147] bg-[#161b27] px-3 py-2 text-sm text-[#F8FAFC] placeholder:text-[#4A5568] outline-none transition-colors focus:border-[#9945FF] focus:ring-1 focus:ring-[#9945FF]'
-  const labelCls = 'mb-1.5 block text-sm font-medium text-[#8B9BB4]'
+  const inputCls = 'w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-[#9945FF] focus:ring-1 focus:ring-[#9945FF]'
+  const labelCls = 'mb-1.5 block text-sm font-medium text-muted-foreground'
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <h1 className="mb-1 font-heading text-3xl font-bold text-[#F8FAFC]">Create a Skill</h1>
-      <p className="mb-2 text-[#8B9BB4]">Register your AI skill and start earning SOL per call.</p>
-      <p className="mb-8 text-xs text-[#4A5568]">
-        No server? Use a <span className="text-[#F8FAFC]">Prompt Skill</span>. Have an MCP server? Use an <span className="text-[#F8FAFC]">MCP Skill</span>. Building an autonomous agent?{' '}
+      <h1 className="mb-1 font-heading text-3xl font-bold text-foreground">Create a Skill</h1>
+      <p className="mb-2 text-muted-foreground">Register your AI skill and start earning SOL per call.</p>
+      <p className="mb-8 text-xs text-muted-foreground">
+        No server? Use a <span className="text-foreground">Prompt Skill</span>. Have an MCP server? Use an <span className="text-foreground">MCP Skill</span>. Building an autonomous agent?{' '}
         <a href="/register" className="text-[#9945FF] hover:underline">Register a Custom Agent</a>.
       </p>
 
@@ -126,16 +126,16 @@ export default function CreatePage() {
                 step === s
                   ? 'bg-[#9945FF] text-white'
                   : step > s
-                  ? 'bg-[#2a3147] text-[#8B9BB4]'
-                  : 'bg-[#161b27] border border-[#2a3147] text-[#4A5568]'
+                  ? 'bg-[#2a3147] text-muted-foreground'
+                  : 'bg-card border border-border text-muted-foreground'
               }`}
             >
               {s}
             </div>
-            {s < 3 && <div className={`h-px w-12 ${step > s ? 'bg-[#2a3147]' : 'bg-[#161b27]'}`} />}
+            {s < 3 && <div className={`h-px w-12 ${step > s ? 'bg-[#2a3147]' : 'bg-card'}`} />}
           </div>
         ))}
-        <span className="ml-2 text-sm text-[#4A5568]">
+        <span className="ml-2 text-sm text-muted-foreground">
           {step === 1 ? 'Basics' : step === 2 ? 'Configuration' : 'Review'}
         </span>
       </div>
@@ -178,7 +178,7 @@ export default function CreatePage() {
               <button
                 type="button"
                 onClick={addTag}
-                className="rounded-lg border border-[#2a3147] bg-[#161b27] px-4 py-2 text-sm text-[#8B9BB4] transition-colors hover:border-[#9945FF40] hover:text-[#F8FAFC]"
+                className="rounded-lg border border-border bg-card px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-[#9945FF40] hover:text-foreground"
               >
                 Add
               </button>
@@ -189,7 +189,7 @@ export default function CreatePage() {
                   key={t}
                   type="button"
                   onClick={() => setTags(tags.filter((x) => x !== t))}
-                  className="rounded-md border border-[#2a3147] bg-[#1e2435] px-2 py-0.5 text-xs text-[#8B9BB4] transition-colors hover:border-red-500/30 hover:text-red-400"
+                  className="rounded-md border border-border bg-secondary px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:border-red-500/30 hover:text-red-400"
                 >
                   {t} ×
                 </button>
@@ -205,16 +205,16 @@ export default function CreatePage() {
                 type="button"
                 onClick={() => setTier(1)}
                 className={`w-full rounded-lg border p-4 text-left transition-colors ${
-                  tier === 1 ? 'border-[#9945FF] bg-[#9945FF]/10' : 'border-[#2a3147] bg-[#161b27] hover:border-[#9945FF40]'
+                  tier === 1 ? 'border-[#9945FF] bg-[#9945FF]/10' : 'border-border bg-card hover:border-[#9945FF40]'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className={`text-sm font-semibold ${tier === 1 ? 'text-[#F8FAFC]' : 'text-[#8B9BB4]'}`}>
+                  <span className={`text-sm font-semibold ${tier === 1 ? 'text-foreground' : 'text-muted-foreground'}`}>
                     Prompt Skill
                   </span>
                   <span className="rounded-md bg-[#14F195]/10 px-2 py-0.5 text-xs text-[#14F195]">No code</span>
                 </div>
-                <p className="mt-1 text-xs text-[#4A5568]">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Write a system prompt — the platform handles the LLM call. Perfect for Q&A assistants, analysts, writers, and summarizers.
                 </p>
                 <p className="mt-1.5 text-xs text-[#9945FF]">e.g. Stock Analyst, Legal Summarizer, Tweet Writer</p>
@@ -225,28 +225,28 @@ export default function CreatePage() {
                 type="button"
                 onClick={() => setTier(2)}
                 className={`w-full rounded-lg border p-4 text-left transition-colors ${
-                  tier === 2 ? 'border-[#9945FF] bg-[#9945FF]/10' : 'border-[#2a3147] bg-[#161b27] hover:border-[#9945FF40]'
+                  tier === 2 ? 'border-[#9945FF] bg-[#9945FF]/10' : 'border-border bg-card hover:border-[#9945FF40]'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className={`text-sm font-semibold ${tier === 2 ? 'text-[#F8FAFC]' : 'text-[#8B9BB4]'}`}>
+                  <span className={`text-sm font-semibold ${tier === 2 ? 'text-foreground' : 'text-muted-foreground'}`}>
                     MCP Skill
                   </span>
                   <span className="rounded-md bg-[#9945FF]/10 px-2 py-0.5 text-xs text-[#9945FF]">MCP</span>
                 </div>
-                <p className="mt-1 text-xs text-[#4A5568]">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Connect your MCP server. The platform discovers your tools automatically and lets the LLM call them to fetch real data.
                 </p>
                 <p className="mt-1.5 text-xs text-[#9945FF]">e.g. Live Price Feed, Database Query, Search API</p>
               </button>
 
               {/* Tier 3 callout */}
-              <div className="rounded-lg border border-dashed border-[#2a3147] p-4">
+              <div className="rounded-lg border border-dashed border-border p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-[#8B9BB4]">Custom Agent</span>
-                  <span className="rounded-md bg-[#1e2435] px-2 py-0.5 text-xs text-[#4A5568]">Self-hosted</span>
+                  <span className="text-sm font-semibold text-muted-foreground">Custom Agent</span>
+                  <span className="rounded-md bg-secondary px-2 py-0.5 text-xs text-muted-foreground">Self-hosted</span>
                 </div>
-                <p className="mt-1 text-xs text-[#4A5568]">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Deploy your own ElizaOS agent and register its endpoint. Full autonomy — browse the web, run code, call any API.
                 </p>
                 <a
@@ -312,7 +312,7 @@ export default function CreatePage() {
               className={inputCls}
             />
             {priceData?.solUsd && priceLamports > 0 && (
-              <p className="mt-1 text-xs text-[#4A5568]">
+              <p className="mt-1 text-xs text-muted-foreground">
                 ≈ {lamportsToUsd(priceLamports, priceData.solUsd)} USD
               </p>
             )}
@@ -327,7 +327,7 @@ export default function CreatePage() {
                 placeholder="https://your-server.com/mcp"
                 className={inputCls}
               />
-              <p className="mt-1 text-xs text-[#4A5568]">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Must be an MCP-compatible endpoint (Streamable HTTP or SSE transport).
                 The platform will call <code className="text-[#9945FF]">tools/list</code> to discover your tools automatically.
               </p>
@@ -338,7 +338,7 @@ export default function CreatePage() {
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="flex-1 rounded-lg border border-[#2a3147] bg-[#161b27] py-2.5 text-sm text-[#8B9BB4] transition-colors hover:border-[#9945FF40] hover:text-[#F8FAFC]"
+              className="flex-1 rounded-lg border border-border bg-card py-2.5 text-sm text-muted-foreground transition-colors hover:border-[#9945FF40] hover:text-foreground"
             >
               Back
             </button>
@@ -356,14 +356,14 @@ export default function CreatePage() {
       {/* Step 3: Review + Submit */}
       {step === 3 && (
         <div className="space-y-5">
-          <div className="rounded-xl border border-[#2a3147] bg-[#161b27] p-5 space-y-3">
-            <h3 className="font-heading font-semibold text-[#F8FAFC]">Review</h3>
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+            <h3 className="font-heading font-semibold text-foreground">Review</h3>
             <div className="grid grid-cols-2 gap-y-2 text-sm">
-              <span className="text-[#4A5568]">Name</span>
-              <span className="text-[#8B9BB4]">{name}</span>
-              <span className="text-[#4A5568]">Type</span>
-              <span className="text-[#8B9BB4]">Tier {tier} — {tier === 1 ? 'Prompt' : 'MCP'}</span>
-              <span className="text-[#4A5568]">Price</span>
+              <span className="text-muted-foreground">Name</span>
+              <span className="text-muted-foreground">{name}</span>
+              <span className="text-muted-foreground">Type</span>
+              <span className="text-muted-foreground">Tier {tier} — {tier === 1 ? 'Prompt' : 'MCP'}</span>
+              <span className="text-muted-foreground">Price</span>
               <span className="font-semibold text-[#14F195]">
                 {lamportsToSol(priceLamports)} SOL
                 {priceData?.solUsd ? ` (${lamportsToUsd(priceLamports, priceData.solUsd)})` : ''}
@@ -387,7 +387,7 @@ export default function CreatePage() {
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="flex-1 rounded-lg border border-[#2a3147] bg-[#161b27] py-2.5 text-sm text-[#8B9BB4] transition-colors hover:border-[#9945FF40] hover:text-[#F8FAFC]"
+              className="flex-1 rounded-lg border border-border bg-card py-2.5 text-sm text-muted-foreground transition-colors hover:border-[#9945FF40] hover:text-foreground"
             >
               Back
             </button>

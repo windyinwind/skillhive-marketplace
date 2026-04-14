@@ -6,13 +6,8 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { SkillCallCard } from './SkillCallCard'
 import { CostTally } from './CostTally'
+import { useTranslations } from 'next-intl'
 import type { ChatMessage } from './types'
-
-const EXAMPLE_PROMPTS = [
-  'Should I buy NVIDIA stock today?',
-  'Summarize the latest AI industry news',
-  'What is the current market sentiment for Bitcoin?',
-]
 
 interface MessageListProps {
   messages: ChatMessage[]
@@ -21,7 +16,14 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages, isLoading, onPrompt }: MessageListProps) {
+  const t = useTranslations('chat')
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const EXAMPLE_PROMPTS = [
+    t('prompt1'),
+    t('prompt2'),
+    t('prompt3'),
+  ]
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -34,9 +36,9 @@ export function MessageList({ messages, isLoading, onPrompt }: MessageListProps)
           <Bot className="h-8 w-8 text-[#9945FF]" />
         </div>
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-[#F8FAFC]">Ask SWARM anything</h2>
-          <p className="mt-1 text-sm text-[#8B9BB4]">
-            The orchestrator discovers and calls marketplace skills to answer your question
+          <h2 className="text-xl font-semibold text-foreground">{t('emptyTitle')}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t('emptySubtitle')}
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -44,7 +46,7 @@ export function MessageList({ messages, isLoading, onPrompt }: MessageListProps)
             <button
               key={prompt}
               onClick={() => onPrompt(prompt)}
-              className="rounded-xl border border-[#2a3147] bg-[#161b27] px-4 py-2.5 text-left text-xs text-[#8B9BB4] transition-colors hover:border-[#9945FF]/40 hover:text-[#F8FAFC]"
+              className="rounded-xl border border-border bg-card px-4 py-2.5 text-left text-xs text-muted-foreground transition-colors hover:border-[#9945FF]/40 hover:text-foreground"
             >
               {prompt}
             </button>
@@ -61,7 +63,7 @@ export function MessageList({ messages, isLoading, onPrompt }: MessageListProps)
           if (message.role === 'user') {
             return (
               <div key={message.id} className="flex justify-end">
-                <div className="max-w-[80%] rounded-2xl rounded-br-sm border border-[#9945FF]/30 bg-[#9945FF]/10 px-4 py-3 text-sm text-[#F8FAFC]">
+                <div className="max-w-[80%] rounded-2xl rounded-br-sm border border-[#9945FF]/30 bg-[#9945FF]/10 px-4 py-3 text-sm text-foreground">
                   {message.content}
                 </div>
               </div>
@@ -78,19 +80,14 @@ export function MessageList({ messages, isLoading, onPrompt }: MessageListProps)
                   <SkillCallCard key={step.id} step={step} />
                 ))}
                 {message.content && (
-                  <div className="rounded-2xl rounded-tl-sm border border-[#2a3147] bg-[#161b27] px-4 py-3 text-sm text-[#C8D3E8]">
-                    <div className="prose prose-invert prose-sm max-w-none leading-relaxed
-                      prose-headings:text-[#F8FAFC] prose-headings:font-semibold prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0
-                      prose-p:text-[#C8D3E8] prose-p:my-1.5
-                      prose-strong:text-[#F8FAFC]
-                      prose-code:text-[#14F195] prose-code:bg-[#0f1117] prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
-                      prose-pre:bg-[#0f1117] prose-pre:border prose-pre:border-[#2a3147] prose-pre:rounded-lg
-                      prose-table:text-xs prose-th:text-[#8B9BB4] prose-td:text-[#C8D3E8] prose-td:border-[#2a3147] prose-th:border-[#2a3147]
+                  <div className="rounded-2xl rounded-tl-sm border border-border bg-card px-4 py-3 text-sm text-foreground">
+                    <div className="prose prose-sm max-w-none leading-relaxed dark:prose-invert
+                      prose-headings:font-semibold prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0
+                      prose-p:my-1.5
+                      prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
+                      prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:rounded-lg
                       prose-a:text-[#9945FF] prose-a:no-underline hover:prose-a:underline
-                      prose-ul:text-[#C8D3E8] prose-ol:text-[#C8D3E8]
-                      prose-li:my-0.5 prose-li:marker:text-[#9945FF]
-                      prose-blockquote:border-[#9945FF] prose-blockquote:text-[#8B9BB4]
-                      prose-hr:border-[#2a3147]">
+                      prose-li:my-0.5">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {message.content}
                       </ReactMarkdown>
@@ -98,7 +95,7 @@ export function MessageList({ messages, isLoading, onPrompt }: MessageListProps)
                   </div>
                 )}
                 {!message.content && (message.toolSteps ?? []).length === 0 && (
-                  <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-[#2a3147] bg-[#161b27] px-4 py-3">
+                  <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-border bg-card px-4 py-3">
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#9945FF]" style={{ animationDelay: '0ms' }} />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#9945FF]" style={{ animationDelay: '150ms' }} />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#9945FF]" style={{ animationDelay: '300ms' }} />

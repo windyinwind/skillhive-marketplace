@@ -108,13 +108,13 @@ export default function EditSkillPage() {
     }
   }
 
-  const inputCls = 'w-full rounded-lg border border-[#2a3147] bg-[#161b27] px-3 py-2 text-sm text-[#F8FAFC] placeholder:text-[#4A5568] outline-none transition-colors focus:border-[#9945FF] focus:ring-1 focus:ring-[#9945FF]'
-  const labelCls = 'mb-1.5 block text-sm font-medium text-[#8B9BB4]'
+  const inputCls = 'w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-[#9945FF] focus:ring-1 focus:ring-[#9945FF]'
+  const labelCls = 'mb-1.5 block text-sm font-medium text-muted-foreground'
 
   if (!connected) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <p className="text-[#8B9BB4]">Connect your wallet to edit this skill.</p>
+        <p className="text-muted-foreground">Connect your wallet to edit this skill.</p>
       </div>
     )
   }
@@ -130,7 +130,7 @@ export default function EditSkillPage() {
   if (notFound) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <p className="text-[#8B9BB4]">Skill not found or you don't own it.</p>
+        <p className="text-muted-foreground">Skill not found or you don't own it.</p>
       </div>
     )
   }
@@ -139,12 +139,12 @@ export default function EditSkillPage() {
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-3xl font-bold text-[#F8FAFC]">Edit Skill</h1>
-          <p className="mt-1 font-mono text-xs text-[#4A5568]">{id}</p>
+          <h1 className="font-heading text-3xl font-bold text-foreground">Edit Skill</h1>
+          <p className="mt-1 font-mono text-xs text-muted-foreground">{id}</p>
         </div>
         <button
           onClick={() => router.push(`/skill/${id}`)}
-          className="text-sm text-[#8B9BB4] hover:text-[#F8FAFC] transition-colors"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           ← Back
         </button>
@@ -179,7 +179,7 @@ export default function EditSkillPage() {
             <button
               type="button"
               onClick={addTag}
-              className="rounded-lg border border-[#2a3147] bg-[#161b27] px-4 py-2 text-sm text-[#8B9BB4] hover:border-[#9945FF40] hover:text-[#F8FAFC] transition-colors"
+              className="rounded-lg border border-border bg-card px-4 py-2 text-sm text-muted-foreground hover:border-[#9945FF40] hover:text-foreground transition-colors"
             >
               Add
             </button>
@@ -190,7 +190,7 @@ export default function EditSkillPage() {
                 key={t}
                 type="button"
                 onClick={() => setTags(tags.filter((x) => x !== t))}
-                className="rounded-md border border-[#2a3147] bg-[#1e2435] px-2 py-0.5 text-xs text-[#8B9BB4] hover:border-red-500/30 hover:text-red-400 transition-colors"
+                className="rounded-md border border-border bg-secondary px-2 py-0.5 text-xs text-muted-foreground hover:border-red-500/30 hover:text-red-400 transition-colors"
               >
                 {t} ×
               </button>
@@ -244,7 +244,7 @@ export default function EditSkillPage() {
           <button
             type="button"
             onClick={() => router.push(`/skill/${id}`)}
-            className="flex-1 rounded-lg border border-[#2a3147] bg-[#161b27] py-2.5 text-sm text-[#8B9BB4] hover:border-[#9945FF40] hover:text-[#F8FAFC] transition-colors"
+            className="flex-1 rounded-lg border border-border bg-card py-2.5 text-sm text-muted-foreground hover:border-[#9945FF40] hover:text-foreground transition-colors"
           >
             Cancel
           </button>

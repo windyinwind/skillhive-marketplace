@@ -59,14 +59,14 @@ export default function HomePage() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-center font-heading text-5xl font-bold tracking-tight text-[#F8FAFC] sm:text-6xl lg:text-7xl">
+        <h1 className="text-center font-heading text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
           The open marketplace<br className="hidden sm:block" />{' '}
           <span className="bg-gradient-to-r from-[#9945FF] to-[#14F195] bg-clip-text text-transparent">
             for AI agent skills
           </span>
         </h1>
 
-        <p className="mx-auto mt-6 max-w-xl text-center text-lg leading-relaxed text-[#8B9BB4]">
+        <p className="mx-auto mt-6 max-w-xl text-center text-lg leading-relaxed text-muted-foreground">
           Discover and call AI skills on Solana. Or publish your own and earn SOL every time it runs.
         </p>
 
@@ -74,8 +74,8 @@ export default function HomePage() {
         <div className="mx-auto mt-10 flex max-w-2xl flex-wrap justify-center gap-x-8 gap-y-3">
           {featuredStats.map(({ label, value }) => (
             <div key={label} className="flex items-baseline gap-1.5">
-              <span className="font-heading text-xl font-bold text-[#F8FAFC]">{value}</span>
-              <span className="text-sm text-[#4A5568]">{label}</span>
+              <span className="font-heading text-xl font-bold text-foreground">{value}</span>
+              <span className="text-sm text-muted-foreground">{label}</span>
             </div>
           ))}
         </div>
@@ -84,25 +84,25 @@ export default function HomePage() {
       {/* Dual-path cards */}
       <div className="mb-20 grid gap-5 sm:grid-cols-2">
         {/* Path: User */}
-        <div className="group flex flex-col rounded-xl border border-[#2a3147] bg-[#161b27] p-8 transition-all duration-150 hover:-translate-y-0.5 hover:border-[#9945FF]/25 hover:shadow-[0_0_0_1px_#9945FF40]">
+        <div className="group flex flex-col rounded-xl border border-border bg-card p-8 transition-all duration-150 hover:-translate-y-0.5 hover:border-[#9945FF]/25 hover:shadow-[0_0_0_1px_#9945FF40]">
           {/* Audience label */}
           <div className="mb-5 flex items-center gap-2">
-            <span className="rounded-md border border-[#2a3147] bg-[#1e2435] px-2.5 py-1 text-xs font-medium text-[#8B9BB4]">
+            <span className="rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
               For users
             </span>
           </div>
 
-          <h2 className="mb-2 font-heading text-2xl font-bold text-[#F8FAFC]">
+          <h2 className="mb-2 font-heading text-2xl font-bold text-foreground">
             I want to use AI skills
           </h2>
-          <p className="mb-6 flex-1 text-[#8B9BB4]">
+          <p className="mb-6 flex-1 text-muted-foreground">
             Browse 100+ AI agent skills. Call them directly from the browser, or let your AI orchestrator call them autonomously — payments settled on Solana.
           </p>
 
           {/* Benefit list */}
           <ul className="mb-8 space-y-2">
             {['Free preview on every skill', 'Pay per call — no subscription', 'Agent-to-agent calls supported'].map((item) => (
-              <li key={item} className="flex items-center gap-2 text-sm text-[#8B9BB4]">
+              <li key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="text-[#14F195]">✓</span>
                 {item}
               </li>
@@ -117,7 +117,7 @@ export default function HomePage() {
         </div>
 
         {/* Path: Creator */}
-        <div className="group flex flex-col rounded-xl border border-[#2a3147] bg-[#161b27] p-8 transition-all duration-150 hover:-translate-y-0.5 hover:border-[#14F195]/20 hover:shadow-[0_0_0_1px_#14F19520]">
+        <div className="group flex flex-col rounded-xl border border-border bg-card p-8 transition-all duration-150 hover:-translate-y-0.5 hover:border-[#14F195]/20 hover:shadow-[0_0_0_1px_#14F19520]">
           {/* Audience label */}
           <div className="mb-5 flex items-center gap-2">
             <span className="rounded-md border border-[#14F195]/20 bg-[#14F195]/5 px-2.5 py-1 text-xs font-medium text-[#14F195]">
@@ -125,17 +125,17 @@ export default function HomePage() {
             </span>
           </div>
 
-          <h2 className="mb-2 font-heading text-2xl font-bold text-[#F8FAFC]">
+          <h2 className="mb-2 font-heading text-2xl font-bold text-foreground">
             I want to publish a skill
           </h2>
-          <p className="mb-6 flex-1 text-[#8B9BB4]">
+          <p className="mb-6 flex-1 text-muted-foreground">
             Register your AI capability and earn SOL every time someone calls it. Prompt skills need no server — just a system prompt and a wallet.
           </p>
 
           {/* Benefit list */}
           <ul className="mb-8 space-y-2">
             {['Live in 30 seconds, no-code option', 'You set the price per call', 'Platform collects payment automatically'].map((item) => (
-              <li key={item} className="flex items-center gap-2 text-sm text-[#8B9BB4]">
+              <li key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="text-[#14F195]">✓</span>
                 {item}
               </li>
@@ -153,24 +153,24 @@ export default function HomePage() {
       {/* How it works — User side */}
       <div className="mb-20">
         <div className="mb-8">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-[#2a3147] bg-[#1e2435] px-2.5 py-1 text-xs font-medium text-[#8B9BB4]">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
             For users
           </div>
-          <h2 className="font-heading text-2xl font-bold text-[#F8FAFC]">Discover and call in seconds</h2>
-          <p className="mt-1 text-[#8B9BB4]">Three ways to pay — free preview, instant micro-payment, or full escrow.</p>
+          <h2 className="font-heading text-2xl font-bold text-foreground">Discover and call in seconds</h2>
+          <p className="mt-1 text-muted-foreground">Three ways to pay — free preview, instant micro-payment, or full escrow.</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
           {userBenefits.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="rounded-xl border border-[#2a3147] bg-[#161b27] p-6 transition-all duration-150 hover:-translate-y-0.5 hover:border-[#9945FF]/25 hover:shadow-[0_0_0_1px_#9945FF40]"
+              className="rounded-xl border border-border bg-card p-6 transition-all duration-150 hover:-translate-y-0.5 hover:border-[#9945FF]/25 hover:shadow-[0_0_0_1px_#9945FF40]"
             >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#9945FF]/10">
                 <Icon className="h-5 w-5 text-[#9945FF]" />
               </div>
-              <h3 className="mb-2 font-heading font-semibold text-[#F8FAFC]">{title}</h3>
-              <p className="text-sm text-[#8B9BB4]">{description}</p>
+              <h3 className="mb-2 font-heading font-semibold text-foreground">{title}</h3>
+              <p className="text-sm text-muted-foreground">{description}</p>
             </div>
           ))}
         </div>
@@ -182,30 +182,30 @@ export default function HomePage() {
           <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-[#14F195]/20 bg-[#14F195]/5 px-2.5 py-1 text-xs font-medium text-[#14F195]">
             For creators
           </div>
-          <h2 className="font-heading text-2xl font-bold text-[#F8FAFC]">Publish once, earn continuously</h2>
-          <p className="mt-1 text-[#8B9BB4]">From a simple system prompt to a fully autonomous ElizaOS agent.</p>
+          <h2 className="font-heading text-2xl font-bold text-foreground">Publish once, earn continuously</h2>
+          <p className="mt-1 text-muted-foreground">From a simple system prompt to a fully autonomous ElizaOS agent.</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
           {creatorBenefits.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="rounded-xl border border-[#2a3147] bg-[#161b27] p-6 transition-all duration-150 hover:-translate-y-0.5 hover:border-[#14F195]/20 hover:shadow-[0_0_0_1px_#14F19520]"
+              className="rounded-xl border border-border bg-card p-6 transition-all duration-150 hover:-translate-y-0.5 hover:border-[#14F195]/20 hover:shadow-[0_0_0_1px_#14F19520]"
             >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#14F195]/10">
                 <Icon className="h-5 w-5 text-[#14F195]" />
               </div>
-              <h3 className="mb-2 font-heading font-semibold text-[#F8FAFC]">{title}</h3>
-              <p className="text-sm text-[#8B9BB4]">{description}</p>
+              <h3 className="mb-2 font-heading font-semibold text-foreground">{title}</h3>
+              <p className="text-sm text-muted-foreground">{description}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Tier explainer */}
-      <div className="mb-20 rounded-xl border border-[#2a3147] bg-[#161b27] p-8">
-        <h2 className="mb-1 font-heading text-xl font-bold text-[#F8FAFC]">Three ways to publish a skill</h2>
-        <p className="mb-6 text-sm text-[#8B9BB4]">Pick the tier that matches your technical setup. You can always upgrade later.</p>
+      <div className="mb-20 rounded-xl border border-border bg-card p-8">
+        <h2 className="mb-1 font-heading text-xl font-bold text-foreground">Three ways to publish a skill</h2>
+        <p className="mb-6 text-sm text-muted-foreground">Pick the tier that matches your technical setup. You can always upgrade later.</p>
 
         <div className="grid gap-4 sm:grid-cols-3">
           {[
@@ -229,19 +229,19 @@ export default function HomePage() {
               tier: '03',
               name: 'Custom Agent',
               badge: 'Self-hosted',
-              badgeColor: 'text-[#8B9BB4] bg-[#1e2435] border-[#2a3147]',
+              badgeColor: 'text-muted-foreground bg-muted border-border',
               description: 'Deploy your own ElizaOS agent and register its HTTPS endpoint.',
               examples: 'Full autonomous agents, multi-step pipelines',
             },
           ].map(({ tier, name, badge, badgeColor, description, examples }) => (
-            <div key={tier} className="rounded-lg border border-[#2a3147] bg-[#0f1117] p-5">
+            <div key={tier} className="rounded-lg border border-border bg-background p-5">
               <div className="mb-3 flex items-center justify-between">
-                <span className="font-mono text-xs text-[#4A5568]">Tier {tier}</span>
+                <span className="font-mono text-xs text-muted-foreground">Tier {tier}</span>
                 <span className={`rounded-md border px-2 py-0.5 text-xs ${badgeColor}`}>{badge}</span>
               </div>
-              <h3 className="mb-1.5 font-heading font-semibold text-[#F8FAFC]">{name}</h3>
-              <p className="mb-3 text-xs text-[#8B9BB4]">{description}</p>
-              <p className="text-xs text-[#4A5568]">e.g. {examples}</p>
+              <h3 className="mb-1.5 font-heading font-semibold text-foreground">{name}</h3>
+              <p className="mb-3 text-xs text-muted-foreground">{description}</p>
+              <p className="text-xs text-muted-foreground/60">e.g. {examples}</p>
             </div>
           ))}
         </div>
@@ -253,7 +253,7 @@ export default function HomePage() {
             </button>
           </Link>
           <Link href="/register">
-            <button className="inline-flex items-center gap-2 rounded-lg border border-[#2a3147] bg-transparent px-5 py-2 text-sm text-[#8B9BB4] transition-colors hover:border-[#9945FF]/25 hover:text-[#F8FAFC]">
+            <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-transparent px-5 py-2 text-sm text-muted-foreground transition-colors hover:border-[#9945FF]/25 hover:text-foreground">
               Register a Custom Agent
             </button>
           </Link>
@@ -262,9 +262,9 @@ export default function HomePage() {
 
       {/* Bottom CTA strip */}
       <div className="mb-20 flex flex-col items-center gap-4 rounded-xl border border-[#9945FF]/20 bg-gradient-to-r from-[#9945FF]/5 to-[#14F195]/5 py-12 text-center">
-        <p className="text-sm font-medium text-[#8B9BB4]">Not sure where to start?</p>
-        <h2 className="font-heading text-2xl font-bold text-[#F8FAFC]">Try a skill for free, no wallet needed</h2>
-        <p className="max-w-sm text-sm text-[#8B9BB4]">
+        <p className="text-sm font-medium text-muted-foreground">Not sure where to start?</p>
+        <h2 className="font-heading text-2xl font-bold text-foreground">Try a skill for free, no wallet needed</h2>
+        <p className="max-w-sm text-sm text-muted-foreground">
           Every skill has a free preview — 3 calls per day, no payment required.
         </p>
         <Link href="/marketplace">

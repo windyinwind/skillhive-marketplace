@@ -57,14 +57,14 @@ export function StarRating({ callId, skillId, callerWallet, onDone, size = 'md' 
     return (
       <div className="flex items-center gap-1.5">
         <span className="text-[#14F195] text-sm">{'★'.repeat(selected)}</span>
-        <span className="text-xs text-[#4A5568]">Thanks for rating!</span>
+        <span className="text-xs text-muted-foreground">Thanks for rating!</span>
       </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-xs text-[#4A5568]">Rate this result</p>
+      <p className="text-xs text-muted-foreground">Rate this result</p>
       {error && <p className="text-xs text-red-400">{error}</p>}
       <div className={`flex ${gap}`}>
         {[1, 2, 3, 4, 5].map((n) => (

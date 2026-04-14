@@ -10,11 +10,11 @@ const badgeVariants = cva(
         default:
           'border-transparent bg-blue-600/20 text-blue-400 border-blue-600/30',
         secondary:
-          'border-transparent bg-slate-700 text-slate-300',
+          'border-transparent bg-slate-700 text-foreground',
         destructive:
           'border-transparent bg-red-600/20 text-red-400 border-red-600/30',
         outline:
-          'text-slate-300 border-slate-600',
+          'text-foreground border-border',
         // Tier-specific badges
         tier1:
           'border-transparent bg-emerald-600/20 text-emerald-400 border-emerald-600/30',
@@ -24,7 +24,7 @@ const badgeVariants = cva(
           'border-transparent bg-orange-600/20 text-orange-400 border-orange-600/30',
         // Tag style
         tag:
-          'border-transparent bg-slate-700/80 text-slate-300 hover:bg-slate-600/80 cursor-pointer',
+          'border-transparent bg-slate-700/80 text-foreground hover:bg-slate-600/80 cursor-pointer',
         // Status
         success:
           'border-transparent bg-emerald-600/20 text-emerald-400 border-emerald-600/30',

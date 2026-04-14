@@ -19,7 +19,7 @@ function ToastItem({ toast, onDismiss }: { toast: ToasterToast; onDismiss: (id: 
     <div
       className={cn(
         'pointer-events-auto flex items-start gap-3 w-full max-w-sm rounded-xl border p-4 shadow-2xl transition-all',
-        'bg-slate-900 border-slate-700',
+        'bg-background border-border',
         toast.variant === 'destructive' && 'border-red-600/40 bg-red-950/60',
         toast.variant === 'success' && 'border-emerald-600/40',
         !toast.open && 'opacity-0 translate-x-4'
@@ -31,14 +31,14 @@ function ToastItem({ toast, onDismiss }: { toast: ToasterToast; onDismiss: (id: 
           <p className="text-sm font-semibold text-white leading-tight">{toast.title}</p>
         )}
         {toast.description && (
-          <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{toast.description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{toast.description}</p>
         )}
       </div>
       <button
         onClick={() => onDismiss(toast.id)}
         className="shrink-0 rounded-sm opacity-70 hover:opacity-100 transition-opacity"
       >
-        <X className="h-3.5 w-3.5 text-slate-400" />
+        <X className="h-3.5 w-3.5 text-muted-foreground" />
       </button>
     </div>
   )

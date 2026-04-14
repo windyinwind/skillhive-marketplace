@@ -71,24 +71,24 @@ export function SkillPicker({ selected, onChange, max = 5 }: SkillPickerProps) {
 
       {/* Search input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder={selected.length >= max ? `Max ${max} skills selected` : 'Search skills by name or tag…'}
           value={query}
           onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
           onFocus={() => setOpen(true)}
           disabled={selected.length >= max}
-          className="pl-9 bg-slate-800/60 border-slate-700 text-slate-200 placeholder:text-slate-500 focus:border-violet-500"
+          className="pl-9 bg-card/60 border-border text-foreground placeholder:text-muted-foreground focus:border-violet-500"
         />
       </div>
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute z-50 w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg shadow-xl max-h-64 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-lg shadow-xl max-h-64 overflow-y-auto">
           {isLoading ? (
-            <div className="p-3 text-slate-500 text-sm text-center">Searching…</div>
+            <div className="p-3 text-muted-foreground text-sm text-center">Searching…</div>
           ) : skills.length === 0 ? (
-            <div className="p-3 text-slate-500 text-sm text-center">No skills found</div>
+            <div className="p-3 text-muted-foreground text-sm text-center">No skills found</div>
           ) : (
             skills.map((skill) => {
               const isSelected = selected.includes(skill.id)
@@ -99,28 +99,28 @@ export function SkillPicker({ selected, onChange, max = 5 }: SkillPickerProps) {
                   type="button"
                   onClick={() => !isDisabled && toggle(skill)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
-                    isDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-800 cursor-pointer'
+                    isDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-card cursor-pointer'
                   } ${isSelected ? 'bg-violet-900/20' : ''}`}
                 >
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-violet-500 border-violet-500' : 'border-slate-600'}`}>
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-violet-500 border-violet-500' : 'border-border'}`}>
                     {isSelected && <Check className="w-3 h-3 text-white" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-200 font-medium truncate">{skill.name}</span>
-                      <Badge variant="outline" className="text-xs border-slate-600 text-slate-400 flex-shrink-0">
+                      <span className="text-sm text-foreground font-medium truncate">{skill.name}</span>
+                      <Badge variant="outline" className="text-xs border-border text-muted-foreground flex-shrink-0">
                         Tier {skill.tier}
                       </Badge>
                     </div>
                     {(skill.tags ?? []).length > 0 && (
                       <div className="flex gap-1.5 mt-0.5">
                         {(skill.tags ?? []).slice(0, 3).map((tag) => (
-                          <span key={tag} className="text-xs text-slate-500">{tag}</span>
+                          <span key={tag} className="text-xs text-muted-foreground">{tag}</span>
                         ))}
                       </div>
                     )}
                   </div>
-                  <div className="text-xs text-slate-500 flex-shrink-0">
+                  <div className="text-xs text-muted-foreground flex-shrink-0">
                     {((skill.price_lamports ?? 0) / 1e9).toFixed(4)} SOL
                   </div>
                 </button>
@@ -131,7 +131,7 @@ export function SkillPicker({ selected, onChange, max = 5 }: SkillPickerProps) {
       )}
 
       {selected.length > 0 && (
-        <p className="mt-1.5 text-xs text-slate-500">
+        <p className="mt-1.5 text-xs text-muted-foreground">
           {selected.length} skill{selected.length !== 1 ? 's' : ''} selected
           {selected.length < max ? ` · ${max - selected.length} more allowed` : ' · max reached'}
         </p>

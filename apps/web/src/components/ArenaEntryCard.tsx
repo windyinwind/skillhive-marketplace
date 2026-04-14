@@ -82,23 +82,23 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
         ? 'border-yellow-500/50 bg-yellow-900/10'
         : rank === 1
         ? 'border-[#9945FF]/40 bg-[#9945FF]/5'
-        : 'border-[#2a3147] bg-[#141926]/60'
+        : 'border-border bg-[#141926]/60'
     }`}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3">
         {/* Rank badge */}
         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
           rank === 1 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40' :
-          rank === 2 ? 'bg-slate-600/40 text-slate-300 border border-slate-600' :
+          rank === 2 ? 'bg-slate-600/40 text-foreground border border-border' :
           rank === 3 ? 'bg-orange-900/30 text-orange-400 border border-orange-700/40' :
-          'bg-slate-700/40 text-slate-500 border border-slate-700'
+          'bg-slate-700/40 text-muted-foreground border border-border'
         }`}>
           {isWinner ? <Trophy className="w-4 h-4" /> : rank}
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-slate-100 truncate">{entry.skill_name}</span>
+            <span className="font-semibold text-foreground truncate">{entry.skill_name}</span>
             <Badge className={`text-xs ${tierColor(entry.skill_tier)}`}>
               {tierLabel(entry.skill_tier)}
             </Badge>
@@ -111,7 +111,7 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
               <Badge variant="destructive" className="text-xs">Error</Badge>
             )}
           </div>
-          <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
+          <div className="flex items-center gap-3 mt-0.5 text-xs text-muted-foreground">
             {entry.response_ms != null && (
               <span className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />{entry.response_ms}ms
@@ -126,7 +126,7 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="p-1 text-slate-500 hover:text-slate-300 transition-colors flex-shrink-0"
+          className="p-1 text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
           aria-label={expanded ? 'Collapse' : 'Expand'}
         >
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -135,17 +135,17 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
 
       {/* Result body */}
       {expanded && (
-        <div className="px-4 pb-4 border-t border-[#2a3147] pt-3 space-y-3">
+        <div className="px-4 pb-4 border-t border-border pt-3 space-y-3">
           {entry.error ? (
             <div className="text-sm text-red-400 bg-red-900/10 border border-red-800/30 rounded-lg p-3">
               {entry.error}
             </div>
           ) : entry.result ? (
-            <div className="prose prose-invert prose-sm max-w-none text-slate-300 leading-relaxed max-h-80 overflow-y-auto bg-[#0d1117] rounded-lg p-3 border border-[#2a3147]">
+            <div className="prose prose-invert prose-sm max-w-none text-foreground leading-relaxed max-h-80 overflow-y-auto bg-[#0d1117] rounded-lg p-3 border border-border">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.result}</ReactMarkdown>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-slate-500 text-sm">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Loader2 className="w-4 h-4 animate-spin" />Processing…
             </div>
           )}
@@ -171,7 +171,7 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
                       <>Pay {formatSol(skillPrice)} · This answer helped me</>
                     )}
                   </Button>
-                  <span className="text-xs text-slate-500">SOL goes directly to the skill owner</span>
+                  <span className="text-xs text-muted-foreground">SOL goes directly to the skill owner</span>
                 </div>
               )}
               {payError && (

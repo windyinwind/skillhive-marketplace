@@ -3,41 +3,42 @@
 @tailwind utilities;
 
 @layer base {
-  /* ── Light theme (default) ─────────────────────────────────────────── */
+  /* ── Light theme — warm purple-tinted, inspired by clawhub.ai ───────── */
   :root,
   .light {
     --swarm-purple: #9945FF;
     --swarm-green: #14F195;
     --swarm-gradient: linear-gradient(135deg, #9945FF, #14F195);
 
-    --bg-base: #FFFFFF;
-    --bg-card: #F8FAFC;
-    --bg-elevated: #EEF2F8;
-    --border-subtle: #E2E8F0;
-    --border-active: rgba(153, 69, 255, 0.3);
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-tertiary: #94A3B8;
+    /* Semantic tokens */
+    --bg-base: #f7f5ff;           /* warm purple-tinted page background */
+    --bg-card: #ffffff;            /* pure white cards for contrast */
+    --bg-elevated: #ede9ff;        /* slightly more purple elevated surfaces */
+    --border-subtle: rgba(120, 90, 200, 0.15);
+    --border-active: rgba(153, 69, 255, 0.4);
+    --text-primary: #1a0e2e;       /* deep purple-near-black */
+    --text-secondary: #5a4a7a;     /* warm purple-tinted secondary */
+    --text-tertiary: #9e8fbf;      /* light purple tertiary */
 
     /* shadcn/ui CSS vars — light */
-    --background: 0 0% 100%;
-    --foreground: 222 47% 7%;
-    --card: 210 40% 98%;
-    --card-foreground: 222 47% 7%;
+    --background: 252 67% 98%;     /* #f7f5ff */
+    --foreground: 262 55% 13%;     /* #1a0e2e */
+    --card: 0 0% 100%;             /* #ffffff */
+    --card-foreground: 262 55% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 7%;
+    --popover-foreground: 262 55% 13%;
     --primary: 265 100% 64%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 7%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --secondary: 258 42% 94%;      /* #ede9ff */
+    --secondary-foreground: 262 55% 13%;
+    --muted: 258 35% 93%;          /* light purple muted */
+    --muted-foreground: 262 22% 45%; /* #5a4a7a range */
     --accent: 159 91% 52%;
-    --accent-foreground: 222 47% 7%;
+    --accent-foreground: 262 55% 13%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    --border: 258 38% 88%;         /* subtle purple-tinted border */
+    --input: 258 38% 88%;
     --ring: 265 100% 64%;
     --radius: 0.75rem;
     color-scheme: light;
@@ -93,6 +94,16 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
+  /* Light mode: white cards get a subtle depth shadow (like clawhub.ai) */
+  :root .bg-card, :root .bg-white,
+  .light .bg-card, .light .bg-white {
+    box-shadow: 0 1px 3px rgba(26, 14, 46, 0.08), 0 4px 16px rgba(26, 14, 46, 0.04);
+  }
+  /* Reset shadow in dark mode */
+  .dark .bg-card, .dark .bg-white {
+    box-shadow: none;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading), system-ui, sans-serif;
   }
@@ -105,8 +116,13 @@
   }
   .skill-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 0 1px rgba(153, 69, 255, 0.25);
-    border-color: rgba(153, 69, 255, 0.25);
+    box-shadow: 0 4px 24px rgba(153, 69, 255, 0.12);
+    border-color: rgba(153, 69, 255, 0.3);
+  }
+
+  /* Light mode card shadow */
+  :root .skill-card, .light .skill-card {
+    box-shadow: 0 1px 4px rgba(26, 14, 46, 0.06);
   }
 
   /* SWARM gradient text */

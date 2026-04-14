@@ -47,23 +47,12 @@ function buildSystemPrompt(hasNativeSearch = false): string {
 
 CURRENT DATE AND TIME: ${dateStr}, ${timeStr}
 
-Your knowledge has a training cutoff. For ANY question involving:
-- Current events, news, or recent developments
-- Stock prices, crypto prices, or financial data
-- Sports scores, election results, or ongoing situations
-- Product releases, company announcements
-
-You MUST either call get_live_data (for prices) or use web search, or clearly state "As of my knowledge cutoff, ..." and tell the user to verify with current sources.
-
 When a user asks a question:
 1. For current prices/market data → call get_live_data FIRST.
 ${searchInstruction}
 3. ALWAYS call discover_skills to find relevant marketplace skills.
 4. Call call_skill for each relevant skill, injecting live data + search results into the input.
-5. Synthesize everything into a clear final answer.
-
-ALWAYS distinguish: real-time data (get_live_data / web search) vs. training knowledge (has a cutoff).
-Never present your training data as current facts without a caveat.`
+5. Synthesize everything into a clear final answer.`
 }
 
 type DiscoverInput = { query: string; tags?: string[] }

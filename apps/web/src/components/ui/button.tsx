@@ -11,11 +11,11 @@ const buttonVariants = cva(
         default:
           'bg-blue-600 text-white hover:bg-blue-500 shadow shadow-blue-900/40',
         secondary:
-          'bg-slate-700 text-slate-100 hover:bg-slate-600 border border-slate-600',
+          'bg-slate-700 text-foreground hover:bg-slate-600 border border-border',
         outline:
-          'border border-slate-600 bg-transparent text-slate-200 hover:bg-slate-800 hover:text-white',
+          'border border-border bg-transparent text-foreground hover:bg-card hover:text-white',
         ghost:
-          'text-slate-300 hover:bg-slate-800 hover:text-white',
+          'text-foreground hover:bg-card hover:text-white',
         destructive:
           'bg-red-600 text-white hover:bg-red-500',
         gradient:

@@ -3,6 +3,7 @@
 import { useRef, type FormEvent, type KeyboardEvent } from 'react'
 import { ArrowUp, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
 
 interface ChatInputProps {
   input: string
@@ -12,6 +13,7 @@ interface ChatInputProps {
 }
 
 export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputProps) {
+  const t = useTranslations('chat')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   function resize() {
@@ -31,21 +33,18 @@ export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputPro
   }
 
   return (
-    <div className="border-t border-[#2a3147] bg-[#0f1117] px-4 py-3">
-      <form
-        onSubmit={onSubmit}
-        className="mx-auto flex max-w-3xl items-end gap-3"
-      >
+    <div className="border-t border-border bg-background px-4 py-3">
+      <form onSubmit={onSubmit} className="mx-auto flex max-w-3xl items-end gap-3">
         <textarea
           ref={textareaRef}
           rows={1}
           value={input}
-          placeholder="Ask SWARM anything… (Shift+Enter for new line)"
+          placeholder={t('inputPlaceholder')}
           disabled={isLoading}
           onInput={resize}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 resize-none rounded-xl border border-[#2a3147] bg-[#161b27] px-4 py-3 text-sm text-[#F8FAFC] placeholder-[#4A5568] outline-none transition-colors focus:border-[#9945FF]/50 disabled:opacity-50"
+          className="flex-1 resize-none rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-[#9945FF]/50 disabled:opacity-50"
           style={{ minHeight: '48px', maxHeight: '160px' }}
         />
         <Button
@@ -60,8 +59,8 @@ export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputPro
           )}
         </Button>
       </form>
-      <p className="mt-2 text-center text-[10px] text-[#4A5568]">
-        SWARM orchestrates skills on Solana · skill calls may incur SOL costs
+      <p className="mt-2 text-center text-[10px] text-muted-foreground">
+        {t('footerNote')}
       </p>
     </div>
   )

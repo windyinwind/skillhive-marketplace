@@ -2,6 +2,7 @@
 
 import { Loader2, Search, Zap, AlertCircle, TrendingUp, Globe } from 'lucide-react'
 import { formatSol } from '@/lib/format'
+import { useTranslations } from 'next-intl'
 import type { ToolStep } from './types'
 
 interface SkillCallCardProps {
@@ -9,6 +10,7 @@ interface SkillCallCardProps {
 }
 
 export function SkillCallCard({ step }: SkillCallCardProps) {
+  const t = useTranslations('skillCall')
   const isDiscovery = step.toolName === 'discover_skills'
   const isLoading = step.state === 'calling'
   const hasError = step.state === 'error'
@@ -18,16 +20,16 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
     const count = step.result ? (step.result.results as unknown[])?.length : null
     const searchedAt = step.result?.searchedAt as string | undefined
     return (
-      <div className="my-1.5 flex items-center gap-2 rounded-lg border border-[#2a3147] bg-[#1a2035] px-3 py-2 text-xs">
+      <div className="my-1.5 flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs">
         {isLoading ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin text-[#9945FF]" />
         ) : (
           <Globe className="h-3.5 w-3.5 text-[#9945FF]" />
         )}
-        <span className="text-[#8B9BB4]">
+        <span className="text-muted-foreground">
           {isLoading
-            ? `Searching web for "${query}"…`
-            : `Web search: "${query}" · ${count ?? 0} results${searchedAt ? ` · ${new Date(searchedAt).toLocaleTimeString()}` : ''}`}
+            ? t('searchingWeb', { query })
+            : `${t('webSearchDone', { query, count: count ?? 0 })}${searchedAt ? ` · ${new Date(searchedAt).toLocaleTimeString()}` : ''}`}
         </span>
       </div>
     )
@@ -37,16 +39,16 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
     const symbols = (step.args.symbols as string[])?.join(', ') ?? ''
     const fetchedAt = step.result ? (step.result.fetchedAt as string) : null
     return (
-      <div className="my-1.5 flex items-center gap-2 rounded-lg border border-[#2a3147] bg-[#1a2035] px-3 py-2 text-xs">
+      <div className="my-1.5 flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs">
         {isLoading ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin text-[#14F195]" />
         ) : (
           <TrendingUp className="h-3.5 w-3.5 text-[#14F195]" />
         )}
-        <span className="text-[#8B9BB4]">
+        <span className="text-muted-foreground">
           {isLoading
-            ? `Fetching live data for ${symbols}…`
-            : `Live data fetched for ${symbols}${fetchedAt ? ` · ${new Date(fetchedAt).toLocaleTimeString()}` : ''}`}
+            ? t('fetchingLiveData', { symbols })
+            : `${t('liveDataDone', { symbols })}${fetchedAt ? ` · ${new Date(fetchedAt).toLocaleTimeString()}` : ''}`}
         </span>
       </div>
     )
@@ -56,16 +58,16 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
     const count = step.result ? (step.result.count as number) : null
     const query = step.args.query as string
     return (
-      <div className="my-1.5 flex items-center gap-2 rounded-lg border border-[#2a3147] bg-[#1a2035] px-3 py-2 text-xs">
+      <div className="my-1.5 flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs">
         {isLoading ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin text-[#9945FF]" />
         ) : (
           <Search className="h-3.5 w-3.5 text-[#14F195]" />
         )}
-        <span className="text-[#8B9BB4]">
+        <span className="text-muted-foreground">
           {isLoading
-            ? `Searching for "${query}"…`
-            : `Found ${count} skill${count === 1 ? '' : 's'} for "${query}"`}
+            ? t('discoveringSkills', { query })
+            : t(count === 1 ? 'discoveredSkills' : 'discoveredSkillsPlural', { count: count ?? 0, query })}
         </span>
       </div>
     )
@@ -92,12 +94,12 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
         <Zap className="h-3.5 w-3.5 shrink-0 text-[#14F195]" />
       )}
 
-      <span className={`font-medium ${hasError ? 'text-red-300' : step.state === 'done' ? 'text-[#F8FAFC]' : 'text-[#9945FF]'}`}>
+      <span className={`font-medium ${hasError ? 'text-red-300' : step.state === 'done' ? 'text-foreground' : 'text-[#9945FF]'}`}>
         {skillName}
       </span>
 
-      <span className="text-[#8B9BB4]">
-        {isLoading ? 'calling…' : hasError ? 'failed' : 'done'}
+      <span className="text-muted-foreground">
+        {isLoading ? t('calling') : hasError ? t('failed') : t('done')}
       </span>
 
       {costLamports !== undefined && costLamports > 0 && (

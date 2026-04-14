@@ -80,7 +80,7 @@ export function tierColor(tier: number): string {
     case 1: return 'bg-blue-500/20 text-blue-300 border-blue-500/30'
     case 2: return 'bg-violet-500/20 text-violet-300 border-violet-500/30'
     case 3: return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-    default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30'
+    default: return 'bg-slate-500/20 text-foreground border-slate-500/30'
   }
 }
 

@@ -16,7 +16,7 @@ interface ArenaRoundClientProps {
 const statusConfig = {
   running: { label: 'Skills competing…', className: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
   open:    { label: 'Choose your answer', className: 'bg-[#14F195]/15 text-[#14F195] border-[#14F195]/30' },
-  closed:  { label: 'Closed', className: 'bg-slate-600/40 text-slate-400 border-slate-600' },
+  closed:  { label: 'Closed', className: 'bg-slate-600/40 text-muted-foreground border-border' },
 }
 
 export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps) {
@@ -56,29 +56,29 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
             {data.status === 'running' && <Loader2 className="w-3 h-3 animate-spin mr-1 inline" />}
             {cfg.label}
           </Badge>
-          <span className="text-xs text-slate-500">{formatDate(data.created_at)}</span>
+          <span className="text-xs text-muted-foreground">{formatDate(data.created_at)}</span>
           <button
             onClick={refresh}
             disabled={refreshing}
-            className="ml-auto p-1.5 text-slate-500 hover:text-slate-300 transition-colors rounded-lg hover:bg-slate-800"
+            className="ml-auto p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-card"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
         </div>
-        <h1 className="text-xl font-bold text-slate-100 leading-snug">{data.query}</h1>
+        <h1 className="text-xl font-bold text-foreground leading-snug">{data.query}</h1>
 
         {data.tags && data.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
             {data.tags.map((tag) => (
-              <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-slate-700/60 text-slate-400">
+              <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-slate-700/60 text-muted-foreground">
                 {tag}
               </span>
             ))}
           </div>
         )}
 
-        <div className="flex items-center gap-5 mt-4 text-xs text-slate-500">
+        <div className="flex items-center gap-5 mt-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Zap className="w-3.5 h-3.5" />{data.competitor_count} skills competing
           </span>
@@ -99,16 +99,16 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
       {data.status === 'running' && sorted.length === 0 && (
         <div className="text-center py-16 space-y-3">
           <Loader2 className="w-8 h-8 animate-spin text-[#9945FF] mx-auto" />
-          <p className="text-slate-400">Skills are processing your query…</p>
-          <p className="text-slate-600 text-sm">This usually takes 5–30 seconds</p>
+          <p className="text-muted-foreground">Skills are processing your query…</p>
+          <p className="text-muted-foreground text-sm">This usually takes 5–30 seconds</p>
         </div>
       )}
 
       {/* How it works — only shown to the creator */}
       {data.status === 'open' && answeredCount > 0 && isCreator && (
-        <div className="rounded-xl border border-[#9945FF]/20 bg-[#9945FF]/5 px-4 py-3 text-sm text-slate-300 space-y-1">
-          <p className="font-semibold text-slate-100">Choose the answer that helped you most</p>
-          <p className="text-slate-400">
+        <div className="rounded-xl border border-[#9945FF]/20 bg-[#9945FF]/5 px-4 py-3 text-sm text-foreground space-y-1">
+          <p className="font-semibold text-foreground">Choose the answer that helped you most</p>
+          <p className="text-muted-foreground">
             Read all the answers below. If one helped you, pay for it — the SOL goes directly
             to that skill&apos;s creator. No payment required if none of them helped.
           </p>
@@ -117,7 +117,7 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
 
       {/* Non-creator view */}
       {data.status === 'open' && !isCreator && (
-        <div className="rounded-xl border border-[#2a3147] bg-[#161b27] px-4 py-3 text-sm text-slate-400">
+        <div className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
           This is a private comparison. Connect the wallet that created this round to pay for an answer.
         </div>
       )}
@@ -126,10 +126,10 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
       {sorted.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               {data.status === 'running' ? 'Answers coming in…' : `${answeredCount} Answer${answeredCount !== 1 ? 's' : ''}`}
             </h2>
-            <span className="text-xs text-slate-600">{sorted.length} skill{sorted.length !== 1 ? 's' : ''}</span>
+            <span className="text-xs text-muted-foreground">{sorted.length} skill{sorted.length !== 1 ? 's' : ''}</span>
           </div>
           {sorted.map((entry, i) => (
             <ArenaEntryCard
@@ -149,7 +149,7 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
           <p className="font-medium text-yellow-400 mb-1">
             <Trophy className="w-4 h-4 inline mr-1" />Winner: {sorted[0].skill_name}
           </p>
-          <p className="text-slate-400">
+          <p className="text-muted-foreground">
             Earned {(sorted[0].sol_earned / 1e9).toFixed(4)} SOL from {sorted[0].votes} payment{sorted[0].votes !== 1 ? 's' : ''}.
           </p>
         </div>

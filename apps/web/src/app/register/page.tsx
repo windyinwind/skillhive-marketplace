@@ -10,8 +10,8 @@ import bs58 from 'bs58'
 type Step = 1 | 2 | 3
 
 const inputCls =
-  'w-full rounded-lg border border-[#2a3147] bg-[#161b27] px-3 py-2 text-sm text-[#F8FAFC] placeholder:text-[#4A5568] outline-none transition-colors focus:border-[#9945FF] focus:ring-1 focus:ring-[#9945FF]'
-const labelCls = 'mb-1.5 block text-sm font-medium text-[#8B9BB4]'
+  'w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-[#9945FF] focus:ring-1 focus:ring-[#9945FF]'
+const labelCls = 'mb-1.5 block text-sm font-medium text-muted-foreground'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -133,20 +133,20 @@ export default function RegisterPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <h1 className="mb-1 font-heading text-3xl font-bold text-[#F8FAFC]">Register Custom Agent</h1>
-      <p className="mb-3 text-[#8B9BB4]">
+      <h1 className="mb-1 font-heading text-3xl font-bold text-foreground">Register Custom Agent</h1>
+      <p className="mb-3 text-muted-foreground">
         For developers deploying their own ElizaOS agent. Your agent runs on your server — the platform routes payments and proxies calls to it.
       </p>
 
       {/* Who should use this */}
-      <div className="mb-6 rounded-xl border border-[#2a3147] bg-[#161b27] p-4 space-y-2">
-        <p className="text-xs font-semibold text-[#8B9BB4] uppercase tracking-wider">Use this if you…</p>
-        <div className="space-y-1.5 text-xs text-[#4A5568]">
+      <div className="mb-6 rounded-xl border border-border bg-card p-4 space-y-2">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Use this if you…</p>
+        <div className="space-y-1.5 text-xs text-muted-foreground">
           <p>✓ Have a running ElizaOS agent at a public HTTPS URL</p>
           <p>✓ Want full control — your own logic, APIs, tools, memory</p>
           <p>✓ Are comfortable deploying and operating a server</p>
         </div>
-        <p className="pt-1 text-xs text-[#4A5568]">
+        <p className="pt-1 text-xs text-muted-foreground">
           No server?{' '}
           <a href="/create" className="text-[#9945FF] hover:underline">Create a Prompt or Tool Skill instead</a>
           {' '}— no infrastructure needed.
@@ -162,8 +162,8 @@ export default function RegisterPage() {
                 step === s
                   ? 'bg-[#9945FF] text-white'
                   : step > s
-                  ? 'bg-[#2a3147] text-[#8B9BB4]'
-                  : 'bg-[#161b27] border border-[#2a3147] text-[#4A5568]'
+                  ? 'bg-[#2a3147] text-muted-foreground'
+                  : 'bg-card border border-border text-muted-foreground'
               }`}
             >
               {s}
@@ -173,7 +173,7 @@ export default function RegisterPage() {
             )}
           </div>
         ))}
-        <span className="ml-2 text-sm text-[#4A5568]">{stepLabels[step]}</span>
+        <span className="ml-2 text-sm text-muted-foreground">{stepLabels[step]}</span>
       </div>
 
       {/* ── Step 1: Skill Details ─────────────────────────────────────── */}
@@ -214,7 +214,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={addTag}
-                className="rounded-lg border border-[#2a3147] bg-[#161b27] px-4 py-2 text-sm text-[#8B9BB4] transition-colors hover:border-[#9945FF40] hover:text-[#F8FAFC]"
+                className="rounded-lg border border-border bg-card px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-[#9945FF40] hover:text-foreground"
               >
                 Add
               </button>
@@ -225,7 +225,7 @@ export default function RegisterPage() {
                   key={t}
                   type="button"
                   onClick={() => setTags(tags.filter((x) => x !== t))}
-                  className="rounded-md border border-[#2a3147] bg-[#1e2435] px-2 py-0.5 text-xs text-[#8B9BB4] transition-colors hover:border-red-500/30 hover:text-red-400"
+                  className="rounded-md border border-border bg-secondary px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:border-red-500/30 hover:text-red-400"
                 >
                   {t} ×
                 </button>
@@ -243,7 +243,7 @@ export default function RegisterPage() {
               step="0.001"
               className={inputCls}
             />
-            <p className="mt-1 text-xs text-[#4A5568]">
+            <p className="mt-1 text-xs text-muted-foreground">
               Callers pay this amount per invocation via on-chain escrow.
             </p>
           </div>
@@ -262,11 +262,11 @@ export default function RegisterPage() {
       {step === 2 && (
         <div className="space-y-5">
           {/* Info banner */}
-          <div className="flex gap-3 rounded-xl border border-[#2a3147] bg-[#161b27] p-4">
+          <div className="flex gap-3 rounded-xl border border-border bg-card p-4">
             <Shield className="mt-0.5 h-5 w-5 shrink-0 text-[#9945FF]" />
             <div className="space-y-1">
-              <p className="text-sm font-medium text-[#F8FAFC]">On-chain registration</p>
-              <p className="text-xs text-[#8B9BB4]">
+              <p className="text-sm font-medium text-foreground">On-chain registration</p>
+              <p className="text-xs text-muted-foreground">
                 This creates your <code className="text-[#9945FF]">SkillAccount</code> on Solana.
                 No endpoint URL is stored on-chain — only your skill metadata and price.
               </p>
@@ -274,25 +274,25 @@ export default function RegisterPage() {
           </div>
 
           {/* Summary */}
-          <div className="rounded-xl border border-[#2a3147] bg-[#161b27] p-5 space-y-3">
-            <h3 className="font-heading text-sm font-semibold text-[#8B9BB4] uppercase tracking-wider">
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+            <h3 className="font-heading text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               What will be registered
             </h3>
             <div className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-              <span className="text-[#4A5568]">Name</span>
-              <span className="text-[#F8FAFC]">{name}</span>
+              <span className="text-muted-foreground">Name</span>
+              <span className="text-foreground">{name}</span>
 
-              <span className="text-[#4A5568]">Description</span>
-              <span className="text-[#8B9BB4] break-words">{description}</span>
+              <span className="text-muted-foreground">Description</span>
+              <span className="text-muted-foreground break-words">{description}</span>
 
               {tags.length > 0 && (
                 <>
-                  <span className="text-[#4A5568]">Tags</span>
+                  <span className="text-muted-foreground">Tags</span>
                   <div className="flex flex-wrap gap-1">
                     {tags.map((t) => (
                       <span
                         key={t}
-                        className="rounded-md border border-[#2a3147] bg-[#1e2435] px-2 py-0.5 text-xs text-[#8B9BB4]"
+                        className="rounded-md border border-border bg-secondary px-2 py-0.5 text-xs text-muted-foreground"
                       >
                         {t}
                       </span>
@@ -301,13 +301,13 @@ export default function RegisterPage() {
                 </>
               )}
 
-              <span className="text-[#4A5568]">Price</span>
+              <span className="text-muted-foreground">Price</span>
               <span className="font-semibold text-[#14F195]">
                 {(priceLamports / 1_000_000_000).toFixed(4)} SOL
               </span>
 
-              <span className="text-[#4A5568]">Tier</span>
-              <span className="text-[#8B9BB4]">3 — Custom Agent</span>
+              <span className="text-muted-foreground">Tier</span>
+              <span className="text-muted-foreground">3 — Custom Agent</span>
             </div>
           </div>
 
@@ -328,7 +328,7 @@ export default function RegisterPage() {
               type="button"
               onClick={() => { setError(null); setStep(1) }}
               disabled={loading}
-              className="flex-1 rounded-lg border border-[#2a3147] bg-[#161b27] py-2.5 text-sm text-[#8B9BB4] transition-colors hover:border-[#9945FF40] hover:text-[#F8FAFC] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 rounded-lg border border-border bg-card py-2.5 text-sm text-muted-foreground transition-colors hover:border-[#9945FF40] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Back
             </button>
@@ -354,8 +354,8 @@ export default function RegisterPage() {
           <div className="flex gap-3 rounded-xl border border-[#14F195]/20 bg-[#14F195]/5 p-4">
             <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#14F195]" />
             <div className="space-y-1">
-              <p className="text-sm font-medium text-[#F8FAFC]">On-chain registration complete</p>
-              <p className="text-xs text-[#8B9BB4]">
+              <p className="text-sm font-medium text-foreground">On-chain registration complete</p>
+              <p className="text-xs text-muted-foreground">
                 Your <code className="text-[#14F195]">SkillAccount</code> is live on Solana.
                 Now register your agent's private endpoint — it is stored server-side only and never exposed.
               </p>
@@ -363,11 +363,11 @@ export default function RegisterPage() {
           </div>
 
           {/* Info callout */}
-          <div className="flex gap-3 rounded-xl border border-[#2a3147] bg-[#161b27] p-4">
+          <div className="flex gap-3 rounded-xl border border-border bg-card p-4">
             <Server className="mt-0.5 h-5 w-5 shrink-0 text-[#9945FF]" />
             <div className="space-y-1">
-              <p className="text-sm font-medium text-[#F8FAFC]">Endpoint privacy</p>
-              <p className="text-xs text-[#8B9BB4]">
+              <p className="text-sm font-medium text-foreground">Endpoint privacy</p>
+              <p className="text-xs text-muted-foreground">
                 Your HTTPS endpoint is stored in Supabase behind Row-Level Security and is
                 only accessible to the platform's server-side proxy. Callers never see it.
               </p>
@@ -383,15 +383,15 @@ export default function RegisterPage() {
               className={inputCls}
               type="url"
             />
-            <p className="mt-1 text-xs text-[#4A5568]">
+            <p className="mt-1 text-xs text-muted-foreground">
               Must be HTTPS. The platform will POST call inputs here and return results to callers.
             </p>
           </div>
 
           {skillId && (
-            <div className="rounded-lg border border-[#2a3147] bg-[#1e2435] px-3 py-2">
-              <p className="text-xs text-[#4A5568]">Skill ID</p>
-              <p className="mt-0.5 font-mono text-xs text-[#8B9BB4] break-all">{skillId}</p>
+            <div className="rounded-lg border border-border bg-secondary px-3 py-2">
+              <p className="text-xs text-muted-foreground">Skill ID</p>
+              <p className="mt-0.5 font-mono text-xs text-muted-foreground break-all">{skillId}</p>
             </div>
           )}
 
@@ -413,7 +413,7 @@ export default function RegisterPage() {
             )}
           </button>
 
-          <p className="text-center text-xs text-[#4A5568]">
+          <p className="text-center text-xs text-muted-foreground">
             You will be asked to sign a message with your wallet to prove endpoint ownership.
           </p>
         </div>

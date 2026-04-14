@@ -123,15 +123,15 @@ export function ChatContainer() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-64px)] flex-col bg-[#0f1117]">
+    <div className="flex h-[calc(100vh-64px)] flex-col bg-background">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-[#2a3147] bg-[#0f1117] px-4 py-3">
+      <div className="flex items-center gap-3 border-b border-border bg-background px-4 py-3">
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#9945FF]/20">
           <Bot className="h-3.5 w-3.5 text-[#9945FF]" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-[#F8FAFC]">SWARM Chat</p>
-          <p className="text-[10px] text-[#4A5568]">Multi-agent orchestration</p>
+          <p className="text-sm font-semibold text-foreground">SWARM Chat</p>
+          <p className="text-[10px] text-muted-foreground">Multi-agent orchestration</p>
         </div>
       </div>
 

@@ -186,19 +186,19 @@ export function TryItPanel({ skillId, priceLamports }: TryItPanelProps) {
   ]
 
   return (
-    <div className="rounded-xl border border-[#2a3147] bg-[#161b27] p-5">
-      <h3 className="mb-4 font-heading font-semibold text-[#F8FAFC]">Try it</h3>
+    <div className="rounded-xl border border-border bg-card p-5">
+      <h3 className="mb-4 font-heading font-semibold text-foreground">Try it</h3>
 
       {/* Mode tabs */}
-      <div className="mb-4 flex rounded-lg bg-[#0f1117] p-1">
+      <div className="mb-4 flex rounded-lg bg-background p-1">
         {tabs.map((t) => (
           <button
             key={t.mode}
             onClick={() => { setMode(t.mode); reset() }}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-medium transition-all ${
               mode === t.mode
-                ? 'bg-[#1e2435] text-[#F8FAFC] shadow-sm'
-                : 'text-[#4A5568] hover:text-[#8B9BB4]'
+                ? 'bg-secondary text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-muted-foreground'
             }`}
           >
             {t.icon}
@@ -209,16 +209,16 @@ export function TryItPanel({ skillId, priceLamports }: TryItPanelProps) {
 
       {/* Mode description */}
       {mode === 'preview' && (
-        <p className="mb-3 text-xs text-[#4A5568]">Free preview · rate limited to 3/day per IP</p>
+        <p className="mb-3 text-xs text-muted-foreground">Free preview · rate limited to 3/day per IP</p>
       )}
       {mode === 'x402' && (
-        <p className="mb-3 text-xs text-[#4A5568]">
+        <p className="mb-3 text-xs text-muted-foreground">
           x402 instant payment · no lock-up · {lamportsToSol(priceLamports)} SOL
           {priceData?.solUsd ? ` (${lamportsToUsd(priceLamports, priceData.solUsd)})` : ''}
         </p>
       )}
       {mode === 'escrow' && (
-        <p className="mb-3 text-xs text-[#4A5568]">
+        <p className="mb-3 text-xs text-muted-foreground">
           On-chain escrow · refundable · {lamportsToSol(priceLamports)} SOL
           {priceData?.solUsd ? ` (${lamportsToUsd(priceLamports, priceData.solUsd)})` : ''}
         </p>
@@ -229,7 +229,7 @@ export function TryItPanel({ skillId, priceLamports }: TryItPanelProps) {
         placeholder="Enter your input..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        className="mb-3 min-h-[80px] w-full resize-none rounded-lg border border-[#2a3147] bg-[#0f1117] px-3 py-2 text-sm text-[#F8FAFC] placeholder:text-[#4A5568] outline-none transition-colors focus:border-[#9945FF] focus:ring-1 focus:ring-[#9945FF]"
+        className="mb-3 min-h-[80px] w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-[#9945FF] focus:ring-1 focus:ring-[#9945FF]"
       />
 
       {/* Action button */}
@@ -237,7 +237,7 @@ export function TryItPanel({ skillId, priceLamports }: TryItPanelProps) {
         <button
           onClick={runPreview}
           disabled={loading || !input.trim()}
-          className="w-full rounded-lg border border-[#2a3147] bg-[#1e2435] py-2 text-sm font-medium text-[#8B9BB4] transition-all active:scale-[0.97] hover:border-[#9945FF40] hover:text-[#F8FAFC] disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full rounded-lg border border-border bg-secondary py-2 text-sm font-medium text-muted-foreground transition-all active:scale-[0.97] hover:border-[#9945FF40] hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {loading ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : 'Try for free'}
         </button>
@@ -283,28 +283,28 @@ export function TryItPanel({ skillId, priceLamports }: TryItPanelProps) {
 
       {/* Loading skeleton */}
       {loading && !result && (
-        <div className="mt-4 space-y-2 rounded-lg border border-[#2a3147] bg-[#0f1117] p-4">
-          <div className="h-3 w-3/4 animate-pulse rounded bg-[#1e2435]" />
-          <div className="h-3 w-full animate-pulse rounded bg-[#1e2435]" />
-          <div className="h-3 w-1/2 animate-pulse rounded bg-[#1e2435]" />
+        <div className="mt-4 space-y-2 rounded-lg border border-border bg-background p-4">
+          <div className="h-3 w-3/4 animate-pulse rounded bg-secondary" />
+          <div className="h-3 w-full animate-pulse rounded bg-secondary" />
+          <div className="h-3 w-1/2 animate-pulse rounded bg-secondary" />
         </div>
       )}
 
       {/* Result */}
       {result && (
-        <div className="mt-4 rounded-lg border border-[#2a3147] bg-[#0f1117] p-4">
+        <div className="mt-4 rounded-lg border border-border bg-background p-4">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs font-medium text-[#4A5568]">Result</p>
+            <p className="text-xs font-medium text-muted-foreground">Result</p>
             <button
               onClick={copyResultLink}
-              className="flex items-center gap-1 text-xs text-[#4A5568] transition-colors hover:text-[#9945FF]"
+              className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-[#9945FF]"
               title="Copy shareable link with this input"
             >
               <Share2 className="h-3 w-3" />
               {copied ? 'Copied!' : 'Share'}
             </button>
           </div>
-          <p className="whitespace-pre-wrap text-sm text-[#8B9BB4]">{result}</p>
+          <p className="whitespace-pre-wrap text-sm text-muted-foreground">{result}</p>
           {txSig && (
             <a
               href={`https://explorer.solana.com/tx/${txSig}?cluster=devnet`}
@@ -317,7 +317,7 @@ export function TryItPanel({ skillId, priceLamports }: TryItPanelProps) {
           )}
           {/* Inline rating — only shown for paid calls where we have a callId */}
           {callId && publicKey && mode !== 'preview' && (
-            <div className="mt-3 border-t border-[#2a3147] pt-3">
+            <div className="mt-3 border-t border-border pt-3">
               <StarRating
                 callId={callId}
                 skillId={skillId}

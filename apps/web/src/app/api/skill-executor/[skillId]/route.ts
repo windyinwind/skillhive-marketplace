@@ -137,10 +137,10 @@ export async function POST(
       }
     }
 
-    // Prepend today's date so the model knows its knowledge cutoff relative to "now"
+    // Prepend today's date so the model has current temporal context
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
     const systemWithDate = sysPrompt
-      ? `Today's date: ${today}\n\nIMPORTANT: Your training data has a cutoff. For any time-sensitive facts (prices, earnings, news), explicitly state "as of my knowledge cutoff" and recommend the user verify with current sources.\n\n${sysPrompt}`
+      ? `Today's date: ${today}\n\n${sysPrompt}`
       : `Today's date: ${today}`
 
     const { text } = await generateText({

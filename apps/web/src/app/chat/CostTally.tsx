@@ -15,7 +15,7 @@ export function CostTally({ toolSteps }: CostTallyProps) {
   if (total === 0) return null
 
   return (
-    <div className="mt-2 flex items-center gap-1.5 text-xs text-[#4A5568]">
+    <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
       <span>Total skill cost:</span>
       <span className="font-mono text-[#14F195]">{formatSol(total)}</span>
     </div>

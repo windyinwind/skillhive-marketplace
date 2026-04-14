@@ -6,7 +6,6 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
 import { RoundCard } from '@/components/RoundCard'
 import { SkillPicker } from '@/components/SkillPicker'
 import {
@@ -17,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Loader2, Swords, Sparkles, List, ChevronDown, ChevronUp } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type SelectionMode = 'auto' | 'manual'
 type SortMode = 'reputation' | 'usage' | 'cheapest' | 'newest'
@@ -40,6 +40,7 @@ interface ArenaRoundsResponse {
 }
 
 export default function ArenaPage() {
+  const t = useTranslations('arena')
   const router = useRouter()
   const { publicKey } = useWallet()
 
@@ -56,7 +57,7 @@ export default function ArenaPage() {
   // Feed state
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('open')
 
-  const { data: feedData, isLoading: feedLoading, refetch: refetchFeed } = useQuery<ArenaRoundsResponse>({
+  const { data: feedData, isLoading: feedLoading } = useQuery<ArenaRoundsResponse>({
     queryKey: ['arena-rounds', statusFilter],
     queryFn: () => fetch(`/api/arena?status=${statusFilter}&limit=20`).then((r) => r.json()),
     refetchInterval: 10_000,
@@ -93,36 +94,44 @@ export default function ArenaPage() {
     }
   }
 
+  const STATUS_FILTERS = [
+    { value: 'open' as StatusFilter,    label: t('statusOpen') },
+    { value: 'running' as StatusFilter, label: t('statusRunning') },
+    { value: 'closed' as StatusFilter,  label: t('statusClosed') },
+  ]
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 space-y-12">
       {/* Hero */}
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-medium">
           <Swords className="w-3.5 h-3.5" />
-          Skill Arena
+          {t('badge')}
         </div>
-        <h1 className="text-3xl sm:text-4xl font-bold text-slate-100">
-          Get multiple AI answers, pay for the best one
+        <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
+          {t('title')}
         </h1>
-        <p className="text-slate-400 max-w-xl mx-auto">
-          Ask once. Multiple skills answer in parallel for free. Read them all, then pay only for the answer that actually helped you — SOL goes directly to that skill&apos;s creator.
+        <p className="text-muted-foreground max-w-xl mx-auto">
+          {t('subtitle')}
         </p>
       </div>
 
       {/* Problem form */}
-      <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-700/60 bg-slate-800/40 p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-card p-6 space-y-5">
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">
-            Your problem or question
+          <label className="block text-sm font-medium text-foreground mb-1.5">
+            {t('questionLabel')}
           </label>
           <Textarea
-            placeholder="e.g. Analyze the risk/reward of buying NVIDIA stock this week given current macro conditions and recent earnings…"
+            placeholder={t('questionPlaceholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             rows={4}
-            className="bg-slate-900/60 border-slate-700 text-slate-200 placeholder:text-slate-600 resize-none focus:border-violet-500"
+            className="bg-background border-border text-foreground placeholder:text-muted-foreground resize-none focus:border-violet-500"
           />
-          <p className="mt-1 text-xs text-slate-600">{query.trim().length} / 10 chars minimum</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t('charsMinimum', { count: query.trim().length })}
+          </p>
         </div>
 
         {/* Selection mode */}
@@ -133,15 +142,15 @@ export default function ArenaPage() {
             className={`flex items-start gap-3 p-3 rounded-xl border transition-all text-left ${
               selectionMode === 'auto'
                 ? 'border-violet-500/60 bg-violet-900/20'
-                : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'
+                : 'border-border bg-card hover:border-border/80'
             }`}
           >
-            <Sparkles className={`w-4 h-4 mt-0.5 flex-shrink-0 ${selectionMode === 'auto' ? 'text-violet-400' : 'text-slate-500'}`} />
+            <Sparkles className={`w-4 h-4 mt-0.5 flex-shrink-0 ${selectionMode === 'auto' ? 'text-violet-400' : 'text-muted-foreground'}`} />
             <div>
-              <p className={`text-sm font-medium ${selectionMode === 'auto' ? 'text-violet-300' : 'text-slate-300'}`}>
-                Auto-select
+              <p className={`text-sm font-medium ${selectionMode === 'auto' ? 'text-violet-300' : 'text-foreground'}`}>
+                {t('autoSelectTitle')}
               </p>
-              <p className="text-xs text-slate-500 mt-0.5">AI picks the best skills for your query</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('autoSelectDesc')}</p>
             </div>
           </button>
           <button
@@ -150,15 +159,15 @@ export default function ArenaPage() {
             className={`flex items-start gap-3 p-3 rounded-xl border transition-all text-left ${
               selectionMode === 'manual'
                 ? 'border-violet-500/60 bg-violet-900/20'
-                : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'
+                : 'border-border bg-card hover:border-border/80'
             }`}
           >
-            <List className={`w-4 h-4 mt-0.5 flex-shrink-0 ${selectionMode === 'manual' ? 'text-violet-400' : 'text-slate-500'}`} />
+            <List className={`w-4 h-4 mt-0.5 flex-shrink-0 ${selectionMode === 'manual' ? 'text-violet-400' : 'text-muted-foreground'}`} />
             <div>
-              <p className={`text-sm font-medium ${selectionMode === 'manual' ? 'text-violet-300' : 'text-slate-300'}`}>
-                Pick skills
+              <p className={`text-sm font-medium ${selectionMode === 'manual' ? 'text-violet-300' : 'text-foreground'}`}>
+                {t('pickSkillsTitle')}
               </p>
-              <p className="text-xs text-slate-500 mt-0.5">You choose which skills compete</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('pickSkillsDesc')}</p>
             </div>
           </button>
         </div>
@@ -166,8 +175,8 @@ export default function ArenaPage() {
         {/* Manual skill picker */}
         {selectionMode === 'manual' && (
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">
-              Select 2–5 skills to compete
+            <label className="block text-sm font-medium text-foreground mb-1.5">
+              {t('selectSkillsLabel')}
             </label>
             <SkillPicker
               selected={selectedSkillIds}
@@ -181,10 +190,10 @@ export default function ArenaPage() {
         <button
           type="button"
           onClick={() => setShowAdvanced((v) => !v)}
-          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           {showAdvanced ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          Advanced options
+          {t('advancedOptions')}
         </button>
 
         {showAdvanced && (
@@ -192,30 +201,30 @@ export default function ArenaPage() {
             {selectionMode === 'auto' && (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Sort by</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">{t('sortByLabel')}</label>
                   <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
-                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-300 text-sm h-9">
+                    <SelectTrigger className="bg-background border-border text-foreground text-sm h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-700">
-                      <SelectItem value="reputation">Reputation</SelectItem>
-                      <SelectItem value="usage">Most Used</SelectItem>
-                      <SelectItem value="cheapest">Cheapest</SelectItem>
-                      <SelectItem value="newest">Newest</SelectItem>
+                    <SelectContent className="bg-card border-border">
+                      <SelectItem value="reputation">{t('sortReputation')}</SelectItem>
+                      <SelectItem value="usage">{t('sortMostUsed')}</SelectItem>
+                      <SelectItem value="cheapest">{t('sortCheapest')}</SelectItem>
+                      <SelectItem value="newest">{t('sortNewest')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Competitors</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">{t('competitorsLabel')}</label>
                   <Select value={String(competitorCount)} onValueChange={(v) => setCompetitorCount(Number(v))}>
-                    <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-300 text-sm h-9">
+                    <SelectTrigger className="bg-background border-border text-foreground text-sm h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-700">
-                      <SelectItem value="2">2 skills</SelectItem>
-                      <SelectItem value="3">3 skills</SelectItem>
-                      <SelectItem value="4">4 skills</SelectItem>
-                      <SelectItem value="5">5 skills</SelectItem>
+                    <SelectContent className="bg-card border-border">
+                      <SelectItem value="2">{t('skills2')}</SelectItem>
+                      <SelectItem value="3">{t('skills3')}</SelectItem>
+                      <SelectItem value="4">{t('skills4')}</SelectItem>
+                      <SelectItem value="5">{t('skills5')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -236,27 +245,23 @@ export default function ArenaPage() {
           className="w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold h-11"
         >
           {submitting ? (
-            <><Loader2 className="w-4 h-4 animate-spin mr-2" />Creating round…</>
+            <><Loader2 className="w-4 h-4 animate-spin mr-2" />{t('creating')}</>
           ) : (
-            <><Swords className="w-4 h-4 mr-2" />Start Arena Round</>
+            <><Swords className="w-4 h-4 mr-2" />{t('startRound')}</>
           )}
         </Button>
 
-        <p className="text-xs text-center text-slate-600">
-          Skill calls are platform-subsidized. You only pay SOL if an answer genuinely helps you.
+        <p className="text-xs text-center text-muted-foreground">
+          {t('subsidy')}
         </p>
       </form>
 
       {/* Feed */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-200">Recent Rounds</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('recentRounds')}</h2>
           <div className="flex gap-1">
-            {([
-              { value: 'open',    label: 'Awaiting payment' },
-              { value: 'running', label: 'Running' },
-              { value: 'closed',  label: 'Closed' },
-            ] as { value: StatusFilter; label: string }[]).map(({ value, label }) => (
+            {STATUS_FILTERS.map(({ value, label }) => (
               <button
                 key={value}
                 type="button"
@@ -264,7 +269,7 @@ export default function ArenaPage() {
                 className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                   statusFilter === value
                     ? 'bg-[#9945FF] text-white'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 }`}
               >
                 {label}
@@ -278,9 +283,9 @@ export default function ArenaPage() {
             <Loader2 className="w-6 h-6 animate-spin text-violet-400 mx-auto" />
           </div>
         ) : !feedData?.rounds.length ? (
-          <div className="text-center py-12 text-slate-500">
-            No {statusFilter} rounds yet.{' '}
-            {statusFilter === 'open' && 'Be the first to start one above!'}
+          <div className="text-center py-12 text-muted-foreground">
+            {t('noRoundsYet', { status: statusFilter })}{' '}
+            {statusFilter === 'open' && t('beFirstToStart')}
           </div>
         ) : (
           <div className="space-y-3">

@@ -74,14 +74,14 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
         onChange(provider, model)
       }}
     >
-      <SelectTrigger className="h-8 w-[200px] border-[#2a3147] bg-[#161b27] text-xs text-[#F8FAFC] focus:ring-[#9945FF]/50">
+      <SelectTrigger className="h-8 w-[200px] border-border bg-card text-xs text-foreground focus:ring-[#9945FF]/50">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent className="border-[#2a3147] bg-[#161b27]">
+      <SelectContent className="border-border bg-card">
         <SelectGroup>
           <SelectItem
             value={SERVER_DEFAULT}
-            className="cursor-pointer text-xs text-[#14F195] focus:bg-[#9945FF]/10 focus:text-[#F8FAFC]"
+            className="cursor-pointer text-xs text-[#14F195] focus:bg-[#9945FF]/10 focus:text-foreground"
           >
             Server default
           </SelectItem>
@@ -89,12 +89,12 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
         <SelectSeparator className="bg-[#2a3147]" />
         {MODEL_OPTIONS.map(({ provider, label, models }) => (
           <SelectGroup key={provider}>
-            <SelectLabel className="text-xs text-[#4A5568]">{label}</SelectLabel>
+            <SelectLabel className="text-xs text-muted-foreground">{label}</SelectLabel>
             {models.map((m) => (
               <SelectItem
                 key={`${provider}::${m.id}`}
                 value={`${provider}::${m.id}`}
-                className="cursor-pointer text-xs text-[#8B9BB4] focus:bg-[#9945FF]/10 focus:text-[#F8FAFC]"
+                className="cursor-pointer text-xs text-muted-foreground focus:bg-[#9945FF]/10 focus:text-foreground"
               >
                 {m.label}
               </SelectItem>
