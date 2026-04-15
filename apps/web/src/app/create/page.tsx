@@ -2,11 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { Transaction, SendTransactionError } from '@solana/web3.js'
-import { Loader2, Sparkles } from 'lucide-react'
+import { Loader2, Sparkles, Info } from 'lucide-react'
 import { lamportsToSol, lamportsToUsd } from '@/lib/format'
 import { useSolPrice } from '@/hooks/useSkills'
+
+const PLATFORM_FEE_PCT = 5
 
 type Step = 1 | 2 | 3
 
@@ -112,10 +115,17 @@ export default function CreatePage() {
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h1 className="mb-1 font-heading text-3xl font-bold text-foreground">Create a Skill</h1>
       <p className="mb-2 text-muted-foreground">Register your AI skill and start earning SOL per call.</p>
-      <p className="mb-8 text-xs text-muted-foreground">
+      <p className="mb-3 text-xs text-muted-foreground">
         No server? Use a <span className="text-foreground">Prompt Skill</span>. Have an MCP server? Use an <span className="text-foreground">MCP Skill</span>. Building an autonomous agent?{' '}
         <a href="/register" className="text-[#9945FF] hover:underline">Register a Custom Agent</a>.
       </p>
+      <Link
+        href="/publish"
+        className="mb-8 flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-[#9945FF]/30 hover:text-foreground w-fit"
+      >
+        <Info className="h-3.5 w-3.5 shrink-0 text-[#9945FF]" />
+        Not sure which type to pick? Read the provider guide
+      </Link>
 
       {/* Step indicator */}
       <div className="mb-8 flex items-center gap-2">
@@ -311,10 +321,23 @@ export default function CreatePage() {
               step="0.001"
               className={inputCls}
             />
-            {priceData?.solUsd && priceLamports > 0 && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                ≈ {lamportsToUsd(priceLamports, priceData.solUsd)} USD
-              </p>
+            {priceData?.solUsd && priceLamports > 0 ? (
+              <div className="mt-2 rounded-lg border border-border bg-card px-3 py-2 space-y-1">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Caller pays</span>
+                  <span>{lamportsToSol(priceLamports)} SOL ({lamportsToUsd(priceLamports, priceData.solUsd)})</span>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Platform fee ({PLATFORM_FEE_PCT}%)</span>
+                  <span>{lamportsToSol(Math.round(priceLamports * PLATFORM_FEE_PCT / 100))} SOL</span>
+                </div>
+                <div className="flex justify-between text-xs font-medium text-[#14F195]">
+                  <span>You earn ({100 - PLATFORM_FEE_PCT}%)</span>
+                  <span>{lamportsToSol(Math.round(priceLamports * (100 - PLATFORM_FEE_PCT) / 100))} SOL</span>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-1 text-xs text-muted-foreground">Platform takes {PLATFORM_FEE_PCT}% · you keep {100 - PLATFORM_FEE_PCT}%</p>
             )}
           </div>
 
@@ -360,15 +383,38 @@ export default function CreatePage() {
             <h3 className="font-heading font-semibold text-foreground">Review</h3>
             <div className="grid grid-cols-2 gap-y-2 text-sm">
               <span className="text-muted-foreground">Name</span>
-              <span className="text-muted-foreground">{name}</span>
+              <span className="text-foreground font-medium">{name}</span>
               <span className="text-muted-foreground">Type</span>
-              <span className="text-muted-foreground">Tier {tier} — {tier === 1 ? 'Prompt' : 'MCP'}</span>
-              <span className="text-muted-foreground">Price</span>
-              <span className="font-semibold text-[#14F195]">
-                {lamportsToSol(priceLamports)} SOL
-                {priceData?.solUsd ? ` (${lamportsToUsd(priceLamports, priceData.solUsd)})` : ''}
-              </span>
+              <span className="text-foreground">Tier {tier} — {tier === 1 ? 'Prompt Skill' : 'MCP Skill'}</span>
+              <span className="text-muted-foreground">Tags</span>
+              <span className="text-muted-foreground">{tags.length ? tags.join(', ') : '—'}</span>
             </div>
+          </div>
+
+          {/* Earnings breakdown */}
+          <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+            <h3 className="text-sm font-semibold text-foreground">Earnings per call</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Caller pays</span>
+                <span className="text-foreground font-medium">
+                  {lamportsToSol(priceLamports)} SOL
+                  {priceData?.solUsd ? ` (${lamportsToUsd(priceLamports, priceData.solUsd)})` : ''}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Platform fee ({PLATFORM_FEE_PCT}%)</span>
+                <span className="text-muted-foreground">{lamportsToSol(Math.round(priceLamports * PLATFORM_FEE_PCT / 100))} SOL</span>
+              </div>
+              <div className="border-t border-border pt-2 flex justify-between text-sm font-semibold">
+                <span className="text-foreground">You earn</span>
+                <span className="text-[#14F195]">{lamportsToSol(Math.round(priceLamports * (100 - PLATFORM_FEE_PCT) / 100))} SOL</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Settled on-chain in SOL immediately after each call. View earnings in your{' '}
+              <a href="/dashboard" className="text-[#9945FF] hover:underline">dashboard</a>.
+            </p>
           </div>
 
           {!connected && (

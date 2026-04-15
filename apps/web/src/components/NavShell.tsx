@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useEffect } from 'react'
+import { Footer } from '@/components/layout/Footer'
 
 const Navbar = dynamic(
   () => import('@/components/layout/Navbar').then((mod) => mod.Navbar),
@@ -21,9 +22,10 @@ export function NavShell({ children, locale }: Props) {
   }, [locale])
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="min-h-screen">{children}</main>
-    </>
+      <main className="flex-1">{children}</main>
+      <Footer />
+    </div>
   )
 }

@@ -110,6 +110,11 @@ export async function POST(req: NextRequest) {
     const { result } = (await skillRes.json()) as { result: string }
     const resultHash = createHash('sha256').update(result).digest('hex')
 
+    // ── Truncate preview results to tease the full answer ─────────────────
+    const PREVIEW_CHAR_LIMIT = 200
+    const truncated = preview && result.length > PREVIEW_CHAR_LIMIT
+    const resultToReturn = truncated ? result.slice(0, PREVIEW_CHAR_LIMIT) : result
+
     // ── Update call record ─────────────────────────────────────────────────
     if (callId) {
       await supabaseServiceRole.from('calls').update({
@@ -138,7 +143,7 @@ export async function POST(req: NextRequest) {
       JSON.stringify({ result, status: preview ? 'preview' : 'completed', txSignature })
     )
 
-    return NextResponse.json({ result, callId: effectiveCallId, txSignature })
+    return NextResponse.json({ result: resultToReturn, truncated, callId: effectiveCallId, txSignature })
   } catch (err) {
     console.error('[POST /api/call/execute]', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

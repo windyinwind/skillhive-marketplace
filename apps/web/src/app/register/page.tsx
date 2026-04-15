@@ -2,10 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { Transaction, SendTransactionError } from '@solana/web3.js'
-import { Loader2, Shield, Server, CheckCircle2 } from 'lucide-react'
+import { Loader2, Shield, Server, CheckCircle2, Info } from 'lucide-react'
 import bs58 from 'bs58'
+
+const PLATFORM_FEE_PCT = 5
 
 type Step = 1 | 2 | 3
 
@@ -137,6 +140,13 @@ export default function RegisterPage() {
       <p className="mb-3 text-muted-foreground">
         For developers deploying their own ElizaOS agent. Your agent runs on your server — the platform routes payments and proxies calls to it.
       </p>
+      <Link
+        href="/publish#tier-3"
+        className="mb-4 flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-[#9945FF]/30 hover:text-foreground w-fit"
+      >
+        <Info className="h-3.5 w-3.5 shrink-0 text-[#9945FF]" />
+        Read the full Tier 3 setup guide before starting
+      </Link>
 
       {/* Who should use this */}
       <div className="mb-6 rounded-xl border border-border bg-card p-4 space-y-2">
@@ -243,8 +253,19 @@ export default function RegisterPage() {
               step="0.001"
               className={inputCls}
             />
-            <p className="mt-1 text-xs text-muted-foreground">
-              Callers pay this amount per invocation via on-chain escrow.
+            <div className="mt-2 rounded-lg border border-border bg-card px-3 py-2 space-y-1">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Platform fee ({PLATFORM_FEE_PCT}%)</span>
+                <span>{(priceLamports * PLATFORM_FEE_PCT / 100 / 1e9).toFixed(6)} SOL</span>
+              </div>
+              <div className="flex justify-between text-xs font-medium text-[#14F195]">
+                <span>You earn ({100 - PLATFORM_FEE_PCT}%)</span>
+                <span>{(priceLamports * (100 - PLATFORM_FEE_PCT) / 100 / 1e9).toFixed(6)} SOL per call</span>
+              </div>
+            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Callers pay via on-chain escrow (Path A), x402 (Path C), or agent-to-agent (Path B).{' '}
+              <Link href="/publish" className="text-[#9945FF] hover:underline">Learn about call paths</Link>.
             </p>
           </div>
 

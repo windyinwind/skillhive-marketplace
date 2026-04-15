@@ -2,8 +2,39 @@ import { NextRequest } from 'next/server'
 import { generateText, tool, jsonSchema, stepCountIs } from 'ai'
 import { google } from '@ai-sdk/google'
 import { tavily } from '@tavily/core'
-import { supabaseAnon } from '@/lib/supabase'
+import { supabaseAnon, supabaseServiceRole } from '@/lib/supabase'
 import { getModel, DEFAULT_PROVIDER } from '@/lib/ai-providers'
+
+const CHAT_FREE_LIMIT = 3
+
+// Returns remaining free uses after this call, or -1 if wallet is paying (no limit applied)
+async function consumeFreeUse(walletAddress: string | null): Promise<{ allowed: boolean; remaining: number; isFree: boolean }> {
+  // No wallet = blocked (Chat requires wallet)
+  if (!walletAddress) return { allowed: false, remaining: 0, isFree: false }
+
+  const { data } = await supabaseServiceRole
+    .from('chat_free_uses')
+    .select('uses_count')
+    .eq('wallet_address', walletAddress)
+    .single()
+
+  const current = (data as { uses_count: number } | null)?.uses_count ?? 0
+
+  if (current >= CHAT_FREE_LIMIT) {
+    // Quota exhausted — caller must pay (allowed but not free)
+    return { allowed: true, remaining: 0, isFree: false }
+  }
+
+  // Increment count
+  await supabaseServiceRole
+    .from('chat_free_uses')
+    .upsert(
+      { wallet_address: walletAddress, uses_count: current + 1, last_used_at: new Date().toISOString() },
+      { onConflict: 'wallet_address' }
+    )
+
+  return { allowed: true, remaining: CHAT_FREE_LIMIT - (current + 1), isFree: true }
+}
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -58,7 +89,7 @@ ${searchInstruction}
 type DiscoverInput = { query: string; tags?: string[] }
 type DiscoverOutput = { skills: unknown[]; count: number }
 type CallInput = { skillId: string; skillName: string; input: string; priceLamports: number }
-type CallOutput = { result?: string; error?: string; costLamports: number; skillId?: string }
+type CallOutput = { result?: string; error?: string; costLamports: number; skillId?: string; ownerWallet?: string }
 type LiveDataInput = { type: 'stock' | 'crypto' | 'both'; symbols: string[] }
 type LiveDataOutput = { data: Record<string, unknown>; fetchedAt: string }
 
@@ -128,12 +159,22 @@ const CRYPTO_ID_MAP: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   const encoder = new TextEncoder()
-  const body = (await req.json()) as { messages?: { role: string; content: string }[] }
+  const body = (await req.json()) as { messages?: { role: string; content: string }[]; walletAddress?: string }
   const messages = (body.messages ?? []) as Parameters<typeof generateText>[0]['messages']
+  const walletAddress = body.walletAddress ?? null
   const useGoogleSearch = DEFAULT_PROVIDER === 'google'
   const llm = getModel(null)
   const baseUrl = new URL(req.url).origin
-  const systemPrompt = buildSystemPrompt(useGoogleSearch)  // built per-request so date is always current
+  const systemPrompt = buildSystemPrompt(useGoogleSearch)
+
+  // Check free-use quota before streaming
+  const quota = await consumeFreeUse(walletAddress)
+  if (!quota.allowed) {
+    return new Response(
+      JSON.stringify({ error: 'wallet_required', message: 'Connect your wallet to use SWARM Chat.' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -270,6 +311,7 @@ export async function POST(req: NextRequest) {
                 const callId = `skill-${Date.now()}`
                 send({ type: 'tool-call', toolCallId: callId, toolName: 'call_skill', args: { skillId, skillName, priceLamports } })
 
+                // Skills run free during chat — user pays in one settlement after the response
                 const res = await fetch(`${baseUrl}/api/skill-executor/${skillId}`, {
                   method: 'POST',
                   headers: {
@@ -279,12 +321,21 @@ export async function POST(req: NextRequest) {
                   body: JSON.stringify({ input, callId }),
                 })
 
+                // Fetch owner wallet from public view so client can settle directly to them
+                const { data: skillData } = await supabaseAnon
+                  .from('skills_public')
+                  .select('owner_wallet')
+                  .eq('id', skillId)
+                  .single()
+                const ownerWallet = (skillData as { owner_wallet?: string } | null)?.owner_wallet
+
                 let output: CallOutput
                 if (!res.ok) {
                   output = { error: `Skill call failed (${res.status})`, costLamports: 0 }
                 } else {
                   const data = (await res.json()) as { result?: string; error?: string }
-                  output = { result: data.result ?? data.error ?? 'No result', costLamports: priceLamports, skillId }
+                  // Return priceLamports + ownerWallet so client can settle directly to skill owners
+                  output = { result: data.result ?? data.error ?? 'No result', costLamports: priceLamports, skillId, ownerWallet }
                 }
 
                 send({ type: 'tool-result', toolCallId: callId, toolName: 'call_skill', result: output })
@@ -294,7 +345,7 @@ export async function POST(req: NextRequest) {
           },
         })
 
-        send({ type: 'done', text: genResult.text })
+        send({ type: 'done', text: genResult.text, isFree: quota.isFree, freeUsesRemaining: quota.remaining })
       } catch (err) {
         console.error('[POST /api/chat]', err)
         send({ type: 'error', error: 'Failed to generate response' })

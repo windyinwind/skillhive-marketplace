@@ -79,19 +79,19 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
       paid
         ? 'border-[#14F195]/40 bg-[#14F195]/5'
         : isWinner
-        ? 'border-yellow-500/50 bg-yellow-900/10'
+        ? 'border-yellow-500/40 bg-yellow-500/5'
         : rank === 1
         ? 'border-[#9945FF]/40 bg-[#9945FF]/5'
-        : 'border-border bg-[#141926]/60'
+        : 'border-border bg-card'
     }`}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3">
         {/* Rank badge */}
         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
-          rank === 1 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40' :
-          rank === 2 ? 'bg-slate-600/40 text-foreground border border-border' :
-          rank === 3 ? 'bg-orange-900/30 text-orange-400 border border-orange-700/40' :
-          'bg-slate-700/40 text-muted-foreground border border-border'
+          rank === 1 ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border border-yellow-500/40' :
+          rank === 2 ? 'bg-muted text-foreground border border-border' :
+          rank === 3 ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/30' :
+          'bg-muted text-muted-foreground border border-border'
         }`}>
           {isWinner ? <Trophy className="w-4 h-4" /> : rank}
         </div>
@@ -137,11 +137,11 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
       {expanded && (
         <div className="px-4 pb-4 border-t border-border pt-3 space-y-3">
           {entry.error ? (
-            <div className="text-sm text-red-400 bg-red-900/10 border border-red-800/30 rounded-lg p-3">
+            <div className="text-sm text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
               {entry.error}
             </div>
           ) : entry.result ? (
-            <div className="prose prose-invert prose-sm max-w-none text-foreground leading-relaxed max-h-80 overflow-y-auto bg-[#0d1117] rounded-lg p-3 border border-border">
+            <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed max-h-80 overflow-y-auto bg-muted rounded-lg p-3 border border-border">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.result}</ReactMarkdown>
             </div>
           ) : (
@@ -154,9 +154,12 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
           {roundStatus === 'open' && entry.result && !entry.error && (
             <div className="pt-1">
               {paid ? (
-                <div className="flex items-center gap-2 text-sm text-[#14F195] bg-[#14F195]/5 border border-[#14F195]/20 rounded-lg px-3 py-2.5">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                  <span>You paid for this answer — SOL sent to the skill owner.</span>
+                <div className="flex items-start gap-2 text-sm text-[#14F195] bg-[#14F195]/5 border border-[#14F195]/20 rounded-lg px-3 py-2.5">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p>You paid for this answer — SOL sent to the skill owner.</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Your payment counts as a vote and contributes to this skill&apos;s leaderboard ranking.</p>
+                  </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 flex-wrap">

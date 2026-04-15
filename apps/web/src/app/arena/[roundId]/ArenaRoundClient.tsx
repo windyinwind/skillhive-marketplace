@@ -14,9 +14,9 @@ interface ArenaRoundClientProps {
 }
 
 const statusConfig = {
-  running: { label: 'Skills competing…', className: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
+  running: { label: 'Skills competing…', className: 'bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/40' },
   open:    { label: 'Choose your answer', className: 'bg-[#14F195]/15 text-[#14F195] border-[#14F195]/30' },
-  closed:  { label: 'Closed', className: 'bg-slate-600/40 text-muted-foreground border-border' },
+  closed:  { label: 'Closed', className: 'bg-secondary text-muted-foreground border-border' },
 }
 
 export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps) {
@@ -71,7 +71,7 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
         {data.tags && data.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
             {data.tags.map((tag) => (
-              <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-slate-700/60 text-muted-foreground">
+              <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-secondary text-muted-foreground">
                 {tag}
               </span>
             ))}
@@ -145,8 +145,8 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
 
       {/* Closed summary */}
       {data.status === 'closed' && sorted.length > 0 && sorted[0].sol_earned > 0 && (
-        <div className="rounded-xl border border-yellow-500/30 bg-yellow-900/10 p-4 text-sm">
-          <p className="font-medium text-yellow-400 mb-1">
+        <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm">
+          <p className="font-medium text-yellow-700 dark:text-yellow-400 mb-1">
             <Trophy className="w-4 h-4 inline mr-1" />Winner: {sorted[0].skill_name}
           </p>
           <p className="text-muted-foreground">

@@ -1,21 +1,64 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { Bot, Sparkles } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Bot, Sparkles, Zap, CheckCircle2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { SkillCallCard } from './SkillCallCard'
 import { CostTally } from './CostTally'
+import { lamportsToSol } from '@/lib/format'
 import { useTranslations } from 'next-intl'
-import type { ChatMessage } from './types'
+import type { ChatMessage, SkillDebt } from './types'
 
 interface MessageListProps {
   messages: ChatMessage[]
   isLoading: boolean
   onPrompt: (prompt: string) => void
+  onSettle: (msgId: string, debts: SkillDebt[]) => Promise<boolean>
+  walletConnected: boolean
 }
 
-export function MessageList({ messages, isLoading, onPrompt }: MessageListProps) {
+function SettleBar({ msgId, debts, onSettle, alreadyPaid }: {
+  msgId: string
+  debts: SkillDebt[]
+  onSettle: (msgId: string, debts: SkillDebt[]) => Promise<boolean>
+  alreadyPaid: boolean
+}) {
+  const [retrying, setRetrying] = useState(false)
+  const totalLamports = debts.reduce((sum, d) => sum + d.costLamports, 0)
+
+  if (alreadyPaid) {
+    return (
+      <div className="mt-2 flex items-center gap-1.5 text-xs text-[#14F195]">
+        <CheckCircle2 className="h-3.5 w-3.5" />
+        Paid {lamportsToSol(totalLamports)} SOL to {debts.length} skill{debts.length !== 1 ? 's' : ''}
+      </div>
+    )
+  }
+
+  // Payment was auto-triggered but user cancelled — show retry
+  return (
+    <div className="mt-2 flex items-center gap-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-3 py-2">
+      <Zap className="h-3.5 w-3.5 shrink-0 text-yellow-400" />
+      <div className="flex-1 text-xs text-muted-foreground">
+        Payment cancelled · {debts.length} skill{debts.length !== 1 ? 's' : ''} ·{' '}
+        <span className="font-medium text-foreground">{lamportsToSol(totalLamports)} SOL</span> owed
+      </div>
+      <button
+        onClick={async () => {
+          setRetrying(true)
+          try { await onSettle(msgId, debts) } finally { setRetrying(false) }
+        }}
+        disabled={retrying}
+        className="rounded-md border border-yellow-500/30 px-2.5 py-1 text-xs font-medium text-yellow-400 transition-all hover:bg-yellow-500/10 disabled:opacity-50 active:scale-[0.97]"
+      >
+        {retrying ? 'Retrying…' : 'Retry payment'}
+      </button>
+    </div>
+  )
+}
+
+export function MessageList({ messages, isLoading, onPrompt, onSettle }: MessageListProps) {
   const t = useTranslations('chat')
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -102,6 +145,14 @@ export function MessageList({ messages, isLoading, onPrompt }: MessageListProps)
                   </div>
                 )}
                 <CostTally toolSteps={message.toolSteps ?? []} />
+                {message.skillDebts && message.skillDebts.length > 0 && (
+                  <SettleBar
+                    msgId={message.id}
+                    debts={message.skillDebts}
+                    onSettle={onSettle}
+                    alreadyPaid={message.paid ?? false}
+                  />
+                )}
               </div>
             </div>
           )

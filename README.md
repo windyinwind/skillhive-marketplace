@@ -27,9 +27,100 @@ An open platform for AI skill discovery, payment, and reputation on Solana. Anyo
 
 ## Architecture
 
+### System Overview
+
+```mermaid
+graph TB
+    subgraph Clients
+        Browser["Browser\n(wallet-adapter)"]
+        ElizaAgent["ElizaOS Agent\n(laptop / server)"]
+        AnyHTTP["Any HTTP client\n(curl, Python, etc.)"]
+    end
+
+    subgraph "SWARM Platform (Next.js API routes)"
+        Chat["/api/chat\nOrchestrator"]
+        Executor["/api/skill-executor/[id]\nHosted executor"]
+        CallPrepare["/api/call/prepare\n+ /execute"]
+        CallX402["/api/call/x402/[id]"]
+        Arena["/api/arena"]
+        Helius_WH["/api/webhooks/helius\nOn-chain sync"]
+        SSE["/api/events\nSSE stream"]
+    end
+
+    subgraph "Data Layer"
+        Supabase[("Supabase\nPostgreSQL + RLS")]
+        Redis[("Upstash Redis\nSSE pub/sub + cache")]
+    end
+
+    subgraph "Solana"
+        SkillRegistry["skill_registry\nSkillAccount"]
+        EscrowProgram["escrow_payment\nCallAccount"]
+        HeliusRPC["Helius RPC\n+ Webhooks"]
+        Yellowstone["Yellowstone gRPC\n(real-time events)"]
+    end
+
+    subgraph "Skill Providers"
+        Tier1["Tier 1\nPrompt Skill\n(platform-hosted)"]
+        Tier2["Tier 2\nMCP Skill\n(provider webhook)"]
+        Tier3["Tier 3\nCustom Agent\n(ElizaOS self-hosted)"]
+        LLM["LLM APIs\nAnthropic / OpenAI\nGoogle / OpenRouter"]
+    end
+
+    Browser -->|"Path A: escrow"| CallPrepare
+    Browser -->|"Path C: x402"| CallX402
+    Browser -->|"Chat UI"| Chat
+    Browser -->|"Arena"| Arena
+    ElizaAgent -->|"Path C: x402"| CallX402
+    ElizaAgent -->|"Path B: on-chain tx"| SkillRegistry
+    AnyHTTP -->|"Path C: x402"| CallX402
+
+    Chat --> Executor
+    Chat --> Supabase
+    CallPrepare --> EscrowProgram
+    CallPrepare --> Executor
+    CallX402 --> Executor
+    Arena --> Executor
+
+    Executor --> Tier1
+    Executor --> Tier2
+    Executor --> LLM
+    Tier1 --> LLM
+    Tier2 -->|"webhook"| Tier3
+
+    Helius_WH --> Supabase
+    HeliusRPC -->|"account changes"| Helius_WH
+    Yellowstone -->|"CallAccount events"| Tier3
+
+    SkillRegistry --> HeliusRPC
+    EscrowProgram --> HeliusRPC
+
+    CallPrepare --> Redis
+    Redis --> SSE
+    SSE -->|"stream results"| Browser
+```
+
 ### Endpoint Privacy (Critical)
 
 Skill endpoint URLs are **never stored on-chain**. Anyone calling `getProgramAccounts` on Solana can read all fields of a `SkillAccount` — if the endpoint were on-chain, competitors could call skills directly and bypass payment entirely.
+
+```mermaid
+graph TB
+    subgraph "Public — anyone can read"
+        OnChain["Solana SkillAccount\nid · name · price_lamports · tags\nreputation_score · owner_wallet\nNO endpoint field"]
+        PublicView["Supabase: skills_public view\nid · name · description · tags\nprice · tier · reputation_score\nNO endpoint / system_prompt / tool_config"]
+    end
+
+    subgraph "Private — server-side API routes only"
+        PrivateTable["Supabase: skills table\nendpoint  — never returned to browser\nsystem_prompt  — never returned to browser\ntool_config  — never returned to browser\nRead via service role key inside /api/ routes only"]
+    end
+
+    Browser["Browser\n(anon key, RLS enforced)"] -->|queries| PublicView
+    Browser -->|reads| OnChain
+    Browser -. "BLOCKED by RLS" .-> PrivateTable
+
+    APIRoute["Server /api/ route\n(service role key)"] -->|reads endpoint| PrivateTable
+    APIRoute -->|proxies call — endpoint stays private| SkillEndpoint["Skill HTTPS endpoint\nnever sent to caller"]
+```
 
 ```
 On-chain (SkillAccount):     id, name, price, reputation — NO endpoint field
@@ -37,50 +128,122 @@ Supabase skills table:       endpoint, system_prompt, tool_config — private, s
 Supabase skills_public view: safe subset — served to browser
 ```
 
-All endpoint reads use the Supabase **service-role key** (server-side API routes only, never in browser code). The `skills_public` view explicitly excludes `endpoint`, `system_prompt`, and `tool_config`.
+All endpoint reads use the Supabase **service role key** (server-side API routes only, never in browser code). The `skills_public` view explicitly excludes `endpoint`, `system_prompt`, and `tool_config`.
 
 ### Three Skill Tiers
 
+```mermaid
+graph LR
+    subgraph "Tier 1 — Prompt Skill (no-code)"
+        T1P["Provider fills:\nname, system_prompt\nmodel, price, tags"]
+        T1E["/api/skill-executor/[id]\n(platform-managed)"]
+        T1L["LLM API"]
+        T1P --> T1E --> T1L
+    end
+
+    subgraph "Tier 2 — MCP Skill (low-code)"
+        T2P["Provider fills:\n+ tool_config\n(webhook URL)"]
+        T2E["/api/skill-executor/[id]"]
+        T2W["Provider's MCP server\n(webhook)"]
+        T2P --> T2E -->|"LLM tool call"| T2W
+    end
+
+    subgraph "Tier 3 — Custom Agent (self-hosted)"
+        T3P["Provider deploys\nElizaOS agent\n+ plugin-swarm"]
+        T3R["Two-step registration:\n1. on-chain tx (SkillAccount)\n2. signed endpoint → Supabase"]
+        T3A["Agent runs on\nprovider's server"]
+        T3P --> T3R --> T3A
+    end
+
+    Caller["Any caller\n(browser / agent)"] -->|"Path A/C"| T1E
+    Caller -->|"Path A/C"| T2E
+    Caller -->|"Path A/C (proxied)\nor Path B (on-chain)"| T3A
 ```
-Tier 1 — Prompt Skill
-  Provider fills: name, description, system_prompt, model config, tags, price
-  Platform hosts the LLM call — no server needed by provider
-  Executor: /api/skill-executor/[skillId]  (internal)
 
-Tier 2 — MCP Skill
-  Same as Tier 1 + tool_config with a webhook URL
-  Platform calls provider's MCP server as an LLM tool
-  Provider pays their own server costs
+**Tier 3 Registration (two-step):**
 
-Tier 3 — Custom Agent (self-hosted)
-  Provider deploys their own ElizaOS agent
-  Two-step registration: on-chain tx → signed endpoint submission
-  Platform proxies UI calls; agent-to-agent calls go direct via Solana
+```mermaid
+sequenceDiagram
+    autonumber
+    participant P as Provider (wallet)
+    participant API as /api/register
+    participant SC as Solana (skill_registry)
+    participant DB as Supabase (private)
+
+    P->>API: POST /prepare {name, description, tags, price}
+    API-->>P: unsigned register_skill tx\n(NO endpoint field)
+    P->>P: sign with wallet
+    P->>SC: broadcast tx → SkillAccount created on-chain
+    Note over SC: endpoint field does NOT exist on-chain
+
+    P->>API: POST /complete\n{skillId, endpoint, nonce, walletSignature}
+    API->>API: verify walletSignature = sign(skillId+endpoint+nonce)\nreject if nonce > 5 min old
+    API->>DB: store endpoint privately (service role, RLS)
+    API-->>P: 200 OK — skill is live
 ```
 
 ### Three Call Paths
 
-**Path A — Human via UI (Escrow)**
-```
-Browser → /api/call/prepare (unsigned tx) → sign with Phantom
-→ /api/call/execute (server fetches endpoint privately, calls skill, settles on-chain)
-→ result via SSE  (GET /api/events?callId=xxx)
+```mermaid
+sequenceDiagram
+    autonumber
+
+    box Path A — Human via UI (Escrow)
+        participant B as Browser
+        participant CP as /api/call/prepare
+        participant CE as /api/call/execute
+        participant SC as Solana (escrow_payment)
+        participant SK as Skill
+    end
+
+    B->>CP: POST {skillId, input}
+    CP-->>B: unsigned initiate_call tx
+    B->>B: sign with Phantom
+    B->>CE: POST {signedTx, skillId, callId}
+    CE->>SC: broadcast signedTx (SOL locked in CallAccount)
+    CE->>SK: fetch endpoint privately → call skill
+    CE->>SC: complete_call tx (SOL → skill owner)
+    CE-->>B: result via SSE (/api/events?callId=xxx)
 ```
 
-**Path B — Agent-to-Agent (Yellowstone gRPC)**
-```
-Orchestrator → initiate_call tx on-chain
-→ Skill agent receives CallAccount event via Yellowstone gRPC (Helius, real-time)
-→ processes → submits complete_call tx
-→ orchestrator polls /api/call/[id] for result
+```mermaid
+sequenceDiagram
+    autonumber
+
+    box Path B — Agent-to-Agent (Yellowstone gRPC)
+        participant OA as Orchestrator Agent
+        participant SC as Solana on-chain
+        participant YG as Yellowstone gRPC (Helius)
+        participant SA as Skill Agent (ElizaOS)
+        participant API as /api/call/[id]
+    end
+
+    OA->>SC: initiate_call tx (SOL locked in CallAccount)
+    SC-->>YG: CallAccount creation event
+    YG-->>SA: real-time notification (plugin-swarm LISTEN)
+    SA->>SA: process request
+    SA->>SC: complete_call tx (SOL released)
+    OA->>API: poll for result
+    API-->>OA: result
 ```
 
-**Path C — x402 Instant Payment**
-```
-Client POST /api/call/x402/[skillId]
-→ 402 response with payment requirements
-→ client attaches x402-Payment header
-→ server verifies, fetches endpoint privately, calls skill → result
+```mermaid
+sequenceDiagram
+    autonumber
+
+    box Path C — x402 Instant Payment
+        participant C as Any Client
+        participant X as /api/call/x402/[skillId]
+        participant SK as Skill
+    end
+
+    C->>X: POST {input}
+    X-->>C: 402 Payment Required\n{amount, recipient, currency}
+    C->>C: sign payment
+    C->>X: POST {input} + x402-Payment header
+    X->>X: verify payment via facilitator
+    X->>SK: fetch endpoint privately → call skill
+    X-->>C: result
 ```
 
 ### Multi-Provider LLM
@@ -97,6 +260,33 @@ Individual skills can override with their own `model_config`. If a skill's confi
 When `LLM_DEFAULT_PROVIDER=google`, native Google Search grounding activates automatically in the Orchestrator (no Tavily key needed).
 
 ### Arena Economics
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User (browser)
+    participant API as /api/arena
+    participant S1 as Skill A (Tier 1)
+    participant S2 as Skill B (Tier 2)
+    participant S3 as Skill C (Tier 3)
+    participant Chain as Solana
+
+    U->>API: POST /arena/create {question, skillIds}
+    API->>S1: call (free for Tier 1)
+    API->>S2: collect 20% deposit
+    API->>S3: lock 100% escrow
+    S1-->>API: answer A
+    S2-->>API: answer B
+    S3-->>API: answer C
+    API-->>U: stream 3 answers
+
+    U->>U: read all answers, pick best
+    U->>API: POST /arena/[roundId]/pay {winnerId}
+    API->>Chain: release payment to winner's owner wallet
+    Note over S2: not selected → keeps 20% deposit
+    Note over S3: not selected → keeps 10% run fee,\nrest refunded to user
+    API-->>U: receipt + leaderboard update
+```
 
 The Arena lets users compare answers from multiple skills and pay only for the one that actually helped. Costs vary by tier so creators are always compensated for running:
 
