@@ -90,7 +90,7 @@ export const PitchVideo: React.FC = () => {
               color: "transparent",
               letterSpacing: "-0.05em"
             }}>
-              SWARM
+              SkillHive
             </h1>
             <h2 style={{ 
               fontFamily: spaceGrotesk,

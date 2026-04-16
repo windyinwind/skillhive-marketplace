@@ -1,5 +1,5 @@
 /**
- * Formatting utilities for SWARM Marketplace UI.
+ * Formatting utilities for SkillHive Marketplace UI.
  * No private fields (endpoint, system_prompt, tool_config) are ever referenced here.
  */
 

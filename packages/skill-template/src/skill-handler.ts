@@ -5,7 +5,7 @@
  * the result string that will be delivered back and settled on-chain.
  *
  * For Tier 3 agents, you control this logic entirely. The LISTEN action
- * in plugin-swarm detects incoming CallAccounts and calls this handler.
+ * in plugin-skillhive detects incoming CallAccounts and calls this handler.
  */
 
 export async function handleSkillCall(input: string): Promise<string> {

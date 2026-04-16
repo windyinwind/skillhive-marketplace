@@ -116,7 +116,7 @@ export default function CookiePolicyPage() {
           <h2 className="text-lg font-semibold text-foreground mb-3">{t('s5Title')}</h2>
           <p>
             {t('s5Body')}{' '}
-            <a href="https://x.com/swarm_market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
+            <a href="https://x.com/skillhive.market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
               {t('s5Twitter')}
             </a>.
           </p>

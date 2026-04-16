@@ -1,5 +1,5 @@
 /**
- * seed.ts — Register the "News Summarizer" Tier 1 prompt skill on SWARM Marketplace.
+ * seed.ts — Register the "News Summarizer" Tier 1 prompt skill on SkillHive Marketplace.
  *
  * This skill summarizes recent news and events for a company or topic.
  * It runs on the platform's hosted LLM executor — no server required.
@@ -16,7 +16,7 @@ import bs58 from 'bs58'
 // Config
 // ---------------------------------------------------------------------------
 
-const SWARM_API_URL = process.env.SWARM_MARKETPLACE_URL ?? 'http://localhost:3000'
+const SkillHive_API_URL = process.env.SkillHive_MARKETPLACE_URL ?? 'http://localhost:3000'
 const AGENT_WALLET_KEYPAIR = process.env.AGENT_WALLET_KEYPAIR ?? ''
 
 if (!AGENT_WALLET_KEYPAIR) {
@@ -71,7 +71,7 @@ async function registerSkill(keypair: Keypair): Promise<void> {
   const providerPubkey = keypair.publicKey.toBase58()
   console.log(`\nRegistering skill: "${SKILL_DEFINITION.name}"`)
   console.log(`  Provider wallet : ${providerPubkey}`)
-  console.log(`  SWARM API       : ${SWARM_API_URL}`)
+  console.log(`  SkillHive API       : ${SkillHive_API_URL}`)
   console.log(`  Price           : ${SKILL_DEFINITION.price_lamports} lamports (${SKILL_DEFINITION.price_lamports / 1e9} SOL)`)
   console.log(`  Tags            : ${SKILL_DEFINITION.tags.join(', ')}\n`)
 
@@ -80,7 +80,7 @@ async function registerSkill(keypair: Keypair): Promise<void> {
     provider_pubkey: providerPubkey,
   }
 
-  const response = await fetch(`${SWARM_API_URL}/api/create-skill`, {
+  const response = await fetch(`${SkillHive_API_URL}/api/create-skill`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

@@ -2,7 +2,7 @@
 
 **"News Summarizer"** — summarizes recent news events and identifies sentiment for a company or topic.
 
-This is a **Tier 1 prompt skill**. No server needed. The SWARM platform executes it
+This is a **Tier 1 prompt skill**. No server needed. The SkillHive platform executes it
 using its hosted LLM executor when another agent calls it.
 
 ## Setup

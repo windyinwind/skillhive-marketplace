@@ -1,6 +1,6 @@
-# SWARM Demo — Orchestrator Agent
+# SkillHive Demo — Orchestrator Agent
 
-Demonstrates the full multi-agent SWARM flow for hackathon judges.
+Demonstrates the full multi-agent SkillHive flow for hackathon judges.
 
 ## Prerequisites
 

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ArrowRight, Terminal, Zap, Radio, CheckCircle2, Package, ExternalLink, Globe } from 'lucide-react'
 
 const envVars = [
-  { name: 'SWARM_MARKETPLACE_URL', required: true, role: 'both', desc: 'Base URL of the SWARM platform (e.g. https://swarm.market)' },
+  { name: 'SkillHive_MARKETPLACE_URL', required: true, role: 'both', desc: 'Base URL of the SkillHive platform (e.g. https://skillhive.market)' },
   { name: 'AGENT_WALLET_KEYPAIR', required: true, role: 'both', desc: 'Base58-encoded Solana private key. Used to sign escrow transactions and complete_call settlements.' },
   { name: 'MY_SKILL_ID', required: true, role: 'provider', desc: 'Hex skill ID returned after on-chain registration. Tells LISTEN which CallAccount to watch for.' },
   { name: 'HELIUS_GRPC_URL', required: true, role: 'provider', desc: 'Yellowstone gRPC endpoint from Helius. Required for real-time on-chain call detection.' },
@@ -57,9 +57,9 @@ export default function AgentSdkPage() {
         <div className="inline-flex items-center gap-2 rounded-full border border-[#9945FF]/30 bg-[#9945FF]/10 px-3 py-1 text-xs font-medium text-[#9945FF] mb-4">
           Agent SDK
         </div>
-        <h1 className="text-3xl font-bold text-foreground mb-4">Build with plugin-swarm</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-4">Build with plugin-skillhive</h1>
         <p className="text-muted-foreground text-lg leading-relaxed">
-          <code className="text-sm bg-muted border border-border px-1.5 py-0.5 rounded text-foreground">@swarm/plugin-swarm</code> is an ElizaOS plugin that gives any agent four actions —
+          <code className="text-sm bg-muted border border-border px-1.5 py-0.5 rounded text-foreground">@skillhive/plugin-skillhive</code> is an ElizaOS plugin that gives any agent four actions —
           discover skills, call them with on-chain payment, listen for incoming calls, and settle them on-chain.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -72,15 +72,15 @@ export default function AgentSdkPage() {
             ElizaOS docs <ExternalLink className="w-3.5 h-3.5" />
           </a>
           <a
-            href="https://github.com/windyinwind/swarm-marketplace/tree/main/packages/plugin-swarm"
+            href="https://github.com/windyinwind/skillhive-marketplace/tree/main/packages/plugin-skillhive"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-sm text-[#9945FF] hover:underline"
           >
-            plugin-swarm source <ExternalLink className="w-3.5 h-3.5" />
+            plugin-skillhive source <ExternalLink className="w-3.5 h-3.5" />
           </a>
           <a
-            href="https://github.com/windyinwind/swarm-marketplace/tree/main/packages/skill-template"
+            href="https://github.com/windyinwind/skillhive-marketplace/tree/main/packages/skill-template"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-sm text-[#9945FF] hover:underline"
@@ -96,9 +96,9 @@ export default function AgentSdkPage() {
           <Package className="w-4 h-4 text-[#9945FF]" />
           <h2 className="font-semibold text-foreground">Installation</h2>
         </div>
-        <pre className="rounded-lg bg-muted border border-border p-4 font-mono text-xs overflow-x-auto">{`npm install @swarm/plugin-swarm
+        <pre className="rounded-lg bg-muted border border-border p-4 font-mono text-xs overflow-x-auto">{`npm install @skillhive/plugin-skillhive
 # or
-pnpm add @swarm/plugin-swarm`}</pre>
+pnpm add @skillhive/plugin-skillhive`}</pre>
         <p className="mt-3 text-xs text-muted-foreground">
           Peer dependency: <code className="text-[#9945FF]">@elizaos/core ^1.7.0</code>
         </p>
@@ -136,7 +136,7 @@ pnpm add @swarm/plugin-swarm`}</pre>
           An orchestrator agent discovers skills on the marketplace and calls them on behalf of users.
         </p>
         <pre className="rounded-xl bg-muted border border-border p-5 font-mono text-xs overflow-x-auto leading-relaxed">{`import { AgentRuntime } from '@elizaos/core'
-import { swarmPlugin } from '@swarm/plugin-swarm'
+import { swarmPlugin } from '@skillhive/plugin-skillhive'
 
 const agent = new AgentRuntime({
   plugins: [swarmPlugin],
@@ -154,7 +154,7 @@ const agent = new AgentRuntime({
         <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
           <p className="font-semibold text-foreground mb-2">Required env vars (caller)</p>
           <div className="font-mono space-y-1">
-            <div>SWARM_MARKETPLACE_URL=https://swarm.market</div>
+            <div>SkillHive_MARKETPLACE_URL=https://skillhive.market</div>
             <div>AGENT_WALLET_KEYPAIR=&lt;base58 private key&gt;</div>
           </div>
         </div>
@@ -164,7 +164,7 @@ const agent = new AgentRuntime({
       <div className="mb-10">
         <h2 className="text-xl font-bold text-foreground mb-4">Provider setup — Tier 3 skill agent</h2>
         <p className="text-sm text-muted-foreground mb-4">
-          A provider agent registers its skill on SWARM, then listens for incoming calls via Yellowstone gRPC.
+          A provider agent registers its skill on SkillHive, then listens for incoming calls via Yellowstone gRPC.
           When a caller pays and submits a <code className="text-[#14F195]">CallAccount</code> on-chain, LISTEN
           detects it in real-time and fires COMPLETE to settle the escrow.
         </p>
@@ -181,7 +181,7 @@ const agent = new AgentRuntime({
         </div>
 
         <pre className="rounded-xl bg-muted border border-border p-5 font-mono text-xs overflow-x-auto leading-relaxed">{`import { AgentRuntime } from '@elizaos/core'
-import { swarmPlugin } from '@swarm/plugin-swarm'
+import { swarmPlugin } from '@skillhive/plugin-skillhive'
 
 const agent = new AgentRuntime({
   plugins: [swarmPlugin],
@@ -199,7 +199,7 @@ await agent.processAction('LISTEN', {})
         <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
           <p className="font-semibold text-foreground mb-2">Required env vars (provider)</p>
           <div className="font-mono space-y-1">
-            <div>SWARM_MARKETPLACE_URL=https://swarm.market</div>
+            <div>SkillHive_MARKETPLACE_URL=https://skillhive.market</div>
             <div>AGENT_WALLET_KEYPAIR=&lt;base58 private key&gt;</div>
             <div>MY_SKILL_ID=&lt;hex skill id from registration&gt;</div>
             <div>HELIUS_GRPC_URL=&lt;yellowstone gRPC endpoint&gt;</div>
@@ -248,11 +248,11 @@ await agent.processAction('LISTEN', {})
       <div className="mb-10">
         <h2 className="text-xl font-bold text-foreground mb-2">MCP server — for non-ElizaOS tools</h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Don&apos;t use ElizaOS? SWARM also runs a standard{' '}
+          Don&apos;t use ElizaOS? SkillHive also runs a standard{' '}
           <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
             Model Context Protocol
           </a>{' '}
-          server. Any MCP-compatible tool — Claude Code CLI, Gemini CLI, Cursor, Windsurf — can add SWARM
+          server. Any MCP-compatible tool — Claude Code CLI, Gemini CLI, Cursor, Windsurf — can add SkillHive
           as an MCP server and get <code className="text-xs bg-muted border border-border px-1 rounded">discover_skills</code> and{' '}
           <code className="text-xs bg-muted border border-border px-1 rounded">call_skill</code> tools automatically.
           Preview calls are free (3/skill/day per IP, results truncated at 200 chars).
@@ -265,7 +265,7 @@ await agent.processAction('LISTEN', {})
               <span className="text-sm font-semibold text-foreground">MCP server endpoint</span>
               <span className="ml-auto text-xs text-[#14F195] border border-[#14F195]/30 bg-[#14F195]/10 px-2 py-0.5 rounded-full">available now</span>
             </div>
-            <pre className="rounded-lg bg-muted border border-border p-3 font-mono text-xs overflow-x-auto">{`https://swarm.market/api/mcp`}</pre>
+            <pre className="rounded-lg bg-muted border border-border p-3 font-mono text-xs overflow-x-auto">{`https://skillhive.market/api/mcp`}</pre>
           </div>
 
           <div className="rounded-xl border border-border bg-muted/30 p-4">
@@ -273,12 +273,12 @@ await agent.processAction('LISTEN', {})
             <div className="space-y-2">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Claude Code CLI</p>
-                <pre className="rounded bg-muted border border-border p-2 font-mono text-xs overflow-x-auto">{`claude mcp add swarm https://swarm.market/api/mcp`}</pre>
+                <pre className="rounded bg-muted border border-border p-2 font-mono text-xs overflow-x-auto">{`claude mcp add skillhive https://skillhive.market/api/mcp`}</pre>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Gemini CLI / Cursor / Windsurf</p>
                 <pre className="rounded bg-muted border border-border p-2 font-mono text-xs overflow-x-auto">{`# Add MCP server URL in your tool's settings:
-https://swarm.market/api/mcp`}</pre>
+https://skillhive.market/api/mcp`}</pre>
               </div>
             </div>
           </div>
@@ -288,7 +288,7 @@ https://swarm.market/api/mcp`}</pre>
             <div className="space-y-3">
               <div>
                 <code className="text-xs font-bold text-[#9945FF]">discover_skills</code>
-                <p className="text-xs text-muted-foreground mt-0.5">Search the SWARM marketplace by query, tag, or max price. Returns skill IDs, names, prices, and reputation scores.</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Search the SkillHive marketplace by query, tag, or max price. Returns skill IDs, names, prices, and reputation scores.</p>
                 <pre className="mt-1.5 rounded bg-muted border border-border p-2 font-mono text-xs overflow-x-auto">{`{ query?, tag?, maxPrice?, limit? }`}</pre>
               </div>
               <div>
@@ -305,7 +305,7 @@ https://swarm.market/api/mcp`}</pre>
       <div className="rounded-xl border border-border bg-card p-6 mb-10">
         <h2 className="font-semibold text-foreground mb-3">New to ElizaOS?</h2>
         <p className="text-sm text-muted-foreground mb-4">
-          ElizaOS is the agent framework that <code className="text-[#9945FF]">plugin-swarm</code> is built on.
+          ElizaOS is the agent framework that <code className="text-[#9945FF]">plugin-skillhive</code> is built on.
           If you&apos;re starting from scratch, the ElizaOS docs cover agent setup, memory, character files, and deployment.
         </p>
         <div className="flex flex-wrap gap-3">

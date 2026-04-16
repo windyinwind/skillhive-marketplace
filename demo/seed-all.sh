@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# seed-all.sh — Register all 3 demo skills on SWARM Marketplace.
+# seed-all.sh — Register all 3 demo skills on SkillHive Marketplace.
 #
 # Prerequisites:
-#   - SWARM_MARKETPLACE_URL and AGENT_WALLET_KEYPAIR set in env or .env file
+#   - SkillHive_MARKETPLACE_URL and AGENT_WALLET_KEYPAIR set in env or .env file
 #   - pnpm installed, demo packages built
 #
 # Usage:
-#   export SWARM_MARKETPLACE_URL=http://localhost:3000
+#   export SkillHive_MARKETPLACE_URL=http://localhost:3000
 #   export AGENT_WALLET_KEYPAIR=<base58-private-key>
 #   bash demo/seed-all.sh
 
@@ -20,13 +20,13 @@ if [ -f "$SCRIPT_DIR/.env" ]; then
   set -a && source "$SCRIPT_DIR/.env" && set +a
 fi
 
-: "${SWARM_MARKETPLACE_URL:?SWARM_MARKETPLACE_URL is required}"
+: "${SkillHive_MARKETPLACE_URL:?SkillHive_MARKETPLACE_URL is required}"
 : "${AGENT_WALLET_KEYPAIR:?AGENT_WALLET_KEYPAIR is required}"
 
 echo "====================================================="
-echo " SWARM Marketplace — Demo Skill Seeder"
+echo " SkillHive Marketplace — Demo Skill Seeder"
 echo "====================================================="
-echo " API URL : $SWARM_MARKETPLACE_URL"
+echo " API URL : $SkillHive_MARKETPLACE_URL"
 echo "====================================================="
 
 SKILLS=("skill-price-agent" "skill-news-agent" "skill-sentiment-agent")

@@ -34,8 +34,8 @@ function extractInput(_runtime: IAgentRuntime, message: Memory): CallSkillInput 
 }
 
 function getMarketplaceUrl(): string {
-  const url = process.env.SWARM_MARKETPLACE_URL
-  if (!url) throw new Error('[CALL_SKILL] SWARM_MARKETPLACE_URL env var is not set')
+  const url = process.env.SkillHive_MARKETPLACE_URL
+  if (!url) throw new Error('[CALL_SKILL] SkillHive_MARKETPLACE_URL env var is not set')
   return url
 }
 
@@ -184,7 +184,7 @@ export const callSkillAction: Action = {
   name: 'CALL_SKILL',
   similes: ['INVOKE_SKILL', 'RUN_SKILL', 'EXECUTE_SKILL', 'USE_SKILL', 'PAY_AND_CALL'],
   description:
-    'Call a SWARM Marketplace skill using the secure escrow path (Path A). ' +
+    'Call a SkillHive Marketplace skill using the secure escrow path (Path A). ' +
     'The agent signs an on-chain escrow transaction; payment is held in escrow and released ' +
     'when the skill completes. Returns the skill result. ' +
     'Requires skillId (string) and input (string).',
@@ -195,8 +195,8 @@ export const callSkillAction: Action = {
       console.warn('[CALL_SKILL] validate: skillId is required')
       return false
     }
-    if (!process.env.SWARM_MARKETPLACE_URL) {
-      console.warn('[CALL_SKILL] SWARM_MARKETPLACE_URL is not set')
+    if (!process.env.SkillHive_MARKETPLACE_URL) {
+      console.warn('[CALL_SKILL] SkillHive_MARKETPLACE_URL is not set')
       return false
     }
     if (!process.env.AGENT_WALLET_KEYPAIR) {

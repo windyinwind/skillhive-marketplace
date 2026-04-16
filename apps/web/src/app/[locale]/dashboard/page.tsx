@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { TrendingUp, Zap, Star } from 'lucide-react'
+import { TrendingUp, Zap, Star, Wallet } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { lamportsToSol, truncateWallet, formatDate, reputationToStars } from '@/lib/format'
 import { StarRating } from '@/components/StarRating'
@@ -19,6 +19,7 @@ interface UnratedCall {
 
 interface DashboardData {
   totalEarned: number
+  totalSpent: number
   callCount: number
   skills: Array<{
     id: string
@@ -88,13 +89,19 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-3">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           {
             label: t('totalEarned'),
             value: isLoading ? '—' : `${lamportsToSol(data?.totalEarned ?? 0)} SOL`,
             icon: TrendingUp,
             color: 'text-[#14F195]',
+          },
+          {
+            label: t('totalSpent'),
+            value: isLoading ? '—' : `${lamportsToSol(data?.totalSpent ?? 0)} SOL`,
+            icon: Wallet,
+            color: 'text-[#9945FF]',
           },
           {
             label: t('totalCalls'),

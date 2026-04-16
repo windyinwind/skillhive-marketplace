@@ -1,7 +1,7 @@
 {
-  "name": "@swarm/plugin-swarm",
+  "name": "@skillhive/plugin-skillhive",
   "version": "0.1.0",
-  "description": "ElizaOS plugin — SWARM Marketplace skill discovery, calling, listening, and completing on Solana",
+  "description": "ElizaOS plugin — SkillHive Marketplace skill discovery, calling, listening, and completing on Solana",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

@@ -82,7 +82,7 @@ export default function FeesPage() {
           <p>{t('howItWorksIntro')}</p>
           <div className="rounded-lg bg-muted border border-border p-3 font-mono text-xs space-y-1">
             <div>Caller pays:       0.010000 SOL</div>
-            <div>Platform fee (5%): 0.000500 SOL → SWARM treasury</div>
+            <div>Platform fee (5%): 0.000500 SOL → SkillHive treasury</div>
             <div>Skill owner gets:  0.009500 SOL → owner wallet</div>
           </div>
           <p>

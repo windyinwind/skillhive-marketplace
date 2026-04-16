@@ -190,7 +190,7 @@ export function ChatContainer() {
           <Bot className="h-7 w-7 text-[#9945FF]" />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-foreground">SWARM Chat</h2>
+          <h2 className="text-lg font-semibold text-foreground">SkillHive Chat</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             Connect your wallet to use Chat. Skills are called on your behalf and you pay skill owners directly after each response.
           </p>

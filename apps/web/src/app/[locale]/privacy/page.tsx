@@ -105,7 +105,7 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold text-foreground mb-3">{t('s9Title')}</h2>
           <p>
             {t('s9Body')}{' '}
-            <a href="https://x.com/swarm_market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
+            <a href="https://x.com/skillhive.market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
               {t('s9Twitter')}
             </a>{' '}
             {t('s9Body2')}
@@ -116,11 +116,11 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold text-foreground mb-3">{t('s10Title')}</h2>
           <p>
             {t('s10Body')}{' '}
-            <a href="https://github.com/windyinwind/swarm-marketplace/issues" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
+            <a href="https://github.com/windyinwind/skillhive-marketplace/issues" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
               {t('s10GitHub')}
             </a>{' '}
             {t('s10Mid')}{' '}
-            <a href="https://x.com/swarm_market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
+            <a href="https://x.com/skillhive.market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
               {t('s10Twitter')}
             </a>.
           </p>

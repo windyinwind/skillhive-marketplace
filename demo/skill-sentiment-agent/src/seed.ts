@@ -1,5 +1,5 @@
 /**
- * seed.ts — Register the "Sentiment Analyzer" Tier 1 prompt skill on SWARM Marketplace.
+ * seed.ts — Register the "Sentiment Analyzer" Tier 1 prompt skill on SkillHive Marketplace.
  *
  * Run once against devnet:
  *   pnpm seed
@@ -9,7 +9,7 @@ import 'dotenv/config'
 import { Keypair } from '@solana/web3.js'
 import bs58 from 'bs58'
 
-const SWARM_API_URL = process.env.SWARM_MARKETPLACE_URL ?? 'http://localhost:3000'
+const SkillHive_API_URL = process.env.SkillHive_MARKETPLACE_URL ?? 'http://localhost:3000'
 const AGENT_WALLET_KEYPAIR = process.env.AGENT_WALLET_KEYPAIR ?? ''
 
 if (!AGENT_WALLET_KEYPAIR) {
@@ -55,9 +55,9 @@ async function main(): Promise<void> {
 
   console.log(`\nRegistering skill: "${SKILL_DEFINITION.name}"`)
   console.log(`  Provider: ${providerPubkey}`)
-  console.log(`  API: ${SWARM_API_URL}\n`)
+  console.log(`  API: ${SkillHive_API_URL}\n`)
 
-  const res = await fetch(`${SWARM_API_URL}/api/create-skill`, {
+  const res = await fetch(`${SkillHive_API_URL}/api/create-skill`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...SKILL_DEFINITION, provider_pubkey: providerPubkey }),

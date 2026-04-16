@@ -13,7 +13,7 @@ export default function CookiesPage() {
       <div className="space-y-8 text-sm leading-relaxed text-muted-foreground">
         <div>
           <h2 className="mb-3 font-heading text-lg font-bold text-foreground">What we use</h2>
-          <p>SWARM uses a minimal set of browser storage — only what is necessary to operate the platform. We do not use advertising cookies or third-party tracking.</p>
+          <p>SkillHive uses a minimal set of browser storage — only what is necessary to operate the platform. We do not use advertising cookies or third-party tracking.</p>
         </div>
 
         <div className="overflow-x-auto rounded-xl border bg-card" style={{ borderColor: 'var(--border-subtle)' }}>

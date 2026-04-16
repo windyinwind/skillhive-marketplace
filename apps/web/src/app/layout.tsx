@@ -3,7 +3,7 @@ import { RootShell } from '@/components/RootShell'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'SWARM Marketplace',
+  title: 'SkillHive Marketplace',
   description: 'Discover, call, and earn from AI skills on Solana',
   icons: {
     icon: '/favicon.png',

@@ -1,7 +1,7 @@
 {
-  "name": "@swarm/orchestrator-agent",
+  "name": "@skillhive/orchestrator-agent",
   "version": "0.1.0",
-  "description": "SWARM demo — orchestrator agent that discovers and calls 3 skills to answer 'Should I invest in NVIDIA?'",
+  "description": "SkillHive demo — orchestrator agent that discovers and calls 3 skills to answer 'Should I invest in NVIDIA?'",
   "scripts": {
     "start": "tsx src/index.ts",
     "build": "tsc"

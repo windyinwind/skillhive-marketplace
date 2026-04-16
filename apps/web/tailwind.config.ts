@@ -49,8 +49,8 @@ const config: Config = {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
-        // SWARM brand tokens
-        swarm: {
+        // SkillHive brand tokens
+        skillhive: {
           purple: '#9945FF',
           green: '#14F195',
           // Semantic tokens (CSS-var backed, theme-aware)
@@ -70,7 +70,7 @@ const config: Config = {
         sm: 'calc(var(--radius) - 6px)',
       },
       backgroundImage: {
-        'swarm-gradient': 'linear-gradient(135deg, #9945FF, #14F195)',
+        'skillhive-gradient': 'linear-gradient(135deg, #9945FF, #14F195)',
       },
     },
   },

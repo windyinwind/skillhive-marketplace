@@ -1,5 +1,5 @@
 {
-  "name": "@swarm/skill-sentiment-agent",
+  "name": "@skillhive/skill-sentiment-agent",
   "version": "0.1.0",
   "description": "Tier 1 prompt skill — market sentiment and macro positioning analyst",
   "scripts": {

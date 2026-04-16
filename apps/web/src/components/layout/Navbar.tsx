@@ -45,9 +45,9 @@ export function Navbar() {
 
           {/* ── Logo ── */}
           <Link href="/" className="flex shrink-0 items-center gap-2.5 mr-2">
-            <Image src="/logo.png" alt="SWARM" width={30} height={30} className="rounded-md" />
+            <Image src="/logo.png" alt="SkillHive" width={30} height={30} className="rounded-md" />
             <span className="font-heading text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-              SWARM<span className="text-[#9945FF]">.</span>
+              SkillHive<span className="text-[#9945FF]">.</span>
             </span>
           </Link>
 

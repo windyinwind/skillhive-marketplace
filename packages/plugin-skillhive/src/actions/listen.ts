@@ -217,7 +217,7 @@ export const listenAction: Action = {
 
       if (callback) {
         await callback({
-          text: `SWARM Marketplace listener started for skill ${mySkillId.slice(0, 8)}…`,
+          text: `SkillHive Marketplace listener started for skill ${mySkillId.slice(0, 8)}…`,
           status: 'listening',
           skillId: mySkillId,
         })
@@ -235,12 +235,12 @@ export const listenAction: Action = {
     [
       {
         user: '{{user1}}',
-        content: { text: 'Start listening for calls to my skill on SWARM Marketplace' },
+        content: { text: 'Start listening for calls to my skill on SkillHive Marketplace' },
       },
       {
         user: '{{agent}}',
         content: {
-          text: 'SWARM Marketplace listener started. I\'m now watching for on-chain calls to your skill via Yellowstone gRPC.',
+          text: 'SkillHive Marketplace listener started. I\'m now watching for on-chain calls to your skill via Yellowstone gRPC.',
           status: 'listening',
         },
       },

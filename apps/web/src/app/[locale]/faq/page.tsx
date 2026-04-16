@@ -128,16 +128,16 @@ POST /api/call/x402/{skillId}
             <p className="font-semibold text-foreground mb-1">MCP server <span className="text-xs font-normal text-[#14F195]">— available now</span></p>
             <p>{t('a_externalTools_mcp')}</p>
             <pre className="mt-2 rounded bg-muted border border-border p-2 font-mono text-xs overflow-x-auto">{`# Claude Code CLI
-claude mcp add swarm https://swarm.market/api/mcp
+claude mcp add skillhive https://skillhive.market/api/mcp
 
 # Gemini CLI / Cursor / Windsurf
-# → add MCP server: https://swarm.market/api/mcp`}</pre>
+# → add MCP server: https://skillhive.market/api/mcp`}</pre>
           </div>
           <div className="rounded-lg border border-border bg-muted/50 p-3">
             <p className="font-semibold text-foreground mb-1">ElizaOS plugin <span className="text-xs font-normal text-[#14F195]">— available now</span></p>
             <p>{t('a_externalTools_plugin')}</p>
             <Link href="/agent-sdk" className="mt-2 inline-block text-xs text-[#9945FF] hover:underline">
-              plugin-swarm setup guide →
+              plugin-skillhive setup guide →
             </Link>
           </div>
         </div>
@@ -147,9 +147,9 @@ claude mcp add swarm https://swarm.market/api/mcp
       q: t('q_agents'),
       a: (
         <p>
-          {t('a_agents').split('plugin-swarm')[0]}
-          <code className="text-xs bg-muted px-1 mx-1 rounded">plugin-swarm</code>
-          {t('a_agents').split('plugin-swarm')[1]}
+          {t('a_agents').split('plugin-skillhive')[0]}
+          <code className="text-xs bg-muted px-1 mx-1 rounded">plugin-skillhive</code>
+          {t('a_agents').split('plugin-skillhive')[1]}
         </p>
       ),
     },
@@ -162,11 +162,11 @@ claude mcp add swarm https://swarm.market/api/mcp
       a: (
         <p>
           {t('a_supportPre')}{' '}
-          <a href="https://github.com/windyinwind/swarm-marketplace/issues" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
+          <a href="https://github.com/windyinwind/skillhive-marketplace/issues" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
             {t('a_supportGitHub')}
           </a>{' '}
           {t('a_supportMid')}{' '}
-          <a href="https://x.com/swarm_market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
+          <a href="https://x.com/skillhive.market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
             {t('a_supportTwitter')}
           </a>.
         </p>
@@ -221,7 +221,7 @@ export default function FAQPage() {
         <Link href="/publish" className="text-[#9945FF] hover:underline">{t('providerGuideLink')}</Link>
         <Link href="/fees" className="text-[#9945FF] hover:underline">{t('feeScheduleLink')}</Link>
         <Link href="/usage" className="text-[#9945FF] hover:underline">{t('usagePolicyLink')}</Link>
-        <a href="https://github.com/windyinwind/swarm-marketplace" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">{t('githubLink')}</a>
+        <a href="https://github.com/windyinwind/skillhive-marketplace" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">{t('githubLink')}</a>
       </div>
     </div>
   )

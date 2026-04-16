@@ -1,11 +1,11 @@
-# SWARM Marketplace — Project Memory for Claude Code
+# SkillHive Marketplace — Project Memory for Claude Code
 
 ## Identity
 
-- **Project:** SWARM Marketplace — An open platform for AI agent skill discovery, payment, and reputation on Solana
+- **Project:** SkillHive Marketplace — An open platform for AI agent skill discovery, payment, and reputation on Solana
 - **Chain:** Solana (Devnet → Mainnet)
-- **Repo:** windyinwind/swarm-marketplace
-- **Dev branch:** `claude/endpoint-privacy-architecture-fcv8n`
+- **Repo:** windyinwind/skillhive-marketplace
+- **Dev branch:** `main`
 
 ---
 
@@ -27,6 +27,8 @@
 | Agent Wallet (dev) | SOLANA_PRIVATE_KEY env var |
 | Agent Wallet (prod) | Frames.ag — OOTB agent wallet |
 | LLM (hosted skills) | Anthropic Claude claude-sonnet-4-6 (primary), GPT-4o (fallback) |
+| i18n | next-intl — 9 locales (en, zh, de, es, fr, ja, ko, pt, ar) |
+| MCP Transport | `/api/mcp` — JSON-RPC 2.0 Streamable HTTP; tools: discover_skills, call_skill |
 | Package Manager | pnpm 9.x (workspace) |
 | Local Dev | solana-test-validator + Docker Compose |
 
@@ -59,9 +61,9 @@ Tier 2 — Tool Skill (low-code, power users)
   Platform calls provider's webhook as an LLM tool
 
 Tier 3 — Custom Agent (self-hosted, developers)
-  Provider deploys own ElizaOS agent
-  Registers HTTPS endpoint via two-step authenticated flow
-  Platform proxies UI calls; agent-to-agent calls go direct via Solana polling
+  Provider deploys any HTTPS server (ElizaOS, FastAPI, Express, etc.)
+  Registers endpoint via two-step authenticated flow (on-chain tx + wallet-signed endpoint)
+  Platform proxies UI calls; agent-to-agent calls go direct via Solana on-chain events
 ```
 
 ### 3. Two-Step Skill Registration
@@ -90,12 +92,9 @@ Orchestrator agent initiates `initiate_call` tx on-chain → Skill agent receive
 **Path C — x402 Instant Payment:**
 Client POSTs to `/api/call/x402/[skillId]` → receives HTTP 402 with payment requirements → attaches `x402-Payment` header → server verifies via facilitator, fetches endpoint privately, calls skill → returns result. No escrow lock-up; for micro-calls and machine-speed agent pipelines.
 
-### 5. Three Modes on "Try it" Panel
+### 5. Try it Panel — Preview Only
 
-The skill detail page has three modes:
-- **Preview** (free, rate-limited 3/day per IP): Platform subsidizes fee, calls skill directly. For discovery.
-- **Quick Pay x402** (instant payment, no escrow): x402-Payment header, fast path, no refund buffer.
-- **Secure Escrow** (real SOL, full escrow flow): Full on-chain payment with refund protection.
+The skill detail page shows **Preview mode only** (free, rate-limited 3/day per IP). The platform subsidizes the fee and calls the skill directly. Quick Pay (x402) and Secure Escrow modes were removed from the detail page — payments happen in Arena, where the user has already seen answers from multiple skills and can make an informed choice.
 
 ### 6. Helius Replaces Custom Indexer
 
@@ -106,29 +105,43 @@ The skill detail page has three modes:
 ## Monorepo Structure
 
 ```
-swarm-marketplace/
+skillhive-marketplace/
 ├── apps/
 │   └── web/                    # Next.js 15 frontend + API routes
-│       └── app/api/
-│           ├── skills/         # GET listing + GET by id
-│           ├── create-skill/   # POST Tier 1+2 single-step
-│           ├── register/       # POST prepare + complete (Tier 3)
-│           ├── call/           # POST prepare, execute, GET [id]
-│           ├── call/x402/      # POST Path C instant payment
-│           ├── skill-executor/ # POST internal hosted executor
-│           ├── webhooks/helius # POST Helius account change events
-│           ├── events/         # GET SSE stream (Redis pub/sub)
-│           ├── pyth/sol-usd    # GET real-time SOL/USD price
-│           └── dashboard/      # GET provider earnings
+│       └── app/
+│           ├── [locale]/       # i18n-wrapped pages (next-intl, 9 locales)
+│           │   ├── page.tsx    # Homepage
+│           │   ├── marketplace/, chat/, arena/, leaderboard/
+│           │   ├── dashboard/, create/, register/
+│           │   ├── agent-sdk/, publish/, fees/, faq/
+│           │   └── usage/, privacy/, terms/, cookies/
+│           └── api/
+│               ├── skills/         # GET listing + GET by id
+│               ├── create-skill/   # POST Tier 1+2 single-step
+│               ├── register/       # POST prepare + complete (Tier 3)
+│               ├── call/           # POST prepare, execute, GET [id]
+│               ├── call/x402/      # POST Path C instant payment
+│               ├── skill-executor/ # POST internal hosted executor
+│               ├── arena/          # GET rounds; POST create
+│               ├── arena/[roundId]/# GET round+entries; POST vote; POST close
+│               ├── cron/arena-close# GET auto-close stale open rounds (Vercel Cron)
+│               ├── mcp/            # POST/OPTIONS MCP Streamable HTTP (discover_skills, call_skill)
+│               ├── webhooks/helius # POST Helius account change events
+│               ├── events/         # GET SSE stream (Redis pub/sub)
+│               ├── pyth/sol-usd    # GET real-time SOL/USD price
+│               └── dashboard/      # GET provider earnings
 ├── packages/
 │   ├── contracts/              # Anchor workspace (skill_registry + escrow_payment)
-│   ├── plugin-swarm/           # ElizaOS plugin (listen via Yellowstone, complete, discover, call)
+│   ├── plugin-skillhive/           # ElizaOS plugin (listen via Yellowstone, complete, discover, call)
 │   └── skill-template/         # Self-hosted agent starter kit (Tier 3)
 ├── demo/
 │   ├── orchestrator-agent/
 │   ├── skill-price-agent/      # Tier 1 prompt skill (demo)
 │   ├── skill-news-agent/       # Tier 1 prompt skill (demo)
 │   └── skill-sentiment-agent/  # Tier 1 prompt skill (demo)
+├── .claude/
+│   ├── commands/               # Slash commands (e.g. /update-docs)
+│   └── hooks/                  # Claude Code session hooks
 ├── docker-compose.yml           # Local: Postgres + Redis
 ├── CLAUDE.md                    # This file
 ├── README.md                    # Full SDD
@@ -174,9 +187,17 @@ NEXT_PUBLIC_PLATFORM_TREASURY=<wallet>
 NEXT_PUBLIC_SUPABASE_URL=<url>
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon_key>
 
+# LLM routing — pick one or more
+LLM_DEFAULT_PROVIDER=openrouter                        # anthropic | openai | google | openrouter
+LLM_DEFAULT_MODEL=meta-llama/llama-4-maverick
+OPENROUTER_API_KEY=<openrouter_key>
+ANTHROPIC_API_KEY=<anthropic_key>
+OPENAI_API_KEY=<openai_key>
+GOOGLE_GENERATIVE_AI_API_KEY=<google_key>              # also enables native search grounding
+TAVILY_API_KEY=<tavily_key>                            # web search (not needed with Google provider)
+
 # Private (server-side only — NEVER NEXT_PUBLIC_)
 SUPABASE_SERVICE_ROLE_KEY=<service_role_key>
-ANTHROPIC_API_KEY=<for_hosted_skill_executor>
 PLATFORM_FEE_BPS=500
 INTERNAL_API_KEY=<for_webhook_auth>
 PREVIEW_RATE_LIMIT_DAILY=3
@@ -198,7 +219,7 @@ CRON_SECRET=<random_secret>                            # Vercel Cron auth header
 | 2 | Smart contracts (skill_registry + escrow_payment) + tests + devnet deploy | ✅ DONE |
 | 3 | Supabase schema + all API routes (incl. Helius webhook borsh parser, x402, SSE, Pyth) | ✅ DONE |
 | 4 | Frontend (marketplace, create, register, detail preview-only, dashboard, arena close) | ✅ DONE |
-| 5 | Agent runtime (plugin-swarm + Yellowstone gRPC, skill-template, orchestrator + 3 demo skills) | ✅ DONE (needs seed) |
+| 5 | Agent runtime (plugin-skillhive + Yellowstone gRPC, skill-template, orchestrator + 3 demo skills) | ✅ DONE (needs seed) |
 
 > **TryItPanel**: Skill detail page shows **Preview only** (free, 3 calls/day per IP). Quick Pay and Escrow modes were removed — payments happen in Arena after users see all answers side-by-side.
 

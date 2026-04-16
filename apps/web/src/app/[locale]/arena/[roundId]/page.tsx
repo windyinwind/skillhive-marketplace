@@ -25,13 +25,13 @@ async function fetchRound(roundId: string): Promise<ArenaRoundWithEntries | null
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { roundId } = await params
   const round = await fetchRound(roundId)
-  if (!round) return { title: 'Round Not Found · SWARM Arena' }
+  if (!round) return { title: 'Round Not Found · SkillHive Arena' }
   const status = round.status === 'open' ? 'Open for voting' : round.status === 'running' ? 'Running' : 'Closed'
   return {
-    title: `${round.query.slice(0, 60)} · SWARM Arena`,
+    title: `${round.query.slice(0, 60)} · SkillHive Arena`,
     description: `${status} · ${round.competitor_count} skills competing · ${round.total_votes} votes · ${(round.total_sol_staked / 1e9).toFixed(4)} SOL staked`,
     openGraph: {
-      title: `SWARM Arena: ${round.query.slice(0, 60)}`,
+      title: `SkillHive Arena: ${round.query.slice(0, 60)}`,
       description: `${round.competitor_count} AI skills competing. ${round.total_votes} community votes. ${(round.total_sol_staked / 1e9).toFixed(4)} SOL at stake.`,
     },
   }

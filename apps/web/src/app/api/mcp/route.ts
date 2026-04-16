@@ -1,12 +1,12 @@
 /**
- * SWARM MCP Server — Streamable HTTP transport (MCP spec 2025-03-26)
+ * SkillHive MCP Server — Streamable HTTP transport (MCP spec 2025-03-26)
  *
- * Add to Claude Code:   claude mcp add swarm https://swarm.market/api/mcp
- * Add to Gemini CLI:    add MCP server: https://swarm.market/api/mcp
- * Add to Cursor:        MCP server URL → https://swarm.market/api/mcp
+ * Add to Claude Code:   claude mcp add skillhive https://skillhive.market/api/mcp
+ * Add to Gemini CLI:    add MCP server: https://skillhive.market/api/mcp
+ * Add to Cursor:        MCP server URL → https://skillhive.market/api/mcp
  *
  * Implements two tools:
- *   discover_skills  — query the SWARM marketplace (wraps GET /api/skills)
+ *   discover_skills  — query the SkillHive marketplace (wraps GET /api/skills)
  *   call_skill       — preview-call a skill (wraps POST /api/call/execute, preview:true)
  *                      Rate-limited: 3 calls / skill / day per IP. Result truncated to 200 chars.
  */
@@ -21,7 +21,7 @@ const TOOLS = [
   {
     name: 'discover_skills',
     description:
-      'Search the SWARM marketplace for AI agent skills. Returns skill IDs, names, descriptions, tags, prices (in lamports), and reputation scores. Use this before calling call_skill to find the right skill ID.',
+      'Search the SkillHive marketplace for AI agent skills. Returns skill IDs, names, descriptions, tags, prices (in lamports), and reputation scores. Use this before calling call_skill to find the right skill ID.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -48,7 +48,7 @@ const TOOLS = [
   {
     name: 'call_skill',
     description:
-      'Preview-call a SWARM skill by ID. Free, no wallet required. Rate-limited to 3 calls per skill per day. Results are truncated to 200 characters — for full results, visit the skill detail page on swarm.market.',
+      'Preview-call a SkillHive skill by ID. Free, no wallet required. Rate-limited to 3 calls per skill per day. Results are truncated to 200 characters — for full results, visit the skill detail page on skillhive.market.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -153,7 +153,7 @@ async function handleCallSkill(
       content: [
         {
           type: 'text',
-          text: 'Preview limit reached (3 calls/skill/day). Visit swarm.market to call this skill with a Solana wallet for full access.',
+          text: 'Preview limit reached (3 calls/skill/day). Visit skillhive.market to call this skill with a Solana wallet for full access.',
         },
       ],
       isError: true,
@@ -171,7 +171,7 @@ async function handleCallSkill(
   const { result, truncated } = (await res.json()) as { result: string; truncated: boolean }
 
   const text = truncated
-    ? `${result}\n\n[Preview truncated at 200 chars. Visit swarm.market for the full result.]`
+    ? `${result}\n\n[Preview truncated at 200 chars. Visit skillhive.market for the full result.]`
     : result
 
   return { content: [{ type: 'text', text }] }
@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
 
   const { id, method, params } = rpc
   const origin = req.headers.get('origin') ?? ''
-  const host = req.headers.get('host') ?? 'swarm.market'
+  const host = req.headers.get('host') ?? 'skillhive.market'
   const proto = origin.startsWith('https') ? 'https' : process.env.NODE_ENV === 'production' ? 'https' : 'http'
   const baseUrl = `${proto}://${host}`
   const clientIp =
@@ -220,7 +220,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       jsonRpcResult(id, {
         protocolVersion: '2024-11-05',
-        serverInfo: { name: 'swarm-marketplace', version: '1.0.0' },
+        serverInfo: { name: 'skillhive-marketplace', version: '1.0.0' },
         capabilities: { tools: {} },
       })
     )

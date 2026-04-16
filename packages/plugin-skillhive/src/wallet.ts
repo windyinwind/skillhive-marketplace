@@ -1,5 +1,5 @@
 /**
- * Wallet utilities for the SWARM plugin.
+ * Wallet utilities for the SkillHive plugin.
  *
  * Loads the agent keypair from AGENT_WALLET_KEYPAIR (base58-encoded private key)
  * and exposes helpers for signing transactions.
@@ -20,7 +20,7 @@ export function getAgentKeypair(): Keypair {
   const raw = process.env.AGENT_WALLET_KEYPAIR
   if (!raw) {
     throw new Error(
-      '[plugin-swarm] AGENT_WALLET_KEYPAIR env var is not set. ' +
+      '[plugin-skillhive] AGENT_WALLET_KEYPAIR env var is not set. ' +
         'Set it to the base58-encoded private key of your agent wallet.',
     )
   }

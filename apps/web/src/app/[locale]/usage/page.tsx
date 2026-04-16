@@ -77,7 +77,7 @@ export default function UsagePolicyPage() {
           <p>{t('s7Body1')}</p>
           <p className="mt-2">
             {t('s7Body2')}{' '}
-            <a href="https://github.com/windyinwind/swarm-marketplace/issues" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">{t('s7GitHub')}</a>.
+            <a href="https://github.com/windyinwind/skillhive-marketplace/issues" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">{t('s7GitHub')}</a>.
           </p>
         </section>
 
@@ -85,7 +85,7 @@ export default function UsagePolicyPage() {
           <h2 className="text-lg font-semibold text-foreground mb-3">{t('s8Title')}</h2>
           <p>
             {t('s8Body')}{' '}
-            <a href="https://x.com/swarm_market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">{t('s8Twitter')}</a>{' '}
+            <a href="https://x.com/skillhive.market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">{t('s8Twitter')}</a>{' '}
             {t('s8Body2')}
           </p>
         </section>

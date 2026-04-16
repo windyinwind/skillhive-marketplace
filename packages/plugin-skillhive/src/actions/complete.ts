@@ -190,7 +190,7 @@ export async function submitComplete(completeInput: CompleteInput): Promise<stri
   )
 
   // Notify the platform API so it can publish the result via SSE
-  const marketplaceUrl = process.env.SWARM_MARKETPLACE_URL
+  const marketplaceUrl = process.env.SkillHive_MARKETPLACE_URL
   if (marketplaceUrl) {
     try {
       await fetch(`${marketplaceUrl}/api/call/${completeInput.callId}`, {
@@ -215,7 +215,7 @@ export const completeAction: Action = {
   name: 'COMPLETE',
   similes: ['COMPLETE_CALL', 'FINISH_CALL', 'SUBMIT_RESULT', 'SETTLE_CALL'],
   description:
-    'Submit the complete_call on-chain instruction after processing a SWARM skill call. ' +
+    'Submit the complete_call on-chain instruction after processing a SkillHive skill call. ' +
     'This settles the escrow, pays the provider 95%, and updates on-chain reputation. ' +
     'Requires callId (hex), result (string), callerPubkey (base58), skillId (hex).',
 

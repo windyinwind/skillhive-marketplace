@@ -33,7 +33,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_SRK)
 const SKILLS = [
   // ── Technology & Engineering ─────────────────────────────────────────────
   {
-    id: 'swarm-code-review',
+    id: 'skillhive-code-review',
     name: 'Code Review Analyst',
     description: 'Performs thorough code reviews identifying bugs, security vulnerabilities, performance issues, and style violations with actionable fix recommendations.',
     tags: ['code', 'engineering', 'security', 'developer', 'review'],
@@ -65,7 +65,7 @@ When given code, produce a structured review:
 Be specific: reference line numbers or function names. Prioritize security and correctness over style.`,
   },
   {
-    id: 'swarm-system-architect',
+    id: 'skillhive-system-architect',
     name: 'System Architecture Designer',
     description: 'Designs scalable system architectures with component diagrams, technology stack recommendations, API contracts, and scaling strategies.',
     tags: ['architecture', 'engineering', 'system-design', 'scalability', 'backend'],
@@ -102,7 +102,7 @@ When asked to design a system, produce:
 Favor boring technology. Justify every choice.`,
   },
   {
-    id: 'swarm-sql-query-builder',
+    id: 'skillhive-sql-query-builder',
     name: 'SQL Query Builder',
     description: 'Writes optimized SQL queries from plain-English requirements, including complex JOINs, window functions, CTEs, and performance tuning tips.',
     tags: ['sql', 'database', 'developer', 'analytics', 'data'],
@@ -130,7 +130,7 @@ When given a plain-English data request or schema, produce:
 Support PostgreSQL, MySQL, and SQLite syntax where relevant. Add comments to complex CTEs or window functions.`,
   },
   {
-    id: 'swarm-api-doc-writer',
+    id: 'skillhive-api-doc-writer',
     name: 'API Documentation Writer',
     description: 'Generates clear, comprehensive API documentation in OpenAPI/Swagger format with examples, error codes, and authentication guides.',
     tags: ['api', 'documentation', 'developer', 'openapi', 'backend'],
@@ -180,7 +180,7 @@ Be developer-friendly: show real example values, not placeholders like "string".
 
   // ── Marketing & Content ───────────────────────────────────────────────────
   {
-    id: 'swarm-seo-content-writer',
+    id: 'skillhive-seo-content-writer',
     name: 'SEO Content Writer',
     description: 'Creates SEO-optimized blog posts, landing pages, and articles with keyword strategy, meta descriptions, header structure, and internal linking recommendations.',
     tags: ['seo', 'content', 'marketing', 'blog', 'copywriting'],
@@ -216,7 +216,7 @@ When given a topic or target keyword, produce:
 Write naturally for humans first, optimized for search second.`,
   },
   {
-    id: 'swarm-ad-copy-writer',
+    id: 'skillhive-ad-copy-writer',
     name: 'Ad Copy Generator',
     description: 'Writes high-converting ad copy for Google Ads, Facebook/Instagram, LinkedIn, and Twitter with multiple variants, CTAs, and A/B testing recommendations.',
     tags: ['advertising', 'copywriting', 'marketing', 'conversion', 'paid-ads'],
@@ -258,7 +258,7 @@ When given a product, service, or offer, produce:
 Focus on benefits, not features. Lead with the customer's pain or desire.`,
   },
   {
-    id: 'swarm-email-campaign-writer',
+    id: 'skillhive-email-campaign-writer',
     name: 'Email Campaign Writer',
     description: 'Writes complete email sequences for cold outreach, onboarding, re-engagement, and product launches with subject lines, preview text, and body copy.',
     tags: ['email', 'marketing', 'copywriting', 'outreach', 'automation'],
@@ -292,7 +292,7 @@ Write as a human, not a robot. Avoid "I hope this email finds you well." Start s
 
   // ── Legal & Compliance ────────────────────────────────────────────────────
   {
-    id: 'swarm-privacy-policy-writer',
+    id: 'skillhive-privacy-policy-writer',
     name: 'Privacy Policy Generator',
     description: 'Generates GDPR/CCPA-compliant privacy policies tailored to your product, data collection practices, and jurisdictions.',
     tags: ['legal', 'privacy', 'gdpr', 'compliance', 'policy'],
@@ -320,7 +320,7 @@ When given information about a product/service and its data practices, produce:
 Include an effective date and version number. Note: this is a template — have a qualified attorney review before publishing.`,
   },
   {
-    id: 'swarm-contract-summary',
+    id: 'skillhive-contract-summary',
     name: 'Contract Summarizer',
     description: 'Summarizes legal contracts into plain English, highlighting key obligations, risks, deadlines, payment terms, and unusual clauses.',
     tags: ['legal', 'contracts', 'compliance', 'risk', 'business'],
@@ -366,7 +366,7 @@ Note: This is a summary for informational purposes — consult a qualified attor
 
   // ── Finance & Crypto ─────────────────────────────────────────────────────
   {
-    id: 'swarm-defi-strategy-advisor',
+    id: 'skillhive-defi-strategy-advisor',
     name: 'DeFi Strategy Advisor',
     description: 'Analyzes DeFi protocols, yield opportunities, and liquidity positions to produce risk-adjusted strategy recommendations for on-chain capital deployment.',
     tags: ['defi', 'crypto', 'yield', 'solana', 'finance'],
@@ -403,7 +403,7 @@ When asked about a DeFi strategy or protocol, produce:
 Not financial advice. Do your own research. Smart contract risk is real.`,
   },
   {
-    id: 'swarm-crypto-portfolio-review',
+    id: 'skillhive-crypto-portfolio-review',
     name: 'Crypto Portfolio Reviewer',
     description: 'Reviews a crypto portfolio for concentration risk, correlation, rebalancing opportunities, and alignment with stated investment goals.',
     tags: ['crypto', 'portfolio', 'finance', 'bitcoin', 'investing'],
@@ -445,7 +445,7 @@ Not financial advice. Past performance does not guarantee future results.`,
 
   // ── Product Management ────────────────────────────────────────────────────
   {
-    id: 'swarm-prd-writer',
+    id: 'skillhive-prd-writer',
     name: 'Product Requirements Doc Writer',
     description: 'Writes comprehensive PRDs with problem statement, user personas, use cases, functional requirements, success metrics, and technical constraints.',
     tags: ['product', 'prd', 'planning', 'requirements', 'agile'],
@@ -494,7 +494,7 @@ When given a feature idea or product request, produce a complete PRD:
 [MVP scope vs. future iterations]`,
   },
   {
-    id: 'swarm-user-story-generator',
+    id: 'skillhive-user-story-generator',
     name: 'User Story Generator',
     description: 'Converts feature requests into well-formed Agile user stories with acceptance criteria, edge cases, and story point estimates.',
     tags: ['agile', 'product', 'scrum', 'developer', 'planning'],
@@ -534,7 +534,7 @@ Break large requests into 3-7 smaller stories. Each story should be deliverable 
 
   // ── HR & People ───────────────────────────────────────────────────────────
   {
-    id: 'swarm-job-description-writer',
+    id: 'skillhive-job-description-writer',
     name: 'Job Description Writer',
     description: 'Writes compelling, inclusive job descriptions that attract top candidates while accurately representing role responsibilities, requirements, and company culture.',
     tags: ['hr', 'recruiting', 'hiring', 'talent', 'management'],
@@ -574,7 +574,7 @@ When given a role title and company context, produce:
 Write in second person ("You will..."). Remove gendered language. Don't ask for years of experience in technologies that haven't existed that long.`,
   },
   {
-    id: 'swarm-performance-review-writer',
+    id: 'skillhive-performance-review-writer',
     name: 'Performance Review Writer',
     description: 'Writes balanced, constructive performance reviews with specific examples, strengths, growth areas, and SMART goals for the next cycle.',
     tags: ['hr', 'management', 'feedback', 'leadership', 'career'],
@@ -618,7 +618,7 @@ Use specific examples. Avoid vague praise like "great team player." Quantify imp
 
   // ── Data & Analytics ──────────────────────────────────────────────────────
   {
-    id: 'swarm-data-analysis-report',
+    id: 'skillhive-data-analysis-report',
     name: 'Data Analysis Report Writer',
     description: 'Interprets datasets, identifies trends and anomalies, and produces executive-ready analysis reports with key findings, visualisation recommendations, and action items.',
     tags: ['data', 'analytics', 'reporting', 'insights', 'business'],
@@ -663,7 +663,7 @@ When given data (numbers, tables, CSV snippets, or descriptions), produce:
 Lead with insights, not numbers. Every finding should have a "so what."`,
   },
   {
-    id: 'swarm-kpi-dashboard-designer',
+    id: 'skillhive-kpi-dashboard-designer',
     name: 'KPI Dashboard Designer',
     description: 'Designs comprehensive KPI frameworks and dashboard specifications for business functions, startups, and executive teams.',
     tags: ['analytics', 'kpi', 'metrics', 'dashboard', 'business'],
@@ -706,7 +706,7 @@ Focus on metrics that actually drive decisions, not metrics that look impressive
 
   // ── Creative & Communication ──────────────────────────────────────────────
   {
-    id: 'swarm-press-release-writer',
+    id: 'skillhive-press-release-writer',
     name: 'Press Release Writer',
     description: 'Writes professional press releases in AP style for product launches, funding rounds, partnerships, and company milestones.',
     tags: ['pr', 'communications', 'marketing', 'media', 'writing'],
@@ -746,7 +746,7 @@ FOR IMMEDIATE RELEASE
 Write for journalists, not customers. Avoid adjectives like "revolutionary" and "world-class." Lead with news, not company history.`,
   },
   {
-    id: 'swarm-executive-summary-writer',
+    id: 'skillhive-executive-summary-writer',
     name: 'Executive Summary Writer',
     description: 'Distills long documents, reports, and proposals into tight executive summaries that busy decision-makers can read in 2 minutes.',
     tags: ['writing', 'business', 'communications', 'productivity', 'consulting'],
@@ -792,7 +792,7 @@ Keep it under one page. Busy executives need clarity, not comprehensiveness.`,
 
   // ── Education & Learning ──────────────────────────────────────────────────
   {
-    id: 'swarm-study-guide-creator',
+    id: 'skillhive-study-guide-creator',
     name: 'Study Guide Creator',
     description: 'Creates comprehensive study guides with summaries, key concepts, practice questions, mnemonics, and exam strategies for any subject.',
     tags: ['education', 'learning', 'studying', 'students', 'exam'],
@@ -835,7 +835,7 @@ For each concept:
 Use examples from everyday life. Connect abstract concepts to concrete reality.`,
   },
   {
-    id: 'swarm-lesson-plan-creator',
+    id: 'skillhive-lesson-plan-creator',
     name: 'Lesson Plan Creator',
     description: 'Designs engaging lesson plans with learning objectives, activities, assessments, differentiation strategies, and time allocations for teachers.',
     tags: ['education', 'teaching', 'curriculum', 'classroom', 'k12'],
@@ -888,7 +888,7 @@ Students will be able to:
 
   // ── Health & Science ──────────────────────────────────────────────────────
   {
-    id: 'swarm-research-paper-summarizer',
+    id: 'skillhive-research-paper-summarizer',
     name: 'Research Paper Summarizer',
     description: 'Summarizes academic papers into plain-English reports covering methodology, findings, limitations, and real-world implications for non-experts.',
     tags: ['research', 'science', 'academic', 'reading', 'education'],

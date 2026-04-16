@@ -24,11 +24,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const skill = await fetchSkillMeta(id)
 
   if (!skill) {
-    return { title: 'Skill not found — SWARM Marketplace' }
+    return { title: 'Skill not found — SkillHive Marketplace' }
   }
 
-  const title = `${skill.name} — SWARM Marketplace`
-  const description = skill.description ?? 'An AI skill available on the SWARM Marketplace on Solana.'
+  const title = `${skill.name} — SkillHive Marketplace`
+  const description = skill.description ?? 'An AI skill available on the SkillHive Marketplace on Solana.'
   const priceSOL = skill.price_lamports ? (skill.price_lamports / 1e9).toFixed(4) : '0'
 
   return {
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description: `${description} · ${priceSOL} SOL per call`,
       type: 'website',
-      siteName: 'SWARM Marketplace',
+      siteName: 'SkillHive Marketplace',
     },
     twitter: {
       card: 'summary',

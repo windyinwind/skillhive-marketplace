@@ -1,4 +1,4 @@
--- SWARM Marketplace — Initial Schema
+-- SkillHive Marketplace — Initial Schema
 -- Apply: supabase db push  OR  paste into Supabase SQL editor
 
 -- ── Enums ────────────────────────────────────────────────────────────────────

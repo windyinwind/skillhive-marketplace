@@ -64,9 +64,9 @@ export function Footer() {
           {/* Brand column */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="SWARM" width={28} height={28} className="rounded-md" />
+              <Image src="/logo.png" alt="SkillHive" width={28} height={28} className="rounded-md" />
               <span className="font-heading text-base font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                SWARM<span className="text-[#9945FF]">.</span>
+                SkillHive<span className="text-[#9945FF]">.</span>
               </span>
             </Link>
             <p className="mt-3 max-w-[220px] text-sm leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
@@ -80,7 +80,7 @@ export function Footer() {
             {/* Social / external links */}
             <div className="mt-5 flex items-center gap-3">
               <a
-                href="https://github.com/windyinwind/swarm-marketplace"
+                href="https://github.com/windyinwind/skillhive-marketplace"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -92,7 +92,7 @@ export function Footer() {
                 </svg>
               </a>
               <a
-                href="https://x.com/swarm_market"
+                href="https://x.com/skillhive.market"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X / Twitter"

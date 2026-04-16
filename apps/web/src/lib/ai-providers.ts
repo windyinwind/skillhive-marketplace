@@ -1,5 +1,5 @@
 /**
- * SWARM Marketplace — Multi-provider LLM routing
+ * SkillHive Marketplace — Multi-provider LLM routing
  *
  * Returns a Vercel AI SDK LanguageModel for a given provider + model string.
  * Import from API routes only — requires server-side env vars.

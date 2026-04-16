@@ -26,7 +26,7 @@ const mc = { provider: 'anthropic', model: 'claude-sonnet-4-6', maxTokens: 2048 
 
 const SKILLS = [
   {
-    id: 'swarm-stock-analyst',
+    id: 'skillhive-stock-analyst',
     name: 'Stock Analyst',
     description: 'Analyzes individual stocks with fundamental analysis, valuation metrics, earnings trends, and buy/hold/sell recommendations.',
     tags: ['stock', 'investing', 'finance', 'equity', 'analysis', 'recommendation', 'nvidia', 'market'],
@@ -67,7 +67,7 @@ const SKILLS = [
 *Not financial advice. Always do your own research and consult a qualified financial advisor.*`,
   },
   {
-    id: 'swarm-market-outlook',
+    id: 'skillhive.market-outlook',
     name: 'Market Outlook Analyst',
     description: 'Provides macro market analysis covering equities, rates, crypto, and commodities with near-term outlook and sector rotation ideas.',
     tags: ['market', 'macro', 'investing', 'finance', 'stocks', 'crypto', 'outlook', 'analysis'],
@@ -111,7 +111,7 @@ const SKILLS = [
 *Not financial advice.*`,
   },
   {
-    id: 'swarm-crypto-analyst',
+    id: 'skillhive-crypto-analyst',
     name: 'Crypto Market Analyst',
     description: 'Analyzes crypto markets with on-chain metrics, sentiment indicators, and technical analysis covering Bitcoin, Ethereum, Solana, and DeFi.',
     tags: ['crypto', 'bitcoin', 'ethereum', 'solana', 'defi', 'market', 'analysis', 'investing', 'sentiment'],
@@ -151,7 +151,7 @@ const SKILLS = [
 *Not financial advice. Crypto is highly volatile — never invest more than you can afford to lose.*`,
   },
   {
-    id: 'swarm-earnings-preview',
+    id: 'skillhive-earnings-preview',
     name: 'Earnings Preview Analyst',
     description: 'Previews upcoming earnings reports with consensus estimates, key metrics to watch, historical beat/miss rates, and expected market reaction.',
     tags: ['earnings', 'stock', 'finance', 'analysis', 'investing', 'equity', 'market'],
@@ -194,7 +194,7 @@ const SKILLS = [
 *Not financial advice.*`,
   },
   {
-    id: 'swarm-portfolio-optimizer',
+    id: 'skillhive-portfolio-optimizer',
     name: 'Portfolio Optimizer',
     description: 'Reviews investment portfolios for risk-adjusted returns, diversification gaps, correlation analysis, and rebalancing recommendations.',
     tags: ['portfolio', 'investing', 'finance', 'risk', 'diversification', 'rebalancing', 'stocks'],

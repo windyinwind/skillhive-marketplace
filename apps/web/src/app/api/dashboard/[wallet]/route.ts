@@ -42,8 +42,20 @@ export async function GET(
       return sum + Math.floor((Number(c.amount_lamports) * 9500) / 10000)
     }, 0)
 
+    // Buyer-side: how much this wallet has spent on other skills
+    const { data: spentCalls, error: spentErr } = await supabaseAnon
+      .from('calls')
+      .select('amount_lamports')
+      .eq('caller_wallet', wallet)
+      .eq('status', 'completed')
+
+    if (spentErr) throw spentErr
+
+    const totalSpent = (spentCalls ?? []).reduce((sum, c) => sum + Number(c.amount_lamports), 0)
+
     return NextResponse.json({
       totalEarned,
+      totalSpent,
       callCount: (calls ?? []).length,
       skills: skills ?? [],
       recentCalls: calls ?? [],

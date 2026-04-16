@@ -1,7 +1,7 @@
 /**
- * SWARM Marketplace Demo — Orchestrator Agent
+ * SkillHive Marketplace Demo — Orchestrator Agent
  *
- * Demonstrates the full multi-agent SWARM flow:
+ * Demonstrates the full multi-agent SkillHive flow:
  *   1. DISCOVER_SKILLS — find price, news, and sentiment skills on-chain
  *   2. CALL_SKILL x3   — pay and invoke each skill in parallel
  *   3. Synthesize      — combine results into an investment recommendation
@@ -13,7 +13,7 @@
 import 'dotenv/config'
 import Anthropic from '@anthropic-ai/sdk'
 
-const SWARM_API_URL = process.env.SWARM_MARKETPLACE_URL ?? 'http://localhost:3000'
+const SkillHive_API_URL = process.env.SkillHive_MARKETPLACE_URL ?? 'http://localhost:3000'
 
 // ─── Step 1: Discover skills ─────────────────────────────────────────────────
 
@@ -27,7 +27,7 @@ interface SkillSummary {
 
 async function discoverSkills(tags: string[]): Promise<SkillSummary[]> {
   const params = new URLSearchParams({ tags: tags.join(','), limit: '10' })
-  const res = await fetch(`${SWARM_API_URL}/api/skills?${params}`)
+  const res = await fetch(`${SkillHive_API_URL}/api/skills?${params}`)
   if (!res.ok) throw new Error(`/api/skills returned ${res.status}`)
   const data = await res.json() as { skills: SkillSummary[] }
   return data.skills ?? []
@@ -37,7 +37,7 @@ async function discoverSkills(tags: string[]): Promise<SkillSummary[]> {
 
 async function callSkill(skillId: string, input: string): Promise<string> {
   // Preview mode for demo (no wallet required; uses platform subsidy)
-  const res = await fetch(`${SWARM_API_URL}/api/call/execute`, {
+  const res = await fetch(`${SkillHive_API_URL}/api/call/execute`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ skillId, input, preview: true }),
@@ -85,12 +85,12 @@ Synthesize these into a clear, concise investment recommendation (3–5 sentence
 
 async function runDemo(question: string): Promise<void> {
   console.log('\n' + '═'.repeat(60))
-  console.log(' SWARM Marketplace Demo — Orchestrator Agent')
+  console.log(' SkillHive Marketplace Demo — Orchestrator Agent')
   console.log('═'.repeat(60))
   console.log(`\nQuestion: "${question}"\n`)
 
   // Step 1: Discover skills
-  console.log('▶ Step 1: Discovering skills on SWARM Marketplace...')
+  console.log('▶ Step 1: Discovering skills on SkillHive Marketplace...')
   const allSkills = await discoverSkills(['finance', 'stocks', 'crypto', 'sentiment', 'price', 'news'])
   console.log(`  Found ${allSkills.length} skills`)
 

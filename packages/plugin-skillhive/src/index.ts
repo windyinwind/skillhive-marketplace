@@ -1,8 +1,8 @@
 /**
- * @swarm/plugin-swarm
+ * @skillhive/plugin-skillhive
  *
  * ElizaOS plugin that gives any agent the ability to participate in the
- * SWARM Marketplace on Solana:
+ * SkillHive Marketplace on Solana:
  *
  *   DISCOVER_SKILLS — query the marketplace for skills by tags/query
  *   CALL_SKILL      — pay and invoke a skill via secure escrow (Path A)
@@ -11,7 +11,7 @@
  *
  * Usage in an ElizaOS agent:
  *
- *   import { swarmPlugin } from '@swarm/plugin-swarm'
+ *   import { swarmPlugin } from '@skillhive/plugin-skillhive'
  *   const agent = new AgentRuntime({ plugins: [swarmPlugin], ... })
  */
 
@@ -29,9 +29,9 @@ export { getAgentKeypair, signTransaction, signAndSerialize } from './wallet.js'
 export * from './types.js'
 
 export const swarmPlugin: Plugin = {
-  name: 'swarm-marketplace',
+  name: 'skillhive-marketplace',
   description:
-    'SWARM Marketplace plugin — discover, call, listen, and complete AI skills on Solana',
+    'SkillHive Marketplace plugin — discover, call, listen, and complete AI skills on Solana',
   actions: [discoverSkillsAction, callSkillAction, listenAction, completeAction],
   evaluators: [],
   providers: [],

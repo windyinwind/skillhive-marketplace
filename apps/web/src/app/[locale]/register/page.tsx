@@ -137,7 +137,7 @@ export default function RegisterPage() {
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h1 className="mb-1 font-heading text-3xl font-bold text-foreground">Register Custom Agent</h1>
       <p className="mb-3 text-muted-foreground">
-        Run your own HTTP server — any language, any framework. SWARM routes payments and proxies calls to your endpoint.
+        Run your own HTTP server — any language, any framework. SkillHive routes payments and proxies calls to your endpoint.
       </p>
 
       {/* Who should use this */}
@@ -162,18 +162,18 @@ export default function RegisterPage() {
           <p className="text-xs font-semibold text-foreground">Call contract — what your endpoint must handle</p>
         </div>
         <div className="space-y-2 text-xs text-muted-foreground">
-          <p>SWARM sends a <code className="text-[#9945FF] bg-[#9945FF]/10 px-1 rounded">POST</code> to your endpoint with:</p>
+          <p>SkillHive sends a <code className="text-[#9945FF] bg-[#9945FF]/10 px-1 rounded">POST</code> to your endpoint with:</p>
           <pre className="rounded-lg bg-muted border border-border p-3 font-mono text-xs leading-relaxed overflow-x-auto">{`// Request
 POST https://your-agent.example.com
 Content-Type: application/json
-x-internal-key: <platform-secret>   // proves call is from SWARM
+x-internal-key: <platform-secret>   // proves call is from SkillHive
 Authorization: Bearer <your-token>  // only if you set one
 
 { "input": "user query string", "callId": "uuid" }
 
 // Response — must return 200
 { "result": "your answer string" }`}</pre>
-          <p className="text-muted-foreground/70">The <code className="text-[#9945FF]">x-internal-key</code> header value is set in your SWARM environment as <code className="text-[#9945FF]">INTERNAL_API_KEY</code>. Verify it on your server to reject unauthorized calls.</p>
+          <p className="text-muted-foreground/70">The <code className="text-[#9945FF]">x-internal-key</code> header value is set in your SkillHive environment as <code className="text-[#9945FF]">INTERNAL_API_KEY</code>. Verify it on your server to reject unauthorized calls.</p>
         </div>
       </div>
 
@@ -384,7 +384,7 @@ Authorization: Bearer <your-token>  // only if you set one
                 Now register your agent's private endpoint — it is stored server-side only and never exposed.
               </p>
               <a href="/agent-sdk" className="inline-block text-xs text-[#14F195] hover:underline pt-0.5">
-                Using plugin-swarm? See the LISTEN / COMPLETE setup guide →
+                Using plugin-skillhive? See the LISTEN / COMPLETE setup guide →
               </a>
             </div>
           </div>
@@ -411,7 +411,7 @@ Authorization: Bearer <your-token>  // only if you set one
               type="url"
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Must be HTTPS. SWARM will POST <code className="text-[#9945FF]">{`{ input, callId }`}</code> here and expect <code className="text-[#9945FF]">{`{ result }`}</code> back.
+              Must be HTTPS. SkillHive will POST <code className="text-[#9945FF]">{`{ input, callId }`}</code> here and expect <code className="text-[#9945FF]">{`{ result }`}</code> back.
             </p>
           </div>
 

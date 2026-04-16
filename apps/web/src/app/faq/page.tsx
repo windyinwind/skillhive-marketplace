@@ -53,39 +53,39 @@ export default function FaqPage() {
       <div className="mb-10">
         <h1 className="font-heading text-3xl font-bold text-foreground">Frequently Asked Questions</h1>
         <p className="mt-2 text-muted-foreground">
-          Answers to common questions about using SWARM, payments, fees, and publishing skills.
+          Answers to common questions about using SkillHive, payments, fees, and publishing skills.
           See also the <Link href="/publish" className="text-[#9945FF] hover:underline">Provider Guide</Link> for detailed setup tutorials.
         </p>
       </div>
 
       {/* General */}
       <Section title="General">
-        <FaqItem q="What is SWARM Marketplace?">
-          <p>SWARM is an open marketplace for AI agent skills built on Solana. Anyone can browse and pay for AI skills — from stock analysis to code review — and anyone can publish a skill and earn SOL every time it's called.</p>
+        <FaqItem q="What is SkillHive Marketplace?">
+          <p>SkillHive is an open marketplace for AI agent skills built on Solana. Anyone can browse and pay for AI skills — from stock analysis to code review — and anyone can publish a skill and earn SOL every time it's called.</p>
           <p>Skills range from simple prompt-based assistants (no-code) to fully autonomous ElizaOS agents that can browse the web, call APIs, and chain tool calls.</p>
         </FaqItem>
-        <FaqItem q="Do I need a crypto wallet to use SWARM?">
+        <FaqItem q="Do I need a crypto wallet to use SkillHive?">
           <p>To <strong className="text-foreground">browse the marketplace</strong> and try skill previews, no wallet is required.</p>
-          <p>To <strong className="text-foreground">pay for full results</strong>, run Arena rounds, or use SWARM Chat you need a Solana wallet — Phantom, Solflare, or Backpack. These are free browser extensions.</p>
+          <p>To <strong className="text-foreground">pay for full results</strong>, run Arena rounds, or use SkillHive Chat you need a Solana wallet — Phantom, Solflare, or Backpack. These are free browser extensions.</p>
           <p>To <strong className="text-foreground">publish a skill</strong>, you also need a wallet to sign the on-chain registration transaction.</p>
         </FaqItem>
-        <FaqItem q="Which blockchains does SWARM support?">
-          <p>SWARM is built entirely on <strong className="text-foreground">Solana</strong>. All payments settle in SOL. The smart contracts use the Anchor framework and are currently deployed on Devnet, with a Mainnet launch planned.</p>
+        <FaqItem q="Which blockchains does SkillHive support?">
+          <p>SkillHive is built entirely on <strong className="text-foreground">Solana</strong>. All payments settle in SOL. The smart contracts use the Anchor framework and are currently deployed on Devnet, with a Mainnet launch planned.</p>
         </FaqItem>
         <FaqItem q="What is the Arena?">
           <p>Arena lets you ask one question and get answers from multiple AI skills in parallel. You read all the answers, then pay only for the one that actually helped. SOL goes directly to that skill's creator.</p>
           <p>It's useful for comparing different approaches — for example, pitting a conservative stock analyst against an aggressive one on the same query.</p>
         </FaqItem>
-        <FaqItem q="What is SWARM Chat?">
-          <p>Chat is the SWARM Orchestrator — an AI that automatically discovers relevant skills from the marketplace and calls them on your behalf. It also fetches live market data and runs web searches before synthesising a final answer.</p>
+        <FaqItem q="What is SkillHive Chat?">
+          <p>Chat is the SkillHive Orchestrator — an AI that automatically discovers relevant skills from the marketplace and calls them on your behalf. It also fetches live market data and runs web searches before synthesising a final answer.</p>
           <p>Each wallet gets 3 free Chat responses. After that, your wallet pays skill owners directly at the end of each response (one transaction covering all skills used).</p>
         </FaqItem>
       </Section>
 
       {/* Payments & Fees */}
       <Section title="Payments & Fees">
-        <FaqItem q="How much does SWARM charge?">
-          <p>SWARM takes a <strong className="text-foreground">5% platform fee</strong> on every paid skill call. The remaining 95% goes directly to the skill creator's wallet.</p>
+        <FaqItem q="How much does SkillHive charge?">
+          <p>SkillHive takes a <strong className="text-foreground">5% platform fee</strong> on every paid skill call. The remaining 95% goes directly to the skill creator's wallet.</p>
           <p>There is no subscription, no monthly fee, and no charge for browsing or previewing skills.</p>
         </FaqItem>
         <FaqItem q="How do I pay for a skill?">
@@ -106,8 +106,8 @@ export default function FaqPage() {
           <p>For x402 payments, the facilitator only settles if a valid result is returned — if the skill fails, the payment is not charged.</p>
         </FaqItem>
         <FaqItem q="Are there any gas fees?">
-          <p>Yes — Solana charges a small network fee per transaction, typically <strong className="text-foreground">0.000005 SOL</strong> (~$0.001). This goes to Solana validators, not to SWARM.</p>
-          <p>Registering a skill also costs a one-time account rent fee (~0.00002 SOL) to store the <code className="text-[#9945FF]">SkillAccount</code> on-chain. SWARM charges no registration fee.</p>
+          <p>Yes — Solana charges a small network fee per transaction, typically <strong className="text-foreground">0.000005 SOL</strong> (~$0.001). This goes to Solana validators, not to SkillHive.</p>
+          <p>Registering a skill also costs a one-time account rent fee (~0.00002 SOL) to store the <code className="text-[#9945FF]">SkillAccount</code> on-chain. SkillHive charges no registration fee.</p>
         </FaqItem>
         <FaqItem q="How do Arena deposits work?">
           <p>Arena pricing varies by skill tier to ensure creators are always compensated for compute costs:</p>
@@ -146,11 +146,11 @@ export default function FaqPage() {
           <p>Your wallet address is part of the public Solana ledger — all on-chain transactions are visible by design. Your wallet address is also stored in our database as your skill's <code className="text-[#9945FF]">owner_wallet</code> and shown publicly on skill listings so callers know who to pay.</p>
           <p>We do not collect your email, name, or any off-chain personal information.</p>
         </FaqItem>
-        <FaqItem q="Does SWARM store my data?">
+        <FaqItem q="Does SkillHive store my data?">
           <p>We store skill metadata (name, description, tags, price), call logs (input/output, wallet address, timestamp), reputation scores, and free-use quotas. We do not sell your data or use it for advertising. See our <Link href="/privacy" className="text-[#9945FF] hover:underline">Privacy Policy</Link> for full details.</p>
         </FaqItem>
         <FaqItem q="How are skills moderated?">
-          <p>SWARM is an open marketplace — anyone can publish. We reserve the right to de-list skills that violate our <Link href="/usage" className="text-[#9945FF] hover:underline">Usage Policy</Link> (e.g. illegal content, malware, spam). Skills with consistently low reputation scores or high failure rates are down-ranked automatically.</p>
+          <p>SkillHive is an open marketplace — anyone can publish. We reserve the right to de-list skills that violate our <Link href="/usage" className="text-[#9945FF] hover:underline">Usage Policy</Link> (e.g. illegal content, malware, spam). Skills with consistently low reputation scores or high failure rates are down-ranked automatically.</p>
         </FaqItem>
       </Section>
 
@@ -158,7 +158,7 @@ export default function FaqPage() {
         <p className="text-sm text-muted-foreground">
           Still have questions?{' '}
           <a
-            href="https://github.com/windyinwind/swarm-marketplace/issues"
+            href="https://github.com/windyinwind/skillhive-marketplace/issues"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#9945FF] hover:underline"
@@ -167,7 +167,7 @@ export default function FaqPage() {
           </a>{' '}
           or reach out on{' '}
           <a
-            href="https://x.com/swarm_market"
+            href="https://x.com/skillhive.market"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#9945FF] hover:underline"

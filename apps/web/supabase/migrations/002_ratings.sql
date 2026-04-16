@@ -1,4 +1,4 @@
--- SWARM Marketplace — Ratings
+-- SkillHive Marketplace — Ratings
 -- One rating per call, stored off-chain for instant UX.
 -- On-chain reputation_score (via complete_call CPI) remains as fraud-resistant baseline.
 

@@ -1,5 +1,5 @@
 {
-  "name": "@swarm/skill-news-agent",
+  "name": "@skillhive/skill-news-agent",
   "version": "0.1.0",
   "description": "Tier 1 prompt skill — news summarizer and event analyst",
   "scripts": {

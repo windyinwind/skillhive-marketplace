@@ -32,14 +32,14 @@ export default function FeesPage() {
                 <td className="py-3 text-muted-foreground">Transferred directly to creator wallet</td>
               </tr>
               <tr>
-                <td className="py-3 text-muted-foreground">SWARM platform</td>
+                <td className="py-3 text-muted-foreground">SkillHive platform</td>
                 <td className="py-3 text-foreground">{PLATFORM_FEE_PCT}% of price</td>
                 <td className="py-3 text-muted-foreground">Covers infrastructure, executor, and proxy costs</td>
               </tr>
               <tr>
                 <td className="py-3 text-muted-foreground">Solana network</td>
                 <td className="py-3 text-foreground">~0.000005 SOL</td>
-                <td className="py-3 text-muted-foreground">Transaction fee, goes to validators — not SWARM</td>
+                <td className="py-3 text-muted-foreground">Transaction fee, goes to validators — not SkillHive</td>
               </tr>
             </tbody>
           </table>
@@ -78,9 +78,9 @@ export default function FeesPage() {
             </thead>
             <tbody className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
               <tr>
-                <td className="py-3 text-muted-foreground">SWARM registration fee</td>
+                <td className="py-3 text-muted-foreground">SkillHive registration fee</td>
                 <td className="py-3 font-semibold text-[#14F195]">Free</td>
-                <td className="py-3 text-muted-foreground">No SWARM fee to publish</td>
+                <td className="py-3 text-muted-foreground">No SkillHive fee to publish</td>
               </tr>
               <tr>
                 <td className="py-3 text-muted-foreground">Solana account rent</td>
@@ -161,7 +161,7 @@ export default function FeesPage() {
 
       {/* Chat */}
       <div className="mb-8 rounded-2xl border bg-card p-6" style={{ borderColor: 'var(--border-subtle)' }}>
-        <h2 className="font-heading text-lg font-bold text-foreground">SWARM Chat</h2>
+        <h2 className="font-heading text-lg font-bold text-foreground">SkillHive Chat</h2>
         <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
           <div className="rounded-lg border px-4 py-3" style={{ borderColor: 'var(--border-subtle)' }}>
             <p className="text-xs text-muted-foreground">Free uses per wallet</p>
@@ -179,7 +179,7 @@ export default function FeesPage() {
 
       <p className="text-xs text-muted-foreground">
         Fees may change. Material changes will be announced on our{' '}
-        <a href="https://x.com/swarm_market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
+        <a href="https://x.com/skillhive.market" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
           X / Twitter
         </a>{' '}
         and in the <Link href="/faq" className="text-[#9945FF] hover:underline">FAQ</Link> with at least 7 days notice.

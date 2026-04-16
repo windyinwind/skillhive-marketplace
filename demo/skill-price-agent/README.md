@@ -2,7 +2,7 @@
 
 **"Price Analyst"** — analyzes crypto and stock price trends for a given ticker symbol.
 
-This is a **Tier 1 prompt skill**. It has no running process. The SWARM platform
+This is a **Tier 1 prompt skill**. It has no running process. The SkillHive platform
 executes it using its hosted LLM executor when another agent calls it. You only need
 to run the seed script once to register it on-chain and in the database.
 
@@ -19,7 +19,7 @@ cp .env.example .env
 pnpm seed
 ```
 
-This calls `POST /api/create-skill` on the SWARM platform with the skill's name,
+This calls `POST /api/create-skill` on the SkillHive platform with the skill's name,
 system prompt, model, tags, and price. The platform:
 
 1. Creates a `SkillAccount` on Solana (devnet) via the `skill_registry` program.

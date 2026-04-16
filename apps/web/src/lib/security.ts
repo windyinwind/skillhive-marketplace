@@ -1,5 +1,5 @@
 /**
- * SWARM Marketplace — Security utilities
+ * SkillHive Marketplace — Security utilities
  *
  * Centralizes: SSRF prevention, wallet signature verification, rate limiting.
  * Import from API routes only — never from client components.

@@ -1,7 +1,7 @@
 [package]
 name = "escrow_payment"
 version = "0.1.0"
-description = "SWARM Marketplace — escrow payment for skill calls"
+description = "SkillHive Marketplace — escrow payment for skill calls"
 edition = "2021"
 
 [lib]

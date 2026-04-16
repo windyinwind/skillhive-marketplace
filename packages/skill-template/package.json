@@ -1,7 +1,7 @@
 {
-  "name": "@swarm/skill-template",
+  "name": "@skillhive/skill-template",
   "version": "0.1.0",
-  "description": "SWARM Marketplace — Tier 3 self-hosted agent starter kit",
+  "description": "SkillHive Marketplace — Tier 3 self-hosted agent starter kit",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@elizaos/core": "^1.7.0",
-    "@swarm/plugin-swarm": "workspace:*",
+    "@skillhive/plugin-skillhive": "workspace:*",
     "dotenv": "^16.0.0"
   },
   "devDependencies": {

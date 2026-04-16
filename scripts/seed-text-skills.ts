@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * seed-text-skills.ts — Seed curated text-output skills into SWARM
+ * seed-text-skills.ts — Seed curated text-output skills into SkillHive
  *
  * These are general-purpose Tier 1 Prompt skills that produce
  * structured text plans, analysis, and reports — no IDE required.
@@ -39,7 +39,7 @@ const db = createClient(SUPABASE_URL, SUPABASE_SRK)
 const SKILLS = [
   // ── Business & Strategy ───────────────────────────────────────────────────
   {
-    id: 'swarm-business-plan-writer',
+    id: 'skillhive-business-plan-writer',
     name: 'Business Plan Writer',
     description: 'Generates a complete, investor-ready business plan with executive summary, market analysis, competitive landscape, go-to-market strategy, financial projections, and team requirements.',
     tags: ['business', 'strategy', 'planning', 'startup', 'investor'],
@@ -99,7 +99,7 @@ Be specific, use realistic numbers, and tailor everything to the specific busine
   },
 
   {
-    id: 'swarm-market-research-analyst',
+    id: 'skillhive.market-research-analyst',
     name: 'Market Research Analyst',
     description: 'Delivers a structured market research report with industry trends, customer segments, TAM/SAM/SOM sizing, competitive dynamics, and strategic recommendations.',
     tags: ['market-research', 'analysis', 'strategy', 'competitive', 'trends'],
@@ -155,7 +155,7 @@ Use concrete data points, cite likely sources (e.g., "per IBISWorld estimates"),
   },
 
   {
-    id: 'swarm-competitive-intelligence',
+    id: 'skillhive-competitive-intelligence',
     name: 'Competitive Intelligence Brief',
     description: 'Produces a deep-dive competitive analysis covering positioning, pricing, strengths, weaknesses, and strategic moves for any company or product.',
     tags: ['competitive', 'intelligence', 'analysis', 'strategy', 'benchmarking'],
@@ -212,7 +212,7 @@ Be analytical and honest — include both strengths and real weaknesses.`,
   },
 
   {
-    id: 'swarm-swot-strategist',
+    id: 'skillhive-swot-strategist',
     name: 'SWOT & Strategic Roadmap',
     description: 'Creates a thorough SWOT analysis and translates it into a prioritized strategic roadmap with OKRs and 90-day action plan.',
     tags: ['swot', 'strategy', 'roadmap', 'planning', 'okr'],
@@ -258,7 +258,7 @@ Specific actions, owners (by role), and success criteria for each phase.`,
 
   // ── Finance & Investment ──────────────────────────────────────────────────
   {
-    id: 'swarm-investment-thesis',
+    id: 'skillhive-investment-thesis',
     name: 'Investment Thesis Writer',
     description: 'Writes a structured investment thesis for any asset, company, or sector — covering bull/bear case, valuation framework, catalysts, and risk factors.',
     tags: ['investment', 'finance', 'analysis', 'valuation', 'thesis'],
@@ -312,7 +312,7 @@ Write with the precision of a Goldman Sachs equity research note, but in plain l
   },
 
   {
-    id: 'swarm-financial-model-explainer',
+    id: 'skillhive-financial-model-explainer',
     name: 'Financial Model & Projections',
     description: 'Builds a written financial model with 3-year P&L projections, cash flow analysis, unit economics, and scenario planning based on your inputs.',
     tags: ['finance', 'modeling', 'projections', 'cash-flow', 'unit-economics'],
@@ -371,7 +371,7 @@ Include a clear sensitivity analysis showing which 2-3 assumptions have the most
   },
 
   {
-    id: 'swarm-due-diligence-checklist',
+    id: 'skillhive-due-diligence-checklist',
     name: 'Due Diligence Report',
     description: 'Generates a comprehensive due diligence framework and report for investments, acquisitions, partnerships, or vendor evaluations.',
     tags: ['due-diligence', 'investment', 'acquisition', 'risk', 'compliance'],
@@ -436,7 +436,7 @@ Recommended reps, warranties, and conditions to include.
 
   // ── Marketing & Content ───────────────────────────────────────────────────
   {
-    id: 'swarm-content-strategy-planner',
+    id: 'skillhive-content-strategy-planner',
     name: 'Content Strategy Planner',
     description: 'Builds a comprehensive 90-day content strategy with editorial calendar, content pillars, channel strategy, and KPIs tailored to your audience and goals.',
     tags: ['content', 'marketing', 'strategy', 'editorial', 'seo'],
@@ -506,7 +506,7 @@ Week-by-week content plan with:
   },
 
   {
-    id: 'swarm-go-to-market-planner',
+    id: 'skillhive-go-to-market-planner',
     name: 'Go-to-Market Strategy',
     description: 'Creates a detailed GTM plan covering positioning, ICP definition, pricing, sales motion, launch tactics, and 6-month milestones.',
     tags: ['gtm', 'marketing', 'launch', 'sales', 'strategy'],
@@ -581,7 +581,7 @@ Week-by-week content plan with:
   },
 
   {
-    id: 'swarm-growth-experiment-designer',
+    id: 'skillhive-growth-experiment-designer',
     name: 'Growth Experiment Designer',
     description: 'Designs a structured growth experimentation program with hypothesis-driven tests across acquisition, activation, retention, and revenue levers.',
     tags: ['growth', 'experimentation', 'product', 'metrics', 'a-b-testing'],
@@ -644,7 +644,7 @@ For top 3 priority experiments, detail:
 
   // ── Research & Analysis ───────────────────────────────────────────────────
   {
-    id: 'swarm-industry-research-brief',
+    id: 'skillhive-industry-research-brief',
     name: 'Industry Research Brief',
     description: 'Produces an in-depth industry research brief covering market dynamics, key players, value chain, disruption vectors, and investment/entry opportunities.',
     tags: ['research', 'industry', 'analysis', 'trends', 'report'],
@@ -705,7 +705,7 @@ Map every stage from raw inputs to end customer:
   },
 
   {
-    id: 'swarm-research-synthesizer',
+    id: 'skillhive-research-synthesizer',
     name: 'Research Synthesizer',
     description: 'Synthesizes complex topics into structured research reports with key findings, evidence summary, contradictions, knowledge gaps, and actionable conclusions.',
     tags: ['research', 'synthesis', 'analysis', 'report', 'academic'],
@@ -759,7 +759,7 @@ Top 3 research questions to answer next, with suggested methodology.`,
   },
 
   {
-    id: 'swarm-trend-forecaster',
+    id: 'skillhive-trend-forecaster',
     name: 'Trend Forecaster & Scenario Planner',
     description: 'Analyzes emerging trends and builds multiple future scenarios with probability-weighted outcomes, strategic implications, and early warning indicators.',
     tags: ['trends', 'forecasting', 'scenarios', 'futures', 'strategy'],
@@ -821,7 +821,7 @@ Actions to take in case of specific scenarios:
 
   // ── Writing & Communication ───────────────────────────────────────────────
   {
-    id: 'swarm-executive-memo-writer',
+    id: 'skillhive-executive-memo-writer',
     name: 'Executive Memo Writer',
     description: 'Drafts crisp, decision-focused executive memos and briefings in the style of McKinsey or top consulting firms — structured for busy leaders.',
     tags: ['writing', 'communication', 'executive', 'memo', 'consulting'],
@@ -875,7 +875,7 @@ Tone: Confident, direct, no hedging. Every sentence earns its place.`,
   },
 
   {
-    id: 'swarm-pitch-deck-writer',
+    id: 'skillhive-pitch-deck-writer',
     name: 'Pitch Deck Narrative Writer',
     description: 'Writes a compelling investor pitch deck narrative — slide-by-slide content, speaker notes, and the story arc that makes investors lean forward.',
     tags: ['pitch', 'startup', 'investor', 'fundraising', 'storytelling'],
@@ -946,7 +946,7 @@ List 5 pitfalls this deck avoids and why.`,
   },
 
   {
-    id: 'swarm-grant-proposal-writer',
+    id: 'skillhive-grant-proposal-writer',
     name: 'Grant Proposal Writer',
     description: 'Drafts a compelling grant proposal with needs assessment, program design, evaluation plan, budget narrative, and organizational capacity statement.',
     tags: ['grant', 'writing', 'nonprofit', 'funding', 'proposal'],
@@ -1021,7 +1021,7 @@ For each budget line:
 
   // ── Product & Operations ──────────────────────────────────────────────────
   {
-    id: 'swarm-product-roadmap-planner',
+    id: 'skillhive-product-roadmap-planner',
     name: 'Product Roadmap Planner',
     description: 'Creates a structured product roadmap with prioritized features, user story mapping, success metrics, and quarterly themes aligned to business goals.',
     tags: ['product', 'roadmap', 'planning', 'features', 'prioritization'],
@@ -1088,7 +1088,7 @@ List 3-5 things explicitly deprioritized with rationale — critical for alignme
   },
 
   {
-    id: 'swarm-operations-playbook',
+    id: 'skillhive-operations-playbook',
     name: 'Operations Playbook Builder',
     description: 'Designs a comprehensive operations playbook for any business process — SOPs, workflows, KPIs, escalation paths, and training guide.',
     tags: ['operations', 'playbook', 'sop', 'process', 'workflow'],
@@ -1150,7 +1150,7 @@ For complex decision points, include:
   },
 
   {
-    id: 'swarm-risk-assessment',
+    id: 'skillhive-risk-assessment',
     name: 'Risk Assessment & Mitigation Plan',
     description: 'Produces a comprehensive risk register, heat map narrative, and mitigation strategies for any project, business, or decision.',
     tags: ['risk', 'assessment', 'mitigation', 'planning', 'compliance'],
@@ -1210,7 +1210,7 @@ For each:
 
   // ── Personal & Professional ───────────────────────────────────────────────
   {
-    id: 'swarm-career-strategy-advisor',
+    id: 'skillhive-career-strategy-advisor',
     name: 'Career Strategy Advisor',
     description: 'Creates a personalized career strategy with skills gap analysis, target role mapping, 12-month action plan, and networking/positioning playbook.',
     tags: ['career', 'strategy', 'professional', 'job-search', 'growth'],
@@ -1280,7 +1280,7 @@ Monthly check-in metrics to track progress`,
   },
 
   {
-    id: 'swarm-negotiation-strategy',
+    id: 'skillhive-negotiation-strategy',
     name: 'Negotiation Strategy Advisor',
     description: 'Builds a comprehensive negotiation playbook with BATNA analysis, opening positions, concession strategy, and tactics for any negotiation scenario.',
     tags: ['negotiation', 'strategy', 'communication', 'deal-making', 'tactics'],
@@ -1355,7 +1355,7 @@ Actual language for critical moments:
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log(`\n🌱  Seeding ${SKILLS.length} curated text-output skills into SWARM\n`)
+  console.log(`\n🌱  Seeding ${SKILLS.length} curated text-output skills into SkillHive\n`)
 
   const rows = SKILLS.map((s) => ({
     id:               s.id,
@@ -1371,7 +1371,7 @@ async function main() {
     is_active:        true,
     system_prompt:    s.system_prompt,
     endpoint:         `/api/skill-executor/${s.id}`,
-    provider_name:    'SWARM Platform',
+    provider_name:    'SkillHive Platform',
     long_description: s.description,
     created_at:       new Date().toISOString(),
   }))

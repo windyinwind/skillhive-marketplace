@@ -6,9 +6,9 @@
   /* ── Light theme — warm purple-tinted, inspired by clawhub.ai ───────── */
   :root,
   .light {
-    --swarm-purple: #9945FF;
-    --swarm-green: #14F195;
-    --swarm-gradient: linear-gradient(135deg, #9945FF, #14F195);
+    --skillhive-purple: #9945FF;
+    --skillhive-green: #14F195;
+    --skillhive-gradient: linear-gradient(135deg, #9945FF, #14F195);
 
     /* Semantic tokens */
     --bg-base: #f7f5ff;           /* warm purple-tinted page background */
@@ -125,17 +125,17 @@
     box-shadow: 0 1px 4px rgba(26, 14, 46, 0.06);
   }
 
-  /* SWARM gradient text */
-  .text-swarm-gradient {
-    background: var(--swarm-gradient);
+  /* SkillHive gradient text */
+  .text-skillhive-gradient {
+    background: var(--skillhive-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* SWARM gradient background */
-  .bg-swarm-gradient {
-    background: var(--swarm-gradient);
+  /* SkillHive gradient background */
+  .bg-skillhive-gradient {
+    background: var(--skillhive-gradient);
   }
 
   /* Subtle purple glow for active elements */

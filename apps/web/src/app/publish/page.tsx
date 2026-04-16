@@ -143,7 +143,7 @@ export default function PublishPage() {
             Publish a Skill,<br />Earn SOL per Call
           </h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Anyone can list an AI skill on SWARM. No-code prompt skills take 2 minutes. Full custom agents take a weekend. Choose your path below.
+            Anyone can list an AI skill on SkillHive. No-code prompt skills take 2 minutes. Full custom agents take a weekend. Choose your path below.
           </p>
           <div className="mt-6 flex items-center justify-center gap-4 flex-wrap">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -312,7 +312,7 @@ Return:
                   <p>Host anywhere — Railway, Fly.io, Render, or your own VPS. The URL must be reachable from the internet and use HTTPS.</p>
                   <p className="mt-1">Example: <code className="text-[#9945FF]">https://my-price-feed.railway.app/mcp</code></p>
                 </Step>
-                <Step number={3} title="Register on SWARM">
+                <Step number={3} title="Register on SkillHive">
                   <p>Go to <Link href="/create" className="text-[#9945FF] hover:underline">/create</Link>, fill in basics, and select <strong className="text-foreground">MCP Skill</strong>. In Step 2, enter your server URL. The platform will validate that it responds to <code className="text-[#9945FF]">tools/list</code>.</p>
                 </Step>
                 <Step number={4} title="Write your system prompt">
@@ -342,15 +342,15 @@ Return:
               <div className="relative">
                 <Step number={1} title="Clone the skill template">
                   <div className="rounded-lg border border-border bg-secondary px-4 py-3 font-mono text-xs text-muted-foreground mt-2 space-y-1">
-                    <p className="flex items-center gap-2"><Terminal className="h-3 w-3" /> git clone https://github.com/windyinwind/swarm-marketplace</p>
+                    <p className="flex items-center gap-2"><Terminal className="h-3 w-3" /> git clone https://github.com/windyinwind/skillhive-marketplace</p>
                     <p className="flex items-center gap-2"><Terminal className="h-3 w-3" /> cd packages/skill-template</p>
                     <p className="flex items-center gap-2"><Terminal className="h-3 w-3" /> cp .env.example .env</p>
                     <p className="flex items-center gap-2"><Terminal className="h-3 w-3" /> pnpm install && pnpm dev</p>
                   </div>
-                  <p className="mt-2">The template is a ready-to-run ElizaOS agent with <code className="text-[#9945FF]">plugin-swarm</code> already wired in.</p>
+                  <p className="mt-2">The template is a ready-to-run ElizaOS agent with <code className="text-[#9945FF]">plugin-skillhive</code> already wired in.</p>
                 </Step>
                 <Step number={2} title="Implement your agent logic">
-                  <p>Edit <code className="text-[#9945FF]">src/agent.ts</code>. The <code className="text-[#9945FF]">LISTEN</code> action in plugin-swarm is already subscribed to Yellowstone gRPC — your job is to handle the incoming <code>input</code> string and return a <code>result</code> string.</p>
+                  <p>Edit <code className="text-[#9945FF]">src/agent.ts</code>. The <code className="text-[#9945FF]">LISTEN</code> action in plugin-skillhive is already subscribed to Yellowstone gRPC — your job is to handle the incoming <code>input</code> string and return a <code>result</code> string.</p>
                 </Step>
                 <Step number={3} title="Set your env variables">
                   <div className="rounded-lg border border-border bg-secondary px-4 py-3 font-mono text-xs text-muted-foreground mt-2 space-y-1">
@@ -377,7 +377,7 @@ Return:
                   <Link href="/register" className="flex items-center gap-2 rounded-xl bg-[#9945FF] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#8535EF]">
                     Register Custom Agent <ArrowRight className="h-4 w-4" />
                   </Link>
-                  <a href="https://github.com/windyinwind/swarm-marketplace/tree/main/packages/skill-template" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground transition-all hover:border-[#9945FF]/40 hover:text-foreground">
+                  <a href="https://github.com/windyinwind/skillhive-marketplace/tree/main/packages/skill-template" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground transition-all hover:border-[#9945FF]/40 hover:text-foreground">
                     <Globe className="h-4 w-4" /> Skill template repo
                   </a>
                 </div>
@@ -391,7 +391,7 @@ Return:
       <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
         <h2 className="font-heading text-2xl font-bold text-foreground mb-2">Fees & earnings</h2>
         <p className="text-sm text-muted-foreground mb-8">
-          SWARM charges a <strong className="text-foreground">{PLATFORM_FEE_PCT}% platform fee</strong> on every paid call. Everything else goes to you, settled on-chain in SOL.
+          SkillHive charges a <strong className="text-foreground">{PLATFORM_FEE_PCT}% platform fee</strong> on every paid call. Everything else goes to you, settled on-chain in SOL.
         </p>
 
         {/* Fee breakdown card */}
@@ -459,7 +459,7 @@ Return:
             <p className="mt-2">For x402 (Path C): the facilitator verifies and settles instantly, typically within 1–2 seconds.</p>
           </FaqItem>
           <FaqItem q="Does it cost anything to register a skill?">
-            <p>Only the standard Solana account creation fee — roughly <strong className="text-foreground">0.000005–0.00002 SOL</strong> (~$0.002). This is the rent-exempt minimum for the on-chain <code className="text-[#9945FF]">SkillAccount</code> storage. There is no SWARM registration fee.</p>
+            <p>Only the standard Solana account creation fee — roughly <strong className="text-foreground">0.000005–0.00002 SOL</strong> (~$0.002). This is the rent-exempt minimum for the on-chain <code className="text-[#9945FF]">SkillAccount</code> storage. There is no SkillHive registration fee.</p>
           </FaqItem>
           <FaqItem q="Can I change my price after registering?">
             <p>Yes — from your dashboard, click the skill and use the Edit Price option. An on-chain transaction updates your <code className="text-[#9945FF]">SkillAccount</code> price immediately. Existing in-flight calls use the old price.</p>

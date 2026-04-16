@@ -74,7 +74,7 @@ function buildSystemPrompt(hasNativeSearch = false): string {
   const searchInstruction = hasNativeSearch
     ? '2. For current events, news, latest releases, recent announcements → use your built-in Google Search grounding (it runs automatically).'
     : '2. For current events, news, latest releases, recent announcements → call search_web FIRST.'
-  return `You are the SWARM Orchestrator — an AI that answers user questions by discovering and calling specialized AI skills from the SWARM marketplace on Solana.
+  return `You are the SkillHive Orchestrator — an AI that answers user questions by discovering and calling specialized AI skills from the SkillHive marketplace on Solana.
 
 CURRENT DATE AND TIME: ${dateStr}, ${timeStr}
 
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
   const quota = await consumeFreeUse(walletAddress)
   if (!quota.allowed) {
     return new Response(
-      JSON.stringify({ error: 'wallet_required', message: 'Connect your wallet to use SWARM Chat.' }),
+      JSON.stringify({ error: 'wallet_required', message: 'Connect your wallet to use SkillHive Chat.' }),
       { status: 401, headers: { 'Content-Type': 'application/json' } }
     )
   }
@@ -255,7 +255,7 @@ export async function POST(req: NextRequest) {
             }),
 
             discover_skills: tool<DiscoverInput, DiscoverOutput>({
-              description: "Search the SWARM skill registry for AI skills relevant to the user's question.",
+              description: "Search the SkillHive skill registry for AI skills relevant to the user's question.",
               inputSchema: jsonSchema<DiscoverInput>({
                 type: 'object',
                 properties: {
@@ -298,7 +298,7 @@ export async function POST(req: NextRequest) {
             }),
 
             call_skill: tool<CallInput, CallOutput>({
-              description: 'Call a specific SWARM skill by its ID. Include any live data fetched from get_live_data in the input so the skill has current context.',
+              description: 'Call a specific SkillHive skill by its ID. Include any live data fetched from get_live_data in the input so the skill has current context.',
               inputSchema: jsonSchema<CallInput>({
                 type: 'object',
                 properties: {

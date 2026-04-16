@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * seed-skills-sh.ts — Seed SWARM from skills.sh
+ * seed-skills-sh.ts — Seed SkillHive from skills.sh
  *
  * Fetches top skills from skills.sh, downloads each SKILL.md from GitHub,
  * and upserts them as Tier 1 Prompt skills in Supabase.
@@ -181,7 +181,7 @@ function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)) }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
-  console.log(`\n🌱  Seeding SWARM from skills.sh (${MAX_PAGES} pages × 200 = up to ${MAX_PAGES * 200} skills)\n`)
+  console.log(`\n🌱  Seeding SkillHive from skills.sh (${MAX_PAGES} pages × 200 = up to ${MAX_PAGES * 200} skills)\n`)
 
   // 1. Collect list
   const all: ShEntry[] = []

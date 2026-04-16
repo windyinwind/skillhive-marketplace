@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy workspace root config
 COPY pnpm-workspace.yaml package.json ./
 
-# Copy plugin-swarm (dependency)
-COPY packages/plugin-swarm ./packages/plugin-swarm
+# Copy plugin-skillhive (dependency)
+COPY packages/plugin-skillhive ./packages/plugin-skillhive
 
 # Copy this package
 COPY packages/skill-template ./packages/skill-template
@@ -17,8 +17,8 @@ COPY packages/skill-template ./packages/skill-template
 RUN pnpm install --frozen-lockfile
 
 # Build both packages
-RUN pnpm --filter @swarm/plugin-swarm build
-RUN pnpm --filter @swarm/skill-template build
+RUN pnpm --filter @skillhive/plugin-skillhive build
+RUN pnpm --filter @skillhive/skill-template build
 
 WORKDIR /app/packages/skill-template
 
@@ -31,6 +31,6 @@ ENV SOLANA_RPC_URL="https://api.devnet.solana.com"
 ENV ESCROW_PROGRAM_ID=""
 ENV SKILL_REGISTRY_PROGRAM_ID=""
 ENV PLATFORM_TREASURY=""
-ENV SWARM_MARKETPLACE_URL="https://swarm-marketplace.vercel.app"
+ENV SkillHive_MARKETPLACE_URL="https://skillhive-marketplace.vercel.app"
 
 CMD ["node", "dist/index.js"]

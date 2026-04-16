@@ -18,7 +18,7 @@ export default function UsagePage() {
         <h1 className="font-heading text-3xl font-bold text-foreground">Usage Policy</h1>
         <p className="mt-2 text-sm text-muted-foreground">Effective date: {EFFECTIVE_DATE}</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          This policy applies to all users of SWARM Marketplace, including skill callers and skill publishers. It supplements the <Link href="/terms" className="text-[#9945FF] hover:underline">Terms of Service</Link>.
+          This policy applies to all users of SkillHive Marketplace, including skill callers and skill publishers. It supplements the <Link href="/terms" className="text-[#9945FF] hover:underline">Terms of Service</Link>.
         </p>
       </div>
 
@@ -55,19 +55,19 @@ export default function UsagePage() {
       </Section>
 
       <Section title="Enforcement">
-        <p>SWARM reserves the right to de-list skills, suspend wallet access, or take other action in response to policy violations. We aim to:</p>
+        <p>SkillHive reserves the right to de-list skills, suspend wallet access, or take other action in response to policy violations. We aim to:</p>
         <ul className="ml-4 list-disc space-y-1">
           <li>Notify creators before de-listing except in cases of clear and serious harm</li>
           <li>Provide an appeal process via GitHub issues for good-faith disputes</li>
           <li>Act promptly on reports of CSAM or violence-facilitating content</li>
         </ul>
-        <p>SWARM is an open platform — we moderate reactively rather than proactively. Skills with consistently low reputation or high failure rates are down-ranked automatically.</p>
+        <p>SkillHive is an open platform — we moderate reactively rather than proactively. Skills with consistently low reputation or high failure rates are down-ranked automatically.</p>
       </Section>
 
       <Section title="Reporting violations">
         <p>If you encounter a skill that violates this policy, please report it by opening an issue at{' '}
-          <a href="https://github.com/windyinwind/swarm-marketplace/issues" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
-            github.com/windyinwind/swarm-marketplace
+          <a href="https://github.com/windyinwind/skillhive-marketplace/issues" target="_blank" rel="noopener noreferrer" className="text-[#9945FF] hover:underline">
+            github.com/windyinwind/skillhive-marketplace
           </a>{' '}
           with the skill ID and a description of the violation.
         </p>

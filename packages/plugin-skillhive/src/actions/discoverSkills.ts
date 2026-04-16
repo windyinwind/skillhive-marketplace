@@ -1,7 +1,7 @@
 /**
  * DISCOVER_SKILLS action
  *
- * Queries the SWARM Marketplace public API (/api/skills) for skills matching
+ * Queries the SkillHive Marketplace public API (/api/skills) for skills matching
  * the requested tags/capabilities. The API returns the skills_public view from
  * Supabase — endpoint, system_prompt, and tool_config are never included.
  */
@@ -36,9 +36,9 @@ function extractInput(
 }
 
 async function fetchSkills(input: DiscoverSkillsInput): Promise<DiscoverSkillsResult> {
-  const marketplaceUrl = process.env.SWARM_MARKETPLACE_URL
+  const marketplaceUrl = process.env.SkillHive_MARKETPLACE_URL
   if (!marketplaceUrl) {
-    throw new Error('[DISCOVER_SKILLS] SWARM_MARKETPLACE_URL env var is not set')
+    throw new Error('[DISCOVER_SKILLS] SkillHive_MARKETPLACE_URL env var is not set')
   }
 
   const params = new URLSearchParams()
@@ -84,13 +84,13 @@ export const discoverSkillsAction: Action = {
   name: 'DISCOVER_SKILLS',
   similes: ['FIND_SKILLS', 'SEARCH_SKILLS', 'LIST_SKILLS', 'BROWSE_MARKETPLACE'],
   description:
-    'Discover AI skills available on the SWARM Marketplace. ' +
+    'Discover AI skills available on the SkillHive Marketplace. ' +
     'Returns skill summaries including id, name, price (in lamports), and reputation score. ' +
     'Accepts tags (string[]), query (string), maxPrice (lamports), and limit (number).',
 
   validate: async (_runtime: IAgentRuntime, _message: Memory): Promise<boolean> => {
-    if (!process.env.SWARM_MARKETPLACE_URL) {
-      console.warn('[DISCOVER_SKILLS] SWARM_MARKETPLACE_URL is not set — action will fail')
+    if (!process.env.SkillHive_MARKETPLACE_URL) {
+      console.warn('[DISCOVER_SKILLS] SkillHive_MARKETPLACE_URL is not set — action will fail')
       return false
     }
     return true

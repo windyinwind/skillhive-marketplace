@@ -1,5 +1,5 @@
 /**
- * Shared types for the SWARM plugin.
+ * Shared types for the SkillHive plugin.
  * These are intentionally lean — never include endpoint, system_prompt, or tool_config.
  */
 
@@ -53,7 +53,7 @@ export interface CallAccountData {
 
 export interface SwarmEnv {
   agentWalletKeypair: string // base58 private key from AGENT_WALLET_KEYPAIR
-  marketplaceUrl: string // SWARM_MARKETPLACE_URL
+  marketplaceUrl: string // SkillHive_MARKETPLACE_URL
   heliusGrpcUrl: string // HELIUS_GRPC_URL
   solanaRpcUrl: string // SOLANA_RPC_URL
   escrowProgramId: string // ESCROW_PROGRAM_ID
@@ -65,7 +65,7 @@ export interface SwarmEnv {
 export function loadEnv(): SwarmEnv {
   const required = [
     'AGENT_WALLET_KEYPAIR',
-    'SWARM_MARKETPLACE_URL',
+    'SkillHive_MARKETPLACE_URL',
     'HELIUS_GRPC_URL',
     'SOLANA_RPC_URL',
     'ESCROW_PROGRAM_ID',
@@ -74,12 +74,12 @@ export function loadEnv(): SwarmEnv {
   ]
   for (const key of required) {
     if (!process.env[key]) {
-      throw new Error(`[plugin-swarm] Missing required env var: ${key}`)
+      throw new Error(`[plugin-skillhive] Missing required env var: ${key}`)
     }
   }
   return {
     agentWalletKeypair: process.env.AGENT_WALLET_KEYPAIR!,
-    marketplaceUrl: process.env.SWARM_MARKETPLACE_URL!,
+    marketplaceUrl: process.env.SkillHive_MARKETPLACE_URL!,
     heliusGrpcUrl: process.env.HELIUS_GRPC_URL!,
     solanaRpcUrl: process.env.SOLANA_RPC_URL!,
     escrowProgramId: process.env.ESCROW_PROGRAM_ID!,

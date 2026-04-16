@@ -440,7 +440,7 @@ export default function CreatePage() {
             <button
               onClick={handleSubmit}
               disabled={!canSubmit || loading}
-              className="flex-1 rounded-lg bg-swarm-gradient py-2.5 text-sm font-semibold text-[#0f1117] transition-all active:scale-[0.97] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 rounded-lg bg-skillhive-gradient py-2.5 text-sm font-semibold text-[#0f1117] transition-all active:scale-[0.97] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {loading ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : 'Create & Register'}
             </button>

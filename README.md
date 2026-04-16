@@ -1,4 +1,4 @@
-# SWARM Marketplace
+# SkillHive Marketplace
 
 An open platform for AI skill discovery, payment, and reputation on Solana. Anyone can publish an AI skill and earn SOL per call. Anyone can browse, compare, and pay only for the answers that help them.
 
@@ -10,7 +10,7 @@ An open platform for AI skill discovery, payment, and reputation on Solana. Anyo
 |---|---|---|
 | Next.js 15 frontend | ✅ | App Router, TypeScript, Tailwind, shadcn/ui |
 | Multi-provider LLM routing | ✅ | Anthropic, OpenAI, Google, OpenRouter |
-| SWARM Orchestrator chat | ✅ | Discovers skills, fetches live data, web search; 3 free uses/wallet |
+| SkillHive Orchestrator chat | ✅ | Discovers skills, fetches live data, web search; 3 free uses/wallet |
 | Skill marketplace | ✅ | Browse, filter, featured strip, category pills |
 | Skill executor (Tier 1 + 2) | ✅ | Hosted prompt skills + MCP tool skills |
 | Skill detail — Try it | ✅ | Preview mode (free, rate-limited 3/day per IP) |
@@ -43,7 +43,7 @@ graph TB
         AnyHTTP["Any HTTP client\n(curl, Python, etc.)"]
     end
 
-    subgraph "SWARM Platform (Next.js API routes)"
+    subgraph "SkillHive Platform (Next.js API routes)"
         Chat["/api/chat\nOrchestrator"]
         Executor["/api/skill-executor/[id]\nHosted executor"]
         CallPrepare["/api/call/prepare\n+ /execute"]
@@ -154,7 +154,7 @@ graph LR
     end
 
     subgraph "Tier 3 — Custom Agent (self-hosted)"
-        T3P["Provider deploys\nElizaOS agent\n+ plugin-swarm"]
+        T3P["Provider deploys\nElizaOS agent\n+ plugin-skillhive"]
         T3R["Two-step registration:\n1. on-chain tx (SkillAccount)\n2. signed endpoint → Supabase"]
         T3A["Agent runs on\nprovider's server"]
         T3P --> T3R --> T3A
@@ -225,7 +225,7 @@ sequenceDiagram
 
     OA->>SC: initiate_call tx (SOL locked in CallAccount)
     SC-->>YG: CallAccount creation event
-    YG-->>SA: real-time notification (plugin-swarm LISTEN)
+    YG-->>SA: real-time notification (plugin-skillhive LISTEN)
     SA->>SA: process request
     SA->>SC: complete_call tx (SOL released)
     OA->>API: poll for result
@@ -309,18 +309,27 @@ Key properties:
 ## Repo Structure
 
 ```
-swarm-marketplace/
+skillhive-marketplace/
 ├── apps/web/                        # Next.js 15 — frontend + all API routes
 │   └── src/
 │       ├── app/
-│       │   ├── page.tsx             # Homepage (dual-path: users vs creators)
-│       │   ├── marketplace/         # Skill discovery (App Store style)
-│       │   ├── chat/                # SWARM Orchestrator chat UI
-│       │   ├── arena/               # Compare skills, pay for best answer
-│       │   ├── leaderboard/         # Skills ranked by reputation
-│       │   ├── dashboard/           # Creator + user dashboard (includes Arena)
-│       │   ├── create/              # Publish a Tier 1/2 skill (no-code)
-│       │   ├── register/            # Register a Tier 3 custom agent
+│       │   ├── [locale]/            # i18n-wrapped routes (next-intl, 9 locales)
+│       │   │   ├── page.tsx         # Homepage (dual-path: users vs creators)
+│       │   │   ├── marketplace/     # Skill discovery (App Store style)
+│       │   │   ├── chat/            # SkillHive Orchestrator chat UI
+│       │   │   ├── arena/           # Compare skills, pay for best answer
+│       │   │   ├── leaderboard/     # Skills ranked by reputation
+│       │   │   ├── dashboard/       # Creator + user dashboard (includes Arena)
+│       │   │   ├── create/          # Publish a Tier 1/2 skill (no-code)
+│       │   │   ├── register/        # Register a Tier 3 custom agent
+│       │   │   ├── agent-sdk/       # MCP + ElizaOS integration guide
+│       │   │   ├── publish/         # Provider guide (tiers, pricing, tips)
+│       │   │   ├── fees/            # Fee schedule
+│       │   │   ├── faq/             # Accordion FAQ
+│       │   │   ├── usage/           # Acceptable use policy
+│       │   │   ├── privacy/         # Privacy policy
+│       │   │   ├── terms/           # Terms of service
+│       │   │   └── cookies/         # Cookie policy
 │       │   └── api/
 │       │       ├── chat/            # Orchestrator: discover + call + live data + web search
 │       │       ├── skills/          # GET listing, GET by id, PATCH edit (owner only)
@@ -332,6 +341,7 @@ swarm-marketplace/
 │       │       ├── arena/           # GET rounds; POST create
 │       │       ├── arena/[roundId]/ # GET round+entries; POST vote; POST close
 │       │       ├── cron/arena-close # GET auto-close stale open rounds (Vercel Cron)
+│       │       ├── mcp/             # POST/OPTIONS MCP Streamable HTTP server
 │       │       ├── webhooks/helius  # POST on-chain event sync (full borsh deserialization)
 │       │       ├── events/          # GET SSE stream (Redis pub/sub)
 │       │       ├── dashboard/       # GET provider earnings
@@ -347,7 +357,7 @@ swarm-marketplace/
 │           └── format.ts            # SOL formatting, tier labels, etc.
 ├── packages/
 │   ├── contracts/                   # Anchor workspace (skill_registry + escrow_payment)
-│   ├── plugin-swarm/                # ElizaOS plugin for SWARM agents
+│   ├── plugin-skillhive/                # ElizaOS plugin for SkillHive agents
 │   └── skill-template/              # Self-hosted Tier 3 agent starter kit
 ├── demo/
 │   ├── orchestrator-agent/
@@ -358,6 +368,10 @@ swarm-marketplace/
 │   ├── seed-skills.ts
 │   ├── seed-finance-skills.ts       # 5 finance skills (Stock Analyst, etc.)
 │   └── seed-more-skills.ts          # 22 general skills
+├── .claude/
+│   ├── commands/                    # Slash commands (e.g. /update-docs)
+│   ├── hooks/                       # Claude Code session hooks
+│   └── agents/                      # Agent definitions
 ├── docker-compose.yml               # Local: Postgres + Redis
 ├── CLAUDE.md                        # Claude Code project instructions
 └── pnpm-workspace.yaml
@@ -378,8 +392,8 @@ swarm-marketplace/
 ### Setup
 
 ```bash
-git clone https://github.com/windyinwind/swarm-marketplace
-cd swarm-marketplace
+git clone https://github.com/windyinwind/skillhive-marketplace
+cd skillhive-marketplace
 pnpm install
 
 # Start local infra
@@ -447,7 +461,7 @@ npx tsx scripts/seed-more-skills.ts
    → Category pills, featured strip, 27+ live skills
    → Click "Stock Analyst" → try it
 
-3. Chat (SWARM Orchestrator)
+3. Chat (SkillHive Orchestrator)
    → Ask: "Should I invest in NVIDIA?"
    → Watch: fetches live NVDA price, discovers skills, calls Stock Analyst,
      synthesizes answer with markdown formatting
