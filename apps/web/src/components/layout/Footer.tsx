@@ -1,50 +1,57 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 const YEAR = new Date().getFullYear()
 
 const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet-beta'
-  ? 'Solana Mainnet'
-  : 'Solana Devnet'
-
-const columns = [
-  {
-    heading: 'Product',
-    links: [
-      { label: 'Marketplace',   href: '/marketplace' },
-      { label: 'Arena',         href: '/arena' },
-      { label: 'Chat',          href: '/chat' },
-      { label: 'Leaderboard',   href: '/leaderboard' },
-    ],
-  },
-  {
-    heading: 'Build & Earn',
-    links: [
-      { label: 'Publish a Skill',     href: '/create' },
-      { label: 'Register Agent',      href: '/register' },
-      { label: 'Provider Guide',      href: '/publish' },
-      { label: 'Creator Dashboard',   href: '/dashboard' },
-    ],
-  },
-  {
-    heading: 'Support',
-    links: [
-      { label: 'FAQ',                 href: '/faq' },
-      { label: 'Fee Schedule',        href: '/fees' },
-      { label: 'Usage Policy',        href: '/usage' },
-    ],
-  },
-  {
-    heading: 'Legal',
-    links: [
-      { label: 'Privacy Policy',      href: '/privacy' },
-      { label: 'Terms of Service',    href: '/terms' },
-      { label: 'Cookie Policy',       href: '/cookies' },
-    ],
-  },
-]
+  ? 'mainnet'
+  : 'devnet'
 
 export function Footer() {
+  const t = useTranslations('footer')
+
+  const networkLabel = network === 'mainnet' ? t('networkMainnet') : t('networkDevnet')
+
+  const columns = [
+    {
+      heading: t('col1Heading'),
+      links: [
+        { label: t('col1Link1'), href: '/marketplace' },
+        { label: t('col1Link2'), href: '/arena' },
+        { label: t('col1Link3'), href: '/chat' },
+        { label: t('col1Link4'), href: '/leaderboard' },
+      ],
+    },
+    {
+      heading: t('col2Heading'),
+      links: [
+        { label: t('col2Link1'), href: '/create' },
+        { label: t('col2Link2'), href: '/register' },
+        { label: t('col2Link3'), href: '/publish' },
+        { label: t('col2Link4'), href: '/dashboard' },
+      ],
+    },
+    {
+      heading: t('col3Heading'),
+      links: [
+        { label: t('col3Link1'), href: '/faq' },
+        { label: t('col3Link2'), href: '/fees' },
+        { label: t('col3Link3'), href: '/usage' },
+      ],
+    },
+    {
+      heading: t('col4Heading'),
+      links: [
+        { label: t('col4Link1'), href: '/privacy' },
+        { label: t('col4Link2'), href: '/terms' },
+        { label: t('col4Link3'), href: '/cookies' },
+      ],
+    },
+  ]
+
   return (
     <footer
       className="mt-auto border-t"
@@ -63,11 +70,11 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-3 max-w-[220px] text-sm leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
-              The open marketplace for AI agent skills on Solana.
+              {t('tagline')}
             </p>
             <div className="mt-4 flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#14F195]" />
-              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Live on {network}</span>
+              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{t('liveOn')} {networkLabel}</span>
             </div>
 
             {/* Social / external links */}
@@ -130,16 +137,16 @@ export function Footer() {
       >
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 px-4 py-4 sm:flex-row sm:px-6">
           <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-            © {YEAR} SWARM Marketplace. All rights reserved.
+            {t('copyright', { year: YEAR })}
           </p>
           <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-            <Link href="/privacy" className="transition-colors hover:text-[#9945FF]">Privacy</Link>
+            <Link href="/privacy" className="transition-colors hover:text-[#9945FF]">{t('bottomPrivacy')}</Link>
             <span>·</span>
-            <Link href="/terms" className="transition-colors hover:text-[#9945FF]">Terms</Link>
+            <Link href="/terms" className="transition-colors hover:text-[#9945FF]">{t('bottomTerms')}</Link>
             <span>·</span>
-            <Link href="/fees" className="transition-colors hover:text-[#9945FF]">Fees</Link>
+            <Link href="/fees" className="transition-colors hover:text-[#9945FF]">{t('bottomFees')}</Link>
             <span>·</span>
-            <Link href="/faq" className="transition-colors hover:text-[#9945FF]">FAQ</Link>
+            <Link href="/faq" className="transition-colors hover:text-[#9945FF]">{t('bottomFaq')}</Link>
           </div>
         </div>
       </div>

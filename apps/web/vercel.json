@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/arena-close",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

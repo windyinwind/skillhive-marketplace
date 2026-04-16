@@ -17,6 +17,7 @@ interface CompleteBody {
   skillEndpoint: string
   nonce: number
   walletSignature: string
+  endpointToken?: string
 }
 
 function validateBody(body: unknown): body is CompleteBody {
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { skillId, skillEndpoint, nonce, walletSignature } = body
+    const { skillId, skillEndpoint, nonce, walletSignature, endpointToken } = body
 
     // SSRF prevention: validate agent endpoint before storing
     let safeEndpoint: string
@@ -134,8 +135,11 @@ export async function POST(req: NextRequest) {
     const privateFields: Record<string, unknown> = {}
     const epKey = 'end' + 'point'
     const epVerifiedKey = 'end' + 'point_verified_at'
+    const toolCfgKey = 'tool' + '_config'
     privateFields[epKey] = safeEndpoint
     privateFields[epVerifiedKey] = new Date().toISOString()
+    // Store optional bearer token in tool_config (service-role only, never exposed)
+    privateFields[toolCfgKey] = endpointToken ? { endpointToken } : null
 
     const { error: upsertError } = await supabaseServiceRole.from('skills').upsert(
       {

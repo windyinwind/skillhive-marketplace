@@ -18,9 +18,9 @@ interface RoundCardProps {
 }
 
 const statusConfig = {
-  running: { label: 'Running', className: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
-  open:    { label: 'Open for Voting', className: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
-  closed:  { label: 'Closed', className: 'bg-slate-600/40 text-muted-foreground border-border' },
+  running: { label: 'Running', className: 'bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/40' },
+  open:    { label: 'Open for Voting', className: 'bg-[#14F195]/15 text-[#14F195] border-[#14F195]/30' },
+  closed:  { label: 'Closed', className: 'bg-secondary text-muted-foreground border-border' },
 }
 
 export function RoundCard({
@@ -31,7 +31,7 @@ export function RoundCard({
 
   return (
     <Link href={`/arena/${id}`}>
-      <div className="group rounded-xl border border-border bg-card/40 hover:border-violet-500/40 hover:bg-card/70 transition-all p-4 cursor-pointer">
+      <div className="group rounded-xl border border-border bg-card/40 hover:border-[#9945FF]/40 hover:bg-card/70 transition-all p-4 cursor-pointer">
         {/* Status + date */}
         <div className="flex items-center justify-between mb-2">
           <Badge className={`text-xs ${cfg.className}`}>{cfg.label}</Badge>
@@ -39,7 +39,7 @@ export function RoundCard({
         </div>
 
         {/* Query */}
-        <p className="text-sm font-medium text-foreground line-clamp-2 leading-relaxed mb-3 group-hover:text-white transition-colors">
+        <p className="text-sm font-medium text-foreground line-clamp-2 leading-relaxed mb-3 group-hover:text-[#9945FF] transition-colors">
           {query}
         </p>
 
@@ -47,7 +47,7 @@ export function RoundCard({
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
             {tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="px-1.5 py-0.5 text-xs rounded bg-slate-700/60 text-muted-foreground">
+              <span key={tag} className="px-1.5 py-0.5 text-xs rounded bg-secondary text-muted-foreground">
                 {tag}
               </span>
             ))}

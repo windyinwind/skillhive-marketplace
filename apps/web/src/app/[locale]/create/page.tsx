@@ -28,6 +28,7 @@ export default function CreatePage() {
   const [systemPrompt, setSystemPrompt] = useState('')
   const [priceSol, setPriceSol] = useState('0.001')
   const [mcpUrl, setMcpUrl] = useState('')
+  const [mcpToken, setMcpToken] = useState('')
   const [assistLoading, setAssistLoading] = useState(false)
   const [assistError, setAssistError] = useState<string | null>(null)
 
@@ -75,7 +76,7 @@ export default function CreatePage() {
           priceLamports,
           ownerWallet: publicKey.toBase58(),
           systemPrompt,
-          ...(tier === 2 && mcpUrl ? { mcpConfig: { mcpUrl } } : {}),
+          ...(tier === 2 && mcpUrl ? { mcpConfig: { mcpUrl, ...(mcpToken ? { mcpToken } : {}) } } : {}),
         }),
       })
       const data = await res.json()
@@ -319,19 +320,35 @@ export default function CreatePage() {
           </div>
 
           {tier === 2 && (
-            <div>
-              <label className={labelCls}>MCP Server URL</label>
-              <input
-                value={mcpUrl}
-                onChange={(e) => setMcpUrl(e.target.value)}
-                placeholder="https://your-server.com/mcp"
-                className={inputCls}
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                Must be an MCP-compatible endpoint (Streamable HTTP or SSE transport).
-                The platform will call <code className="text-[#9945FF]">tools/list</code> to discover your tools automatically.
-              </p>
-            </div>
+            <>
+              <div>
+                <label className={labelCls}>MCP Server URL</label>
+                <input
+                  value={mcpUrl}
+                  onChange={(e) => setMcpUrl(e.target.value)}
+                  placeholder="https://your-server.com/mcp"
+                  className={inputCls}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Must be an MCP-compatible endpoint (Streamable HTTP or SSE transport).
+                  The platform will call <code className="text-[#9945FF]">tools/list</code> to discover your tools automatically.
+                </p>
+              </div>
+              <div>
+                <label className={labelCls}>Bearer Token <span className="text-muted-foreground/60">(optional)</span></label>
+                <input
+                  type="password"
+                  value={mcpToken}
+                  onChange={(e) => setMcpToken(e.target.value)}
+                  placeholder="sk-… or your server's API key"
+                  className={inputCls}
+                  autoComplete="off"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Sent as <code className="text-[#9945FF]">Authorization: Bearer &lt;token&gt;</code> on every MCP request. Stored encrypted, never exposed to callers.
+                </p>
+              </div>
+            </>
           )}
 
           <div className="flex gap-3">

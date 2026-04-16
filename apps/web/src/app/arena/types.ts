@@ -11,6 +11,13 @@ export interface ArenaRound {
   created_at: string
 }
 
+export interface ContributingSkill {
+  skillId: string
+  skillName: string
+  wallet: string
+  amountLamports: number
+}
+
 export interface ArenaEntry {
   id: string
   round_id: string
@@ -25,6 +32,10 @@ export interface ArenaEntry {
   votes: number
   sol_earned: number
   created_at: string
+  // synthesis fields (populated on multi-skill answers)
+  synthesis_type: 'comprehensive' | 'key_insights' | null
+  contributing_skill_ids: string[]
+  contributing_owners: ContributingSkill[]
 }
 
 export interface ArenaRoundWithEntries extends ArenaRound {

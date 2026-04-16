@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { Transaction, SendTransactionError } from '@solana/web3.js'
-import { Loader2, Shield, Server, CheckCircle2 } from 'lucide-react'
+import { Loader2, Shield, Server, CheckCircle2, Code2 } from 'lucide-react'
 import bs58 from 'bs58'
 
 type Step = 1 | 2 | 3
@@ -33,8 +33,9 @@ export default function RegisterPage() {
   const [skillId, setSkillId] = useState<string | null>(null)
   const [nonce, setNonce] = useState<number | null>(null)
 
-  // Step 3 field
+  // Step 3 fields
   const [agentEndpoint, setAgentEndpoint] = useState('')
+  const [endpointToken, setEndpointToken] = useState('')
 
   const priceLamports = Math.round(parseFloat(priceSol || '0') * 1_000_000_000)
 
@@ -112,6 +113,7 @@ export default function RegisterPage() {
           skillEndpoint: agentEndpoint,
           nonce,
           walletSignature,
+          ...(endpointToken ? { endpointToken } : {}),
         }),
       })
       const data = await res.json()
@@ -135,22 +137,44 @@ export default function RegisterPage() {
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       <h1 className="mb-1 font-heading text-3xl font-bold text-foreground">Register Custom Agent</h1>
       <p className="mb-3 text-muted-foreground">
-        For developers deploying their own ElizaOS agent. Your agent runs on your server — the platform routes payments and proxies calls to it.
+        Run your own HTTP server — any language, any framework. SWARM routes payments and proxies calls to your endpoint.
       </p>
 
       {/* Who should use this */}
-      <div className="mb-6 rounded-xl border border-border bg-card p-4 space-y-2">
+      <div className="mb-4 rounded-xl border border-border bg-card p-4 space-y-2">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Use this if you…</p>
         <div className="space-y-1.5 text-xs text-muted-foreground">
-          <p>✓ Have a running ElizaOS agent at a public HTTPS URL</p>
-          <p>✓ Want full control — your own logic, APIs, tools, memory</p>
+          <p>✓ Have a running HTTP server at a public HTTPS URL (Express, FastAPI, Flask, ElizaOS, etc.)</p>
+          <p>✓ Want full control — your own logic, tools, memory, and APIs</p>
           <p>✓ Are comfortable deploying and operating a server</p>
         </div>
         <p className="pt-1 text-xs text-muted-foreground">
           No server?{' '}
-          <a href="/create" className="text-[#9945FF] hover:underline">Create a Prompt or Tool Skill instead</a>
+          <a href="/create" className="text-[#9945FF] hover:underline">Create a Prompt or MCP Skill instead</a>
           {' '}— no infrastructure needed.
         </p>
+      </div>
+
+      {/* Call contract */}
+      <div className="mb-6 rounded-xl border border-border bg-card p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Code2 className="h-4 w-4 text-[#9945FF]" />
+          <p className="text-xs font-semibold text-foreground">Call contract — what your endpoint must handle</p>
+        </div>
+        <div className="space-y-2 text-xs text-muted-foreground">
+          <p>SWARM sends a <code className="text-[#9945FF] bg-[#9945FF]/10 px-1 rounded">POST</code> to your endpoint with:</p>
+          <pre className="rounded-lg bg-muted border border-border p-3 font-mono text-xs leading-relaxed overflow-x-auto">{`// Request
+POST https://your-agent.example.com
+Content-Type: application/json
+x-internal-key: <platform-secret>   // proves call is from SWARM
+Authorization: Bearer <your-token>  // only if you set one
+
+{ "input": "user query string", "callId": "uuid" }
+
+// Response — must return 200
+{ "result": "your answer string" }`}</pre>
+          <p className="text-muted-foreground/70">The <code className="text-[#9945FF]">x-internal-key</code> header value is set in your SWARM environment as <code className="text-[#9945FF]">INTERNAL_API_KEY</code>. Verify it on your server to reject unauthorized calls.</p>
+        </div>
       </div>
 
       {/* Step indicator */}
@@ -359,6 +383,9 @@ export default function RegisterPage() {
                 Your <code className="text-[#14F195]">SkillAccount</code> is live on Solana.
                 Now register your agent's private endpoint — it is stored server-side only and never exposed.
               </p>
+              <a href="/agent-sdk" className="inline-block text-xs text-[#14F195] hover:underline pt-0.5">
+                Using plugin-swarm? See the LISTEN / COMPLETE setup guide →
+              </a>
             </div>
           </div>
 
@@ -384,7 +411,22 @@ export default function RegisterPage() {
               type="url"
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Must be HTTPS. The platform will POST call inputs here and return results to callers.
+              Must be HTTPS. SWARM will POST <code className="text-[#9945FF]">{`{ input, callId }`}</code> here and expect <code className="text-[#9945FF]">{`{ result }`}</code> back.
+            </p>
+          </div>
+
+          <div>
+            <label className={labelCls}>Bearer token <span className="text-muted-foreground/60">(optional)</span></label>
+            <input
+              type="password"
+              value={endpointToken}
+              onChange={(e) => setEndpointToken(e.target.value)}
+              placeholder="sk-… or your server's auth token"
+              className={inputCls}
+              autoComplete="off"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              If set, sent as <code className="text-[#9945FF]">Authorization: Bearer &lt;token&gt;</code> on every call. Stored encrypted, never exposed to callers.
             </p>
           </div>
 

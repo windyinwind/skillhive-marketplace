@@ -22,7 +22,24 @@ function validateBody(body: unknown): body is VoteBody {
   return true
 }
 
-// Verify a Solana transaction transferred amountLamports from voter to recipient
+// Scan parsed instructions for system transfers from fromWallet
+function extractTransfers(tx: Awaited<ReturnType<ReturnType<typeof getRpcConnection>['getParsedTransaction']>>): Map<string, number> {
+  const transfers = new Map<string, number>()
+  if (!tx) return transfers
+  for (const ix of tx.transaction.message.instructions) {
+    if (!('parsed' in ix)) continue
+    const parsed = ix as { parsed?: { type?: string; info?: { source?: string; destination?: string; lamports?: number } }; program?: string }
+    if (parsed.program !== 'system') continue
+    if (parsed.parsed?.type !== 'transfer') continue
+    const info = parsed.parsed?.info
+    if (typeof info?.lamports === 'number' && info.destination) {
+      transfers.set(info.destination, (transfers.get(info.destination) ?? 0) + info.lamports)
+    }
+  }
+  return transfers
+}
+
+// Verify a Solana tx transferred amountLamports from voter to a single recipient
 async function verifyTransfer(
   txSignature: string,
   fromWallet: string,
@@ -37,27 +54,40 @@ async function verifyTransfer(
     })
     if (!tx) return false
 
-    // Check fee payer (sender)
     const feePayer = tx.transaction.message.accountKeys[0]?.pubkey.toBase58()
     if (feePayer !== fromWallet) return false
 
-    // Scan instructions for a SystemProgram transfer to the expected recipient
-    const instructions = tx.transaction.message.instructions
-    for (const ix of instructions) {
-      if (!('parsed' in ix)) continue
-      const parsed = ix as { parsed?: { type?: string; info?: { destination?: string; lamports?: number } }; program?: string }
-      if (parsed.program !== 'system') continue
-      if (parsed.parsed?.type !== 'transfer') continue
-      const info = parsed.parsed?.info
-      if (
-        info?.destination === toWallet &&
-        typeof info?.lamports === 'number' &&
-        info.lamports >= amountLamports
-      ) {
-        return true
-      }
-    }
+    const transfers = extractTransfers(tx)
+    return (transfers.get(toWallet) ?? 0) >= amountLamports
+  } catch {
     return false
+  }
+}
+
+// Verify a Solana tx has transfers to ALL recipients with at least the required amounts
+async function verifyMultiTransfer(
+  txSignature: string,
+  fromWallet: string,
+  recipients: Record<string, number> // wallet → required lamports
+): Promise<boolean> {
+  try {
+    const connection = getRpcConnection()
+    const tx = await connection.getParsedTransaction(txSignature, {
+      commitment: 'confirmed',
+      maxSupportedTransactionVersion: 0,
+    })
+    if (!tx) return false
+
+    const feePayer = tx.transaction.message.accountKeys[0]?.pubkey.toBase58()
+    if (feePayer !== fromWallet) return false
+
+    const transfers = extractTransfers(tx)
+
+    // Every recipient must have received at least their required amount
+    for (const [wallet, required] of Object.entries(recipients)) {
+      if ((transfers.get(wallet) ?? 0) < required) return false
+    }
+    return true
   } catch {
     return false
   }
@@ -85,7 +115,7 @@ export async function POST(
     // Check round + entry exist and belong together
     const { data: entry, error: entryErr } = await supabaseAnon
       .from('arena_entries')
-      .select('id, round_id, owner_wallet, votes, sol_earned')
+      .select('id, round_id, owner_wallet, votes, sol_earned, contributing_owners')
       .eq('id', entryId)
       .eq('round_id', roundId)
       .single()
@@ -115,8 +145,22 @@ export async function POST(
       return NextResponse.json({ error: 'Transaction already used' }, { status: 409 })
     }
 
-    // Verify on-chain: tx sent amountLamports from voter to skill owner
-    const verified = await verifyTransfer(txSignature, voterWallet, entry.owner_wallet, amountLamports)
+    // Verify on-chain payment
+    // Synthesis entries: verify multi-transfer to each contributing owner
+    // Legacy single-skill entries: verify single transfer to skill owner
+    const contributingOwners = (entry.contributing_owners ?? []) as Array<{ wallet: string; amountLamports: number }>
+    let verified: boolean
+
+    if (contributingOwners.length > 0) {
+      // Group by wallet and sum required amounts
+      const recipients: Record<string, number> = {}
+      for (const co of contributingOwners) {
+        recipients[co.wallet] = (recipients[co.wallet] ?? 0) + co.amountLamports
+      }
+      verified = await verifyMultiTransfer(txSignature, voterWallet, recipients)
+    } else {
+      verified = await verifyTransfer(txSignature, voterWallet, entry.owner_wallet, amountLamports)
+    }
 
     // Insert vote (verified or pending — stored either way for audit)
     const { error: voteErr } = await supabaseServiceRole

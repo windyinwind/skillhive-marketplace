@@ -3,20 +3,35 @@
 import { useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
-import { Connection, PublicKey, SystemProgram, Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js'
+import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Clock, Zap, Trophy, ChevronDown, ChevronUp, Loader2, CheckCircle2 } from 'lucide-react'
+import { Clock, Zap, Trophy, ChevronDown, ChevronUp, Loader2, CheckCircle2, Layers } from 'lucide-react'
 import { tierLabel, tierColor, formatSol } from '@/lib/format'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import type { ArenaEntry } from '@/app/arena/types'
+import type { ArenaEntry, ContributingSkill } from '@/app/arena/types'
 
 interface ArenaEntryCardProps {
   entry: ArenaEntry
   rank: number
   roundStatus: 'running' | 'open' | 'closed'
   onPaid?: () => void
+}
+
+// Group contributing owners by wallet and sum amounts
+function groupByWallet(owners: ContributingSkill[]): Record<string, number> {
+  const grouped: Record<string, number> = {}
+  for (const co of owners) {
+    grouped[co.wallet] = (grouped[co.wallet] ?? 0) + co.amountLamports
+  }
+  return grouped
+}
+
+function synthesisLabel(type: string | null): string {
+  if (type === 'comprehensive') return 'Full Analysis'
+  if (type === 'key_insights')  return 'Key Insights'
+  return ''
 }
 
 export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryCardProps) {
@@ -28,7 +43,17 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
   const [paid, setPaid] = useState(false)
 
   const isWinner = rank === 1 && roundStatus === 'closed'
-  const skillPrice = entry.cost_lamports
+  const owners = entry.contributing_owners ?? []
+  const isSynthesis = owners.length > 0
+
+  // For synthesis entries, totalCost = sum of each contributing owner's amount
+  // For single-skill entries, totalCost = entry.cost_lamports
+  const contributingByWallet = isSynthesis ? groupByWallet(owners) : {}
+  const totalCost = isSynthesis
+    ? Object.values(contributingByWallet).reduce((s, v) => s + v, 0)
+    : entry.cost_lamports
+
+  const uniqueOwnerCount = Object.keys(contributingByWallet).length
 
   async function handlePay() {
     if (!publicKey) { setVisible(true); return }
@@ -40,11 +65,29 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
         process.env.NEXT_PUBLIC_SOLANA_RPC ?? 'https://api.devnet.solana.com',
         'confirmed'
       )
-      const recipientKey = new PublicKey(entry.owner_wallet)
       const { blockhash } = await connection.getLatestBlockhash('confirmed')
-      const tx = new Transaction({ recentBlockhash: blockhash, feePayer: publicKey }).add(
-        SystemProgram.transfer({ fromPubkey: publicKey, toPubkey: recipientKey, lamports: skillPrice })
-      )
+      const tx = new Transaction({ recentBlockhash: blockhash, feePayer: publicKey })
+
+      if (isSynthesis) {
+        // One transfer instruction per unique contributing owner wallet
+        for (const [wallet, lamports] of Object.entries(contributingByWallet)) {
+          tx.add(
+            SystemProgram.transfer({
+              fromPubkey: publicKey,
+              toPubkey:   new PublicKey(wallet),
+              lamports,
+            })
+          )
+        }
+      } else {
+        tx.add(
+          SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey:   new PublicKey(entry.owner_wallet),
+            lamports:   totalCost,
+          })
+        )
+      }
 
       const sig = await sendTransaction(tx, connection)
       await connection.confirmTransaction(sig, 'confirmed')
@@ -53,10 +96,10 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          entryId: entry.id,
-          voterWallet: publicKey.toBase58(),
-          txSignature: sig,
-          amountLamports: skillPrice,
+          entryId:        entry.id,
+          voterWallet:    publicKey.toBase58(),
+          txSignature:    sig,
+          amountLamports: totalCost,
         }),
       })
 
@@ -99,9 +142,22 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-foreground truncate">{entry.skill_name}</span>
-            <Badge className={`text-xs ${tierColor(entry.skill_tier)}`}>
-              {tierLabel(entry.skill_tier)}
-            </Badge>
+
+            {/* Synthesis type badge */}
+            {entry.synthesis_type && (
+              <Badge className="text-xs bg-[#9945FF]/15 text-[#9945FF] border-[#9945FF]/30">
+                <Layers className="w-3 h-3 mr-1 inline" />
+                {synthesisLabel(entry.synthesis_type)}
+              </Badge>
+            )}
+
+            {/* Single-skill tier badge (only for non-synthesis entries) */}
+            {!isSynthesis && entry.skill_tier > 0 && (
+              <Badge className={`text-xs ${tierColor(entry.skill_tier)}`}>
+                {tierLabel(entry.skill_tier)}
+              </Badge>
+            )}
+
             {paid && (
               <Badge className="text-xs bg-[#14F195]/15 text-[#14F195] border-[#14F195]/30">
                 <CheckCircle2 className="w-3 h-3 mr-1 inline" />Paid
@@ -111,6 +167,22 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
               <Badge variant="destructive" className="text-xs">Error</Badge>
             )}
           </div>
+
+          {/* Contributing skills chips */}
+          {isSynthesis && owners.length > 0 && (
+            <div className="flex items-center gap-1 mt-1 flex-wrap">
+              <span className="text-xs text-muted-foreground">from:</span>
+              {owners.map((co) => (
+                <span
+                  key={co.skillId}
+                  className="text-xs px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground border border-border"
+                >
+                  {co.skillName}
+                </span>
+              ))}
+            </div>
+          )}
+
           <div className="flex items-center gap-3 mt-0.5 text-xs text-muted-foreground">
             {entry.response_ms != null && (
               <span className="flex items-center gap-1">
@@ -118,7 +190,7 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
               </span>
             )}
             <span className="flex items-center gap-1">
-              <Zap className="w-3 h-3" />{formatSol(skillPrice)}
+              <Zap className="w-3 h-3" />{formatSol(totalCost)}
             </span>
           </div>
         </div>
@@ -157,24 +229,35 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
                 <div className="flex items-start gap-2 text-sm text-[#14F195] bg-[#14F195]/5 border border-[#14F195]/20 rounded-lg px-3 py-2.5">
                   <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p>You paid for this answer — SOL sent to the skill owner.</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Your payment counts as a vote and contributes to this skill&apos;s leaderboard ranking.</p>
+                    <p className="font-medium">
+                      {formatSol(totalCost)} SOL sent to {isSynthesis ? `${uniqueOwnerCount} skill creator${uniqueOwnerCount !== 1 ? 's' : ''}` : 'skill owner'}.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Your payment counts as a vote and boosts these skills&apos; leaderboard ranking.</p>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3 flex-wrap">
-                  <Button
-                    onClick={handlePay}
-                    disabled={paying}
-                    className="bg-[#9945FF] hover:bg-[#8a3ee8] text-white font-semibold h-10 px-5"
-                  >
-                    {paying ? (
-                      <><Loader2 className="w-4 h-4 animate-spin mr-2" />Sending…</>
-                    ) : (
-                      <>Pay {formatSol(skillPrice)} · This answer helped me</>
-                    )}
-                  </Button>
-                  <span className="text-xs text-muted-foreground">SOL goes directly to the skill owner</span>
+                <div className="space-y-1.5">
+                  <p className="text-xs text-muted-foreground">
+                    {isSynthesis
+                      ? <>If this answer was useful, reward the {owners.length} contributing creators — <span className="text-foreground font-medium">{formatSol(totalCost)} SOL</span> split equally from your wallet to theirs.</>
+                      : <>If this answer was useful, reward the creator directly — <span className="text-foreground font-medium">{formatSol(totalCost)} SOL</span> sent from your wallet to theirs.</>
+                    }
+                  </p>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <Button
+                      onClick={handlePay}
+                      disabled={paying}
+                      className="bg-[#9945FF] hover:bg-[#8a3ee8] text-white font-semibold h-10 px-5"
+                    >
+                      {paying ? (
+                        <><Loader2 className="w-4 h-4 animate-spin mr-2" />Sending…</>
+                      ) : isSynthesis ? (
+                        <>Send {formatSol(totalCost)} SOL to {uniqueOwnerCount} creators</>
+                      ) : (
+                        <>Send {formatSol(totalCost)} SOL to creator</>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               )}
               {payError && (

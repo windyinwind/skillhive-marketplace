@@ -15,6 +15,7 @@ interface CreateSkillBody {
   systemPrompt: string
   mcpConfig?: {
     mcpUrl: string
+    mcpToken?: string
   }
 }
 

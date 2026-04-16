@@ -10,18 +10,24 @@ An open platform for AI skill discovery, payment, and reputation on Solana. Anyo
 |---|---|---|
 | Next.js 15 frontend | ✅ | App Router, TypeScript, Tailwind, shadcn/ui |
 | Multi-provider LLM routing | ✅ | Anthropic, OpenAI, Google, OpenRouter |
-| SWARM Orchestrator chat | ✅ | Discovers skills, fetches live data, web search |
+| SWARM Orchestrator chat | ✅ | Discovers skills, fetches live data, web search; 3 free uses/wallet |
 | Skill marketplace | ✅ | Browse, filter, featured strip, category pills |
 | Skill executor (Tier 1 + 2) | ✅ | Hosted prompt skills + MCP tool skills |
-| Arena (compare & pay) | ✅ | Multiple skills answer one query, pay for the best |
-| Leaderboard | ✅ | Skills ranked by reputation, calls, SOL earned |
+| Skill detail — Try it | ✅ | Preview mode (free, rate-limited 3/day per IP) |
+| Arena (compare & pay) | ✅ | Multiple skills answer in parallel; creator pays for best; auto-close after 24h |
+| Leaderboard | ✅ | Skills ranked by SOL earned, wins, win rate, calls, reputation |
 | Creator dashboard | ✅ | Earnings, skills, recent calls, ratings |
+| Skill create / edit | ✅ | No-code Tier 1/2; Tier 3 endpoint update supported |
 | Dual-audience homepage | ✅ | Clear user vs creator entry paths |
-| Supabase schema + RLS | ✅ | Endpoint privacy enforced |
-| Smart contracts | 🚧 | Anchor programs (skill_registry + escrow_payment) |
-| x402 instant payments | 🚧 | Path C micro-payment endpoint |
-| ElizaOS plugin | 🚧 | DISCOVER_SKILLS, CALL_SKILL, LISTEN, COMPLETE |
-| Helius webhook indexer | 🚧 | On-chain event sync |
+| Supabase schema + RLS | ✅ | Endpoint privacy enforced; 4 migrations applied |
+| Smart contracts | ✅ | Anchor programs deployed on Devnet (skill_registry + escrow_payment) |
+| Tier 3 two-step registration | ✅ | On-chain tx + wallet-signed endpoint storage |
+| ElizaOS plugin | ✅ | DISCOVER_SKILLS, CALL_SKILL, LISTEN, COMPLETE |
+| Helius webhook indexer | ✅ | Full borsh deserialization; syncs SkillAccount + CallAccount to Supabase |
+| x402 instant payments | ✅ | Path C backend complete; client uses x402-payment header |
+| i18n | ✅ | next-intl; 9 locales (en, zh, de, es, fr, ja, ko, pt, ar); full content translation |
+| MCP server | ✅ | `/api/mcp` — Streamable HTTP; tools: discover_skills, call_skill |
+| Static pages | ✅ | /publish, /fees, /faq, /usage, /privacy, /terms, /cookies, /agent-sdk |
 
 ---
 
@@ -66,10 +72,9 @@ graph TB
         LLM["LLM APIs\nAnthropic / OpenAI\nGoogle / OpenRouter"]
     end
 
-    Browser -->|"Path A: escrow"| CallPrepare
-    Browser -->|"Path C: x402"| CallX402
+    Browser -->|"Arena votes (direct SOL)"| Arena
     Browser -->|"Chat UI"| Chat
-    Browser -->|"Arena"| Arena
+    Browser -->|"Preview (free)"| Executor
     ElizaAgent -->|"Path C: x402"| CallX402
     ElizaAgent -->|"Path B: on-chain tx"| SkillRegistry
     AnyHTTP -->|"Path C: x402"| CallX402
@@ -266,37 +271,38 @@ sequenceDiagram
     autonumber
     participant U as User (browser)
     participant API as /api/arena
-    participant S1 as Skill A (Tier 1)
-    participant S2 as Skill B (Tier 2)
-    participant S3 as Skill C (Tier 3)
+    participant S1 as Skill A
+    participant S2 as Skill B
+    participant S3 as Skill C
     participant Chain as Solana
 
-    U->>API: POST /arena/create {question, skillIds}
-    API->>S1: call (free for Tier 1)
-    API->>S2: collect 20% deposit
-    API->>S3: lock 100% escrow
+    U->>API: POST /arena/create {question, skillIds or auto}
+    Note over API: platform calls all skills in parallel\n(subsidized — no upfront cost to user)
+    API->>S1: call skill
+    API->>S2: call skill
+    API->>S3: call skill
     S1-->>API: answer A
     S2-->>API: answer B
     S3-->>API: answer C
-    API-->>U: stream 3 answers
+    API-->>U: all answers visible (status = open)
 
-    U->>U: read all answers, pick best
-    U->>API: POST /arena/[roundId]/pay {winnerId}
-    API->>Chain: release payment to winner's owner wallet
-    Note over S2: not selected → keeps 20% deposit
-    Note over S3: not selected → keeps 10% run fee,\nrest refunded to user
-    API-->>U: receipt + leaderboard update
+    U->>U: read all answers, pick the one that helped
+    U->>Chain: direct SOL transfer to skill owner\n(skill's price_lamports)
+    U->>API: POST /arena/[roundId]/vote\n{entryId, txSignature, amountLamports}
+    API->>Chain: verify transfer on-chain
+    API->>API: update entry votes + sol_earned\nleaderboard recalculated
+    API-->>U: 200 OK — vote recorded
+
+    Note over API: round auto-closes after 24h\n(Vercel cron) or creator closes manually
 ```
 
-The Arena lets users compare answers from multiple skills and pay only for the one that actually helped. Costs vary by tier so creators are always compensated for running:
+Key properties:
 
-| Tier | Upfront cost | If selected | If not selected |
-|---|---|---|---|
-| Tier 1 (Prompt) | Free — platform subsidizes LLM token cost | Pay full `price_lamports` | Nothing owed |
-| Tier 2 (MCP) | 20% deposit per skill | Pay remaining 80% | Provider keeps 20% deposit |
-| Tier 3 (Agent) | 100% escrow per skill | Provider keeps full payment | 10% run fee, rest refunded |
-
-Arena rounds are **private** — only the wallet that created the round can pay for an answer. The round lives in the creator's dashboard, not a public feed.
+- **Free to run** — the platform calls all skills in parallel at no cost to the user. Skills run speculatively.
+- **Pay what helped** — the user pays only the skill that actually helped them. SOL goes directly to the skill owner's wallet. No platform fee on Arena votes.
+- **Direct payment** — vote is a standard Solana SOL transfer, verified on-chain by `tx_signature`. No escrow.
+- **Auto-close** — open rounds auto-close after 24 hours via `GET /api/cron/arena-close` (Vercel Cron, runs hourly). Creators can also close manually.
+- **Leaderboard signal** — each vote increments `sol_earned` and `votes` on the entry, feeding the global leaderboard's `wins` and `win_rate` metrics.
 
 ---
 
@@ -317,15 +323,16 @@ swarm-marketplace/
 │       │   ├── register/            # Register a Tier 3 custom agent
 │       │   └── api/
 │       │       ├── chat/            # Orchestrator: discover + call + live data + web search
-│       │       ├── skills/          # GET listing, GET by id
+│       │       ├── skills/          # GET listing, GET by id, PATCH edit (owner only)
 │       │       ├── skill-executor/  # POST internal hosted executor (Tier 1+2)
 │       │       ├── create-skill/    # POST single-step Tier 1+2 creation
-│       │       ├── register/        # POST prepare + complete (Tier 3)
+│       │       ├── register/        # POST prepare + complete (Tier 3 two-step)
 │       │       ├── call/            # POST prepare, execute; GET result
 │       │       ├── call/x402/       # POST Path C instant payment
-│       │       ├── arena/           # GET rounds (wallet-filtered); POST create
-│       │       ├── arena/[roundId]/ # GET round with entries; POST pay
-│       │       ├── webhooks/helius  # POST on-chain event sync
+│       │       ├── arena/           # GET rounds; POST create
+│       │       ├── arena/[roundId]/ # GET round+entries; POST vote; POST close
+│       │       ├── cron/arena-close # GET auto-close stale open rounds (Vercel Cron)
+│       │       ├── webhooks/helius  # POST on-chain event sync (full borsh deserialization)
 │       │       ├── events/          # GET SSE stream (Redis pub/sub)
 │       │       ├── dashboard/       # GET provider earnings
 │       │       └── pyth/sol-usd     # GET real-time SOL/USD
@@ -416,6 +423,7 @@ HELIUS_WEBHOOK_SECRET=
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
 PLATFORM_FEE_BPS=500
+CRON_SECRET=                          # random secret matching Vercel cron auth header
 ```
 
 ### Seed Skills
@@ -470,13 +478,19 @@ npx tsx scripts/seed-more-skills.ts
 `getProgramAccounts` is public — storing the endpoint there lets anyone bypass payment and call skills directly. The platform is the only authorized proxy. Endpoint lives in Supabase behind RLS, readable only with the service-role key.
 
 **Why Helius instead of a custom indexer?**
-Helius Webhooks push `SkillAccount`/`CallAccount` change events directly to the API route. No separate always-on service needed, no polling, less operational complexity.
+Helius Webhooks push `SkillAccount`/`CallAccount` change events directly to `/api/webhooks/helius`. No separate always-on service needed, no polling, less operational complexity. The handler does full borsh deserialization from the IDL discriminators to sync price, reputation, tier, status, and timestamps.
 
-**Why tiered Arena pricing?**
-Tier 1 skills cost fractions of a cent to run — the platform subsidizes this for discovery value. Tier 2/3 skills have real server costs the provider pays out of pocket — they need a run fee even when not selected, otherwise there's no incentive to participate in Arena rounds.
+**Why does the Skill Detail page only show Preview (free)?**
+The escrow and x402 payment flows add friction that blocks discovery. Preview (rate-limited to 3 free calls/day per IP) lets users evaluate skills instantly. Paying happens in Arena, where the user has already seen answers from multiple skills and can make an informed choice.
+
+**Why does Arena use direct SOL transfers (no escrow)?**
+Arena is speculative — all skills run for free and the user decides after seeing all answers. Escrow requires locking funds before knowing whether any answer is useful. Direct payment is simpler, faster, and gives the full amount to the skill owner immediately.
 
 **Why multi-provider LLM?**
 Different tasks suit different models. Skills can specify their preferred model. The platform falls back to the default if a provider key is missing — no hard failures.
+
+**Why Vercel Cron for Arena close?**
+Open rounds must eventually close so the leaderboard reflects final standings. A server-side cron avoids requiring users to take any action and handles abandoned rounds automatically.
 
 ---
 

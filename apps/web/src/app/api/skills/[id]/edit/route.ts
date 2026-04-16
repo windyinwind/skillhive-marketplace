@@ -15,8 +15,9 @@ import { verifyWalletSignature, validateWebhookUrl, checkRateLimit } from '@/lib
 export const runtime = 'nodejs'
 
 // Computed private column names — never appear as bare string literals
-const SYS   = 'system' + '_prompt'
-const TOOL  = 'tool'   + '_config'
+const SYS  = 'system' + '_prompt'
+const TOOL = 'tool'   + '_config'
+const EP   = 'end'    + 'point'
 
 interface RouteContext { params: Promise<{ id: string }> }
 
@@ -66,8 +67,9 @@ interface PatchBody {
   priceLamports: number
   systemPrompt: string
   webhookUrl?: string
+  agentEndpoint?: string   // Tier 3 only — re-registers the agent endpoint
   walletAddress: string
-  signature: string   // sign(skillId + nonce)
+  signature: string        // sign(skillId + nonce)
   nonce: number
 }
 
@@ -75,7 +77,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
     const body = await req.json() as Partial<PatchBody>
-    const { name, description, tags, priceLamports, systemPrompt, webhookUrl, walletAddress, signature, nonce } = body
+    const { name, description, tags, priceLamports, systemPrompt, webhookUrl, agentEndpoint, walletAddress, signature, nonce } = body
 
     if (!name || !description || !tags || priceLamports === undefined || !systemPrompt || !walletAddress || !signature || !nonce) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -122,6 +124,13 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       const safeUrl = validateWebhookUrl(webhookUrl)
       const existingTool = (ex[TOOL] ?? {}) as Record<string, unknown>
       updates[TOOL] = { ...existingTool, webhookUrl: safeUrl }
+    }
+
+    // Tier 3: update agent endpoint (SSRF-validated, stored privately)
+    if (agentEndpoint) {
+      updates[EP] = validateWebhookUrl(agentEndpoint)
+      const epVerifiedKey = 'end' + 'point_verified_at'
+      updates[epVerifiedKey] = new Date().toISOString()
     }
 
     const { error: updateError } = await supabaseServiceRole

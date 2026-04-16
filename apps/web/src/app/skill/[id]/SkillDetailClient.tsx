@@ -140,7 +140,7 @@ export function SkillDetailClient({ id }: SkillDetailClientProps) {
 
         {/* Try-it panel */}
         <div>
-          <TryItPanel skillId={skill.id} priceLamports={skill.price_lamports} />
+          <TryItPanel skillId={skill.id} />
         </div>
       </div>
     </div>

@@ -37,6 +37,7 @@ export default function EditSkillPage() {
   const [systemPrompt, setSystemPrompt] = useState('')
   const [priceSol, setPriceSol] = useState('0.001')
   const [webhookUrl, setWebhookUrl] = useState('')
+  const [agentEndpoint, setAgentEndpoint] = useState('')
   const [tier, setTier] = useState(1)
 
   // Load skill data for this owner
@@ -53,6 +54,7 @@ export default function EditSkillPage() {
         setSystemPrompt(data.system_prompt ?? '')
         setPriceSol(lamportsToSol(data.price_lamports ?? 0))
         setWebhookUrl(data.tool_config?.webhookUrl ?? '')
+        // agentEndpoint not returned from API (private), but allow editing via re-registration
         setTier(data.tier ?? 1)
       })
       .catch(() => setNotFound(true))
@@ -91,6 +93,7 @@ export default function EditSkillPage() {
           priceLamports,
           systemPrompt,
           ...(tier === 2 && webhookUrl ? { webhookUrl } : {}),
+        ...(tier === 3 && agentEndpoint ? { agentEndpoint } : {}),
           walletAddress: publicKey.toBase58(),
           signature,
           nonce,
@@ -228,6 +231,21 @@ export default function EditSkillPage() {
               placeholder="https://your-api.com/webhook"
               className={inputCls}
             />
+          </div>
+        )}
+
+        {tier === 3 && (
+          <div>
+            <label className={labelCls}>Agent Endpoint</label>
+            <input
+              value={agentEndpoint}
+              onChange={(e) => setAgentEndpoint(e.target.value)}
+              placeholder="https://your-agent.com/api/call"
+              className={inputCls}
+            />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Update your agent&apos;s HTTPS endpoint. Requires re-signing with your wallet to verify ownership.
+            </p>
           </div>
         )}
 

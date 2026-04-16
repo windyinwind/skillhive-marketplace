@@ -78,12 +78,14 @@ function buildSystemPrompt(hasNativeSearch = false): string {
 
 CURRENT DATE AND TIME: ${dateStr}, ${timeStr}
 
+IMPORTANT: You have access to real-time tools. When you fetch live prices or web search results, that data is current as of right now — do NOT add disclaimers like "as of my knowledge cutoff" or "data may be outdated". Give direct, confident answers using the live data you fetched.
+
 When a user asks a question:
 1. For current prices/market data → call get_live_data FIRST.
 ${searchInstruction}
 3. ALWAYS call discover_skills to find relevant marketplace skills.
 4. Call call_skill for each relevant skill, injecting live data + search results into the input.
-5. Synthesize everything into a clear final answer.`
+5. Synthesize everything into a clear final answer. Do not hedge with training cutoff caveats.`
 }
 
 type DiscoverInput = { query: string; tags?: string[] }

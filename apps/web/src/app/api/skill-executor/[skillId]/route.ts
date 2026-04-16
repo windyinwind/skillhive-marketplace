@@ -6,7 +6,7 @@ import { getModel, type ModelConfig } from '@/lib/ai-providers'
 export const runtime = 'nodejs'
 
 // MCP config stored in tool_config column for Tier 2 skills
-type McpConfig = { mcpUrl: string }
+type McpConfig = { mcpUrl: string; mcpToken?: string }
 
 // MCP tool descriptor returned by tools/list
 interface McpTool {
@@ -22,14 +22,18 @@ interface McpTool {
 async function mcpRequest<T = unknown>(
   mcpUrl: string,
   method: string,
-  params: Record<string, unknown> = {}
+  params: Record<string, unknown> = {},
+  token?: string
 ): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json, text/event-stream',
+  }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
   const res = await fetch(mcpUrl, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json, text/event-stream',
-    },
+    headers,
     body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method, params }),
   })
 
@@ -54,20 +58,22 @@ async function mcpRequest<T = unknown>(
   return json.result as T
 }
 
-async function mcpListTools(mcpUrl: string): Promise<McpTool[]> {
-  const result = await mcpRequest<{ tools: McpTool[] }>(mcpUrl, 'tools/list')
+async function mcpListTools(mcpUrl: string, token?: string): Promise<McpTool[]> {
+  const result = await mcpRequest<{ tools: McpTool[] }>(mcpUrl, 'tools/list', {}, token)
   return result?.tools ?? []
 }
 
 async function mcpCallTool(
   mcpUrl: string,
   name: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  token?: string
 ): Promise<unknown> {
   const result = await mcpRequest<{ content: { type: string; text?: string }[] }>(
     mcpUrl,
     'tools/call',
-    { name, arguments: args }
+    { name, arguments: args },
+    token
   )
   // Extract text content from MCP result
   const texts = (result?.content ?? [])
@@ -115,7 +121,7 @@ export async function POST(
     let maxSteps: number | undefined
 
     if (mcpCfg?.mcpUrl) {
-      const mcpTools = await mcpListTools(mcpCfg.mcpUrl)
+      const mcpTools = await mcpListTools(mcpCfg.mcpUrl, mcpCfg.mcpToken)
 
       if (mcpTools.length > 0) {
         // Record<string, unknown> avoids the Tool<never,never> generic mismatch;
@@ -128,7 +134,7 @@ export async function POST(
             description: mcpTool.description ?? mcpTool.name,
             inputSchema: jsonSchema<Record<string, unknown>>(schema as Parameters<typeof jsonSchema>[0]),
             execute: async (args: Record<string, unknown>) =>
-              mcpCallTool(mcpCfg.mcpUrl, mcpTool.name, args),
+              mcpCallTool(mcpCfg.mcpUrl, mcpTool.name, args, mcpCfg.mcpToken),
           })
         }
 
@@ -137,11 +143,17 @@ export async function POST(
       }
     }
 
-    // Prepend today's date so the model has current temporal context
+    // Prepend today's date and live-data instruction so the model has current temporal context.
+    // When the input already contains real-time data (injected by Arena/Chat), the model must
+    // use it as the primary source and must NOT add knowledge-cutoff disclaimers.
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+    const hasLiveContext = input.includes('REAL-TIME MARKET DATA') || input.includes('LIVE WEB SEARCH RESULTS')
+    const liveDataInstruction = hasLiveContext
+      ? '\nReal-time market data and/or live web search results have been injected into the user query. Use them as your primary source. Do NOT hedge with knowledge cutoff disclaimers or suggest the data may be outdated — it was fetched moments ago.'
+      : ''
     const systemWithDate = sysPrompt
-      ? `Today's date: ${today}\n\n${sysPrompt}`
-      : `Today's date: ${today}`
+      ? `Today's date: ${today}${liveDataInstruction}\n\n${sysPrompt}`
+      : `Today's date: ${today}${liveDataInstruction}`
 
     const { text } = await generateText({
       model,

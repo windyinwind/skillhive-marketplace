@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { Badge } from '@/components/ui/badge'
 import { ArenaEntryCard } from '@/components/ArenaEntryCard'
-import { Loader2, RefreshCw, Clock, Zap, Trophy } from 'lucide-react'
+import { Loader2, RefreshCw, Clock, Zap, Trophy, XCircle } from 'lucide-react'
 import { formatDate } from '@/lib/format'
 import type { ArenaRoundWithEntries } from '@/app/arena/types'
 
@@ -23,6 +23,8 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
   const { publicKey } = useWallet()
   const [data, setData] = useState<ArenaRoundWithEntries>(initialData)
   const [refreshing, setRefreshing] = useState(false)
+  const [closing, setClosing] = useState(false)
+  const [closeError, setCloseError] = useState<string | null>(null)
 
   const isCreator = !data.creator_wallet || publicKey?.toBase58() === data.creator_wallet
 
@@ -42,6 +44,25 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
     return () => clearInterval(id)
   }, [data.status, refresh])
 
+  const closeRound = useCallback(async () => {
+    setClosing(true)
+    setCloseError(null)
+    try {
+      const res = await fetch(`/api/arena/${roundId}/close`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ callerWallet: publicKey?.toBase58() }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? 'Close failed')
+      setData((prev) => ({ ...prev, status: 'closed' }))
+    } catch (err) {
+      setCloseError((err as Error).message)
+    } finally {
+      setClosing(false)
+    }
+  }, [roundId, publicKey])
+
   // Sort by sol_earned desc, then by votes
   const sorted = [...data.entries].sort((a, b) => b.sol_earned - a.sol_earned || b.votes - a.votes)
   const cfg = statusConfig[data.status]
@@ -57,14 +78,29 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
             {cfg.label}
           </Badge>
           <span className="text-xs text-muted-foreground">{formatDate(data.created_at)}</span>
-          <button
-            onClick={refresh}
-            disabled={refreshing}
-            className="ml-auto p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-card"
-            title="Refresh"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="ml-auto flex items-center gap-2">
+            {isCreator && data.status === 'open' && (
+              <button
+                onClick={closeRound}
+                disabled={closing}
+                className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs text-muted-foreground hover:border-red-500/30 hover:text-red-500 transition-colors disabled:opacity-40"
+                title="Close this round"
+              >
+                {closing
+                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  : <XCircle className="w-3.5 h-3.5" />}
+                Close round
+              </button>
+            )}
+            <button
+              onClick={refresh}
+              disabled={refreshing}
+              className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-card"
+              title="Refresh"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
         <h1 className="text-xl font-bold text-foreground leading-snug">{data.query}</h1>
 
@@ -80,11 +116,11 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
 
         <div className="flex items-center gap-5 mt-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <Zap className="w-3.5 h-3.5" />{data.competitor_count} skills competing
+            <Zap className="w-3.5 h-3.5" />{data.competitor_count} skills synthesized
           </span>
           {answeredCount > 0 && (
             <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" />{answeredCount} answered
+              <Clock className="w-3.5 h-3.5" />{answeredCount} answer{answeredCount !== 1 ? 's' : ''}
             </span>
           )}
           {data.total_sol_staked > 0 && (
@@ -107,10 +143,11 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
       {/* How it works — only shown to the creator */}
       {data.status === 'open' && answeredCount > 0 && isCreator && (
         <div className="rounded-xl border border-[#9945FF]/20 bg-[#9945FF]/5 px-4 py-3 text-sm text-foreground space-y-1">
-          <p className="font-semibold text-foreground">Choose the answer that helped you most</p>
+          <p className="font-semibold text-foreground">Multi-skill synthesized answers</p>
           <p className="text-muted-foreground">
-            Read all the answers below. If one helped you, pay for it — the SOL goes directly
-            to that skill&apos;s creator. No payment required if none of them helped.
+            Multiple AI skills contributed their expertise and the results were synthesized into
+            distinct perspectives below. If an answer helped you, pay for it — the SOL is split
+            directly among the contributing skill creators. No payment required if none helped.
           </p>
         </div>
       )}
@@ -127,9 +164,9 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              {data.status === 'running' ? 'Answers coming in…' : `${answeredCount} Answer${answeredCount !== 1 ? 's' : ''}`}
+              {data.status === 'running' ? 'Synthesizing…' : `${answeredCount} Synthesized Answer${answeredCount !== 1 ? 's' : ''}`}
             </h2>
-            <span className="text-xs text-muted-foreground">{sorted.length} skill{sorted.length !== 1 ? 's' : ''}</span>
+            <span className="text-xs text-muted-foreground">{data.competitor_count} skill{data.competitor_count !== 1 ? 's' : ''} contributed</span>
           </div>
           {sorted.map((entry, i) => (
             <ArenaEntryCard
@@ -141,6 +178,10 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
             />
           ))}
         </div>
+      )}
+
+      {closeError && (
+        <p className="text-xs text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{closeError}</p>
       )}
 
       {/* Closed summary */}

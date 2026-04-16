@@ -18,7 +18,13 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { connected } = useWallet()
 
-  const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/')
+  const isActive = (href: string) => {
+    if (!pathname) return false
+    // Strip the 2-letter locale prefix (like /zh or /zh/) from pathname
+    const strippedPathname = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '')
+    const cleanPathname = strippedPathname || '/'
+    return cleanPathname === href || cleanPathname.startsWith(href + '/')
+  }
 
   const userLinks = [
     { href: '/marketplace', label: t('marketplace') },
@@ -104,21 +110,23 @@ export function Navbar() {
             )}
 
             {/* Wallet — identity + connect */}
-            <WalletMultiButton
-              style={{
-                background: connected
-                  ? 'var(--bg-elevated)'
-                  : 'linear-gradient(135deg, #9945FF, #14F195)',
-                border: connected ? '1px solid var(--border-subtle)' : 'none',
-                borderRadius: '10px',
-                fontSize: '13px',
-                height: '36px',
-                padding: '0 14px',
-                color: connected ? 'var(--text-primary)' : '#0f1117',
-                fontWeight: '600',
-                flexShrink: 0,
-              }}
-            />
+            <div dir="ltr" className="flex">
+              <WalletMultiButton
+                style={{
+                  background: connected
+                    ? 'var(--bg-elevated)'
+                    : 'linear-gradient(135deg, #9945FF, #14F195)',
+                  border: connected ? '1px solid var(--border-subtle)' : 'none',
+                  borderRadius: '10px',
+                  fontSize: '13px',
+                  height: '36px',
+                  padding: '0 14px',
+                  color: connected ? 'var(--text-primary)' : '#0f1117',
+                  fontWeight: '600',
+                  flexShrink: 0,
+                }}
+              />
+            </div>
 
             {/* Mobile hamburger */}
             <button

@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
     // ── Fetch endpoint (service role — never returned to browser) ─────────
     const { data: skillPrivate, error: skillErr } = await supabaseServiceRole
       .from('skills')
-      .select('endpoint')
+      .select('endpoint, tool_config')
       .eq('id', skillId)
       .single()
 
@@ -94,12 +94,15 @@ export async function POST(req: NextRequest) {
 
     // ── Call the skill ─────────────────────────────────────────────────────
     const effectiveCallId = callId ?? crypto.randomUUID()
+    const endpointToken = (skillPrivate.tool_config as Record<string, unknown> | null)?.endpointToken as string | undefined
+    const callHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'x-internal-key': process.env.INTERNAL_API_KEY ?? '',
+    }
+    if (endpointToken) callHeaders['Authorization'] = `Bearer ${endpointToken}`
     const skillRes = await fetch(skillPrivate.endpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-internal-key': process.env.INTERNAL_API_KEY ?? '',
-      },
+      headers: callHeaders,
       body: JSON.stringify({ input, callId: effectiveCallId }),
     })
 

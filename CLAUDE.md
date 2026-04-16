@@ -185,6 +185,7 @@ HELIUS_WEBHOOK_SECRET=<webhook_secret>                 # verify Helius webhook p
 X402_FACILITATOR_URL=<x402_facilitator_url>            # x402 payment verification
 UPSTASH_REDIS_REST_URL=<upstash_url>                   # SSE pub/sub + rate limiting
 UPSTASH_REDIS_REST_TOKEN=<upstash_token>
+CRON_SECRET=<random_secret>                            # Vercel Cron auth header
 ```
 
 ---
@@ -193,11 +194,13 @@ UPSTASH_REDIS_REST_TOKEN=<upstash_token>
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Monorepo scaffold + Docker + tooling | TODO |
-| 2 | Smart contracts (skill_registry + escrow_payment) + tests + devnet deploy | TODO |
-| 3 | Supabase schema + all API routes (incl. Helius webhook handler, x402, SSE, Pyth) | TODO |
-| 4 | Frontend (marketplace, create, register, detail + 3-mode TryItPanel, dashboard, wallet) | TODO |
-| 5 | Agent runtime (plugin-swarm + Yellowstone gRPC, skill-template, orchestrator + 3 demo skills) | TODO |
+| 1 | Monorepo scaffold + Docker + tooling | ✅ DONE |
+| 2 | Smart contracts (skill_registry + escrow_payment) + tests + devnet deploy | ✅ DONE |
+| 3 | Supabase schema + all API routes (incl. Helius webhook borsh parser, x402, SSE, Pyth) | ✅ DONE |
+| 4 | Frontend (marketplace, create, register, detail preview-only, dashboard, arena close) | ✅ DONE |
+| 5 | Agent runtime (plugin-swarm + Yellowstone gRPC, skill-template, orchestrator + 3 demo skills) | ✅ DONE (needs seed) |
+
+> **TryItPanel**: Skill detail page shows **Preview only** (free, 3 calls/day per IP). Quick Pay and Escrow modes were removed — payments happen in Arena after users see all answers side-by-side.
 
 ---
 
@@ -206,12 +209,13 @@ UPSTASH_REDIS_REST_TOKEN=<upstash_token>
 ```
 1. Browse marketplace → 3+ live skills shown
 2. Click "Stock Analyst" → "Try it" panel → Preview mode (free) → see result
-3. Switch to Live mode → Phantom approves 0.001 SOL → see tx on Explorer
+3. Arena → ask a question → 3 skills answer → pay for the best → SOL to skill owner
 4. Create a new Prompt Skill (no-code) → fill form → connect wallet → sign → live in 30s
 5. Dashboard → provider sees earnings
-6. Terminal: run orchestrator agent
+5. Dashboard → provider sees earnings, call history
+6. Terminal: run orchestrator agent (demo/)
 7. Ask: "Should I invest in NVIDIA?"
-8. Watch: agent discovers 3 skills on-chain, pays each, synthesizes result
+8. Watch: agent discovers 3 skills on-chain, pays each via x402, synthesizes result
 9. Explorer: show 3 payment txs settled
 ```
 

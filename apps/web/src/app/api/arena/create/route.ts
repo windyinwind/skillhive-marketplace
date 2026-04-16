@@ -204,8 +204,18 @@ function buildEnrichedInput(query: string, ctx: LiveContext): string {
       ...ctx.webResults.map((r, i) =>
         `[${i + 1}] ${r.title}${r.publishedDate ? ` (${r.publishedDate})` : ''}\n${r.snippet}\nSource: ${r.url}`
       ),
-      '---',
-      'Use the above search results and prices to answer accurately. Cite sources where relevant.'
+      '---'
+    )
+  }
+
+  const hasLiveData = priceEntries.length > 0 || ctx.webResults.length > 0
+  if (hasLiveData) {
+    parts.push(
+      '\n--- INSTRUCTIONS ---',
+      `Today is ${ctx.fetchedAt.split('T')[0]}. You have been provided with real-time market data and/or live web search results fetched moments ago.`,
+      'Answer using this live data as your primary source. Do NOT add disclaimers about knowledge cutoffs, training data limits, or data being "as of" a past date.',
+      'Give a direct, confident, current answer. Cite sources from the search results where relevant.',
+      '---'
     )
   }
 
@@ -368,26 +378,134 @@ export async function POST(req: NextRequest) {
       })
     )
 
-    // ── 6. Insert entries ─────────────────────────────────────────────────────
-    const entries = skills.map((skill, i) => {
-      const r = callResults[i]
-      const outcome: SkillCallResult = r.status === 'fulfilled'
-        ? r.value
-        : { result: undefined, error: String((r as PromiseRejectedResult).reason), responseMs: 0 }
-      return {
-        round_id:      roundId,
-        skill_id:      skill.id,
-        skill_name:    skill.name,
-        skill_tier:    skill.tier,
-        owner_wallet:  skill.owner_wallet,
-        result:        outcome.result ?? null,
-        error:         outcome.error ?? null,
-        response_ms:   outcome.responseMs,
-        cost_lamports: skill.price_lamports,
-      }
-    })
+    // ── 6. Synthesize: combine all skill outputs into multi-perspective answers
+    const successfulOutputs = skills
+      .map((skill, i) => {
+        const r = callResults[i]
+        if (r.status !== 'fulfilled' || !r.value.result) return null
+        return { skill, result: r.value.result, responseMs: r.value.responseMs ?? 0 }
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null)
 
-    await supabaseServiceRole.from('arena_entries').insert(entries)
+    // contributing_owners: split cost_lamports equally among contributing skills
+    // (deduplicated by wallet so two skills with same owner count once)
+    const buildContributingOwners = (outputs: typeof successfulOutputs) => {
+      const perSkill = outputs.length > 0
+        ? Math.floor(outputs.reduce((sum, o) => sum + o.skill.price_lamports, 0) / outputs.length)
+        : 0
+      return outputs.map((o) => ({
+        skillId:        o.skill.id,
+        skillName:      o.skill.name,
+        wallet:         o.skill.owner_wallet,
+        amountLamports: perSkill,
+      }))
+    }
+
+    const today = new Date().toISOString().split('T')[0]
+    const baseSystemSuffix = `\nToday is ${today}. Live market data and web search results are provided in the user message. Do NOT add knowledge-cutoff disclaimers — all data is current.`
+
+    const SYNTHESIS_TYPES = [
+      {
+        type: 'comprehensive' as const,
+        label: 'Full Analysis',
+        system: `You are a senior analyst synthesizing insights from multiple specialized AI experts, each examining a different aspect of the topic. Combine their perspectives into one comprehensive, well-structured answer with clear sections and headers. Integrate contradictory viewpoints rather than ignoring them. Be authoritative and specific.${baseSystemSuffix}`,
+      },
+      {
+        type: 'key_insights' as const,
+        label: 'Key Insights & Actions',
+        system: `You are a strategic advisor distilling expert analyses into the most important takeaways. Present 4–6 concise, actionable bullet points with bold titles. Each point should draw on at least two different expert perspectives. End with one clear bottom-line recommendation.${baseSystemSuffix}`,
+      },
+    ]
+
+    const skillOutputsBlock = successfulOutputs.length > 0
+      ? '\n\n=== EXPERT ANALYSES (from ' + successfulOutputs.length + ' specialized skills) ===\n' +
+        successfulOutputs.map((o) => `[${o.skill.name}]\n${o.result}`).join('\n\n---\n\n') +
+        '\n=== END EXPERT ANALYSES ==='
+      : ''
+
+    const synthesisInput = enrichedInput + skillOutputsBlock
+
+    const synthesisEntries: object[] = []
+
+    if (successfulOutputs.length >= 1) {
+      const contributingOwners = buildContributingOwners(successfulOutputs)
+      const totalCostLamports = successfulOutputs.reduce((s, o) => s + o.skill.price_lamports, 0)
+      const avgResponseMs = Math.round(
+        successfulOutputs.reduce((s, o) => s + o.responseMs, 0) / successfulOutputs.length
+      )
+
+      await Promise.allSettled(
+        SYNTHESIS_TYPES.map(async (synthType) => {
+          const synthStart = Date.now()
+          try {
+            const { text } = await generateText({
+              model:            getModel(null),
+              system:           synthType.system,
+              messages:         [{ role: 'user', content: synthesisInput }],
+              maxOutputTokens:  2048,
+            })
+            const synthMs = Date.now() - synthStart
+
+            synthesisEntries.push({
+              round_id:                roundId,
+              skill_id:                'synthesis',
+              skill_name:              synthType.label,
+              skill_tier:              0,
+              owner_wallet:            contributingOwners[0]?.wallet ?? '',
+              result:                  text,
+              error:                   null,
+              response_ms:             avgResponseMs + synthMs,
+              cost_lamports:           totalCostLamports,
+              contributing_skill_ids:  successfulOutputs.map((o) => o.skill.id),
+              synthesis_type:          synthType.type,
+              contributing_owners:     contributingOwners,
+            })
+          } catch {
+            // synthesis failed — skip this type silently
+          }
+        })
+      )
+    }
+
+    // If synthesis produced no entries (all skills failed), fall back to raw individual entries
+    const entriesToInsert = synthesisEntries.length > 0
+      ? synthesisEntries
+      : skills.map((skill, i) => {
+          const r = callResults[i]
+          const outcome: SkillCallResult = r.status === 'fulfilled'
+            ? r.value
+            : { result: undefined, error: String((r as PromiseRejectedResult).reason), responseMs: 0 }
+          return {
+            round_id:      roundId,
+            skill_id:      skill.id,
+            skill_name:    skill.name,
+            skill_tier:    skill.tier,
+            owner_wallet:  skill.owner_wallet,
+            result:        outcome.result ?? null,
+            error:         outcome.error ?? null,
+            response_ms:   outcome.responseMs,
+            cost_lamports: skill.price_lamports,
+            contributing_skill_ids: [],
+            synthesis_type:         null,
+            contributing_owners:    [],
+          }
+        })
+
+    const { error: insertErr } = await supabaseServiceRole.from('arena_entries').insert(entriesToInsert)
+
+    if (insertErr) {
+      console.error('[arena/create] entries insert failed:', insertErr.message, insertErr.code)
+      // Migration 005 may not be applied yet — retry without synthesis columns
+      if (insertErr.code === 'PGRST204' || insertErr.message?.includes('contributing') || insertErr.message?.includes('synthesis')) {
+        const legacyEntries = entriesToInsert.map((e) => {
+          const { contributing_skill_ids, synthesis_type, contributing_owners, ...rest } = e as Record<string, unknown>
+          void contributing_skill_ids; void synthesis_type; void contributing_owners
+          return rest
+        })
+        const { error: retryErr } = await supabaseServiceRole.from('arena_entries').insert(legacyEntries)
+        if (retryErr) console.error('[arena/create] legacy insert also failed:', retryErr.message)
+      }
+    }
 
     // ── 7. Open round for voting ──────────────────────────────────────────────
     await supabaseServiceRole
