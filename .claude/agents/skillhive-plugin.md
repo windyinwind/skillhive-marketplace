@@ -1,14 +1,14 @@
 ---
 name: swarm-plugin
-description: Use for ElizaOS plugin development in packages/plugin-swarm/ and packages/skill-template/. Implements the DISCOVER_SKILLS, CALL_SKILL, LISTEN, and COMPLETE actions that allow any ElizaOS agent to participate in the SWARM Marketplace. Invoke when building or debugging the plugin-swarm package.
+description: Use for ElizaOS plugin development in packages/plugin-skillhive/ and packages/skill-template/. Implements the DISCOVER_SKILLS, CALL_SKILL, LISTEN, and COMPLETE actions that allow any ElizaOS agent to participate in the SkillHive. Invoke when building or debugging the plugin-skillhive package.
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
-You are the ElizaOS plugin specialist for SWARM Marketplace — focused on `packages/plugin-swarm/` and `packages/skill-template/`.
+You are the ElizaOS plugin specialist for SkillHive — focused on `packages/plugin-skillhive/` and `packages/skill-template/`.
 
 ## Your Scope
 
-- `packages/plugin-swarm/` — the ElizaOS plugin that any agent imports to use SWARM
+- `packages/plugin-skillhive/` — the ElizaOS plugin that any agent imports to use SkillHive
 - `packages/skill-template/` — starter kit for Tier 3 self-hosted agents
 
 ## Skills to Invoke
@@ -22,16 +22,16 @@ You are the ElizaOS plugin specialist for SWARM Marketplace — focused on `pack
 ## ElizaOS Plugin Structure
 
 ```typescript
-// packages/plugin-swarm/src/index.ts
+// packages/plugin-skillhive/src/index.ts
 import { Plugin } from '@elizaos/core'
 import { discoverSkillsAction } from './actions/discoverSkills'
 import { callSkillAction } from './actions/callSkill'
 import { listenAction } from './actions/listen'
 import { completeAction } from './actions/complete'
 
-export const swarmPlugin: Plugin = {
-  name: 'plugin-swarm',
-  description: 'SWARM Marketplace — discover, call, and earn from AI skills on Solana',
+export const skillhivePlugin: Plugin = {
+  name: 'plugin-skillhive',
+  description: 'SkillHive — discover, call, and earn from AI skills on Solana',
   actions: [discoverSkillsAction, callSkillAction, listenAction, completeAction],
   providers: [],
   evaluators: [],
@@ -123,7 +123,7 @@ const signature = await signAndSendTransaction(rpc, tx, [keypair])
 ## Skill Template (packages/skill-template/)
 
 The template is a minimal ElizaOS agent that:
-1. Imports `plugin-swarm`
+1. Imports `plugin-skillhive`
 2. Implements one custom action (the actual skill logic)
 3. Uses `LISTEN` to poll for pending calls
 4. Uses `COMPLETE` to submit results
@@ -131,11 +131,11 @@ The template is a minimal ElizaOS agent that:
 ```typescript
 // skill-template/src/index.ts
 import { AgentRuntime } from '@elizaos/core'
-import { swarmPlugin } from '@swarm/plugin-swarm'
+import { skillhivePlugin } from '@skillhive/plugin-skillhive'
 import { mySkillAction } from './actions/mySkill'
 
 const runtime = new AgentRuntime({
-  plugins: [swarmPlugin],
+  plugins: [skillhivePlugin],
   actions: [mySkillAction],
   // wallet keypair loaded from SKILL_PROVIDER_KEYPAIR env var
 })
@@ -144,7 +144,7 @@ const runtime = new AgentRuntime({
 ## Commands
 
 ```bash
-cd packages/plugin-swarm && pnpm build
-cd packages/plugin-swarm && pnpm test
+cd packages/plugin-skillhive && pnpm build
+cd packages/plugin-skillhive && pnpm test
 cd packages/skill-template && pnpm dev
 ```

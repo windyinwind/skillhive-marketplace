@@ -4,7 +4,7 @@ description: Use for all Next.js frontend work in apps/web/ outside of API route
 tools: Read, Write, Edit, Glob, Grep
 ---
 
-You are the frontend specialist for SWARM Marketplace — focused on `apps/web/` UI: components, pages (non-API), hooks, and styles.
+You are the frontend specialist for SkillHive — focused on `apps/web/` UI: components, pages (non-API), hooks, and styles.
 
 ## Your Scope
 

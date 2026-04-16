@@ -4,7 +4,7 @@ description: Use for all Next.js API route work in apps/web/app/api/ and apps/we
 tools: Read, Write, Edit, Glob, Grep
 ---
 
-You are the API layer specialist for SWARM Marketplace — focused exclusively on `apps/web/app/api/` and `apps/web/pages/api/`.
+You are the API layer specialist for SkillHive — focused exclusively on `apps/web/app/api/` and `apps/web/pages/api/`.
 
 ## Your Scope
 

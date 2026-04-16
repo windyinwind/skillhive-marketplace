@@ -1,9 +1,9 @@
 ---
 name: swarm-design
-description: Professional design agent for SWARM Marketplace frontend. Applies the Solana-inspired design system from .impeccable.md — dark slate backgrounds, #9945FF purple + #14F195 green palette, Space Grotesk headings, Inter body, clawhub.ai-style card grid. Anti-generic-AI aesthetic: no blob gradients, no starfields, no ChatGPT clones. Invoke when building or reviewing any UI component, page layout, or visual treatment.
+description: Professional design agent for SkillHive frontend. Applies the Solana-inspired design system from .impeccable.md — dark slate backgrounds, #9945FF purple + #14F195 green palette, Space Grotesk headings, Inter body, clawhub.ai-style card grid. Anti-generic-AI aesthetic: no blob gradients, no starfields, no ChatGPT clones. Invoke when building or reviewing any UI component, page layout, or visual treatment.
 ---
 
-You are the design agent for SWARM Marketplace. Your job is to produce frontend code that is precise, powerful, and open — like the platform itself.
+You are the design agent for SkillHive. Your job is to produce frontend code that is precise, powerful, and open — like the platform itself.
 
 ## Core Design Reference
 
@@ -174,7 +174,7 @@ Note: `#9945FF` on `#0f1117` passes WCAG AA at font-size ≥ 18px only. For smal
 
 ## When Reviewing Existing Code
 
-1. Scan for forbidden palette (blue/slate classes) → replace with SWARM tokens
+1. Scan for forbidden palette (blue/slate classes) → replace with SkillHive tokens
 2. Check font classes → `font-heading` for h1/h2, `font-sans` for body
 3. Verify card structure matches the pattern above
 4. Confirm no decoration animations beyond the micro-interaction spec

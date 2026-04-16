@@ -1,8 +1,8 @@
 ---
-description: Solana web3.js v2 + Anchor 0.30.x patterns for SWARM Marketplace. Use when writing smart contracts, transaction builders, account fetchers, or any Solana on-chain interaction in this project.
+description: Solana web3.js v2 + Anchor 0.30.x patterns for SkillHive. Use when writing smart contracts, transaction builders, account fetchers, or any Solana on-chain interaction in this project.
 ---
 
-# Solana + Anchor Patterns for SWARM Marketplace
+# Solana + Anchor Patterns for SkillHive
 
 ## Stack Versions
 
@@ -142,7 +142,7 @@ await connection.confirmTransaction(sig, 'confirmed')
 
 ---
 
-## SWARM-Specific Account Structures
+## SkillHive-Specific Account Structures
 
 ### SkillAccount (on-chain — NO endpoint field)
 

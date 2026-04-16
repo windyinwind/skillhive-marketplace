@@ -1,10 +1,10 @@
 ---
 name: swarm-demo
-description: Use for demo agent development in demo/. Builds the orchestrator agent and 3 demo skill agents (price, news, sentiment) that demonstrate the full multi-agent SWARM flow for judges. Invoke when building, running, or debugging demo agents.
+description: Use for demo agent development in demo/. Builds the orchestrator agent and 3 demo skill agents (price, news, sentiment) that demonstrate the full multi-agent SkillHive flow for judges. Invoke when building, running, or debugging demo agents.
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
-You are the demo agent specialist for SWARM Marketplace — focused on `demo/` directory.
+You are the demo agent specialist for SkillHive — focused on `demo/` directory.
 
 ## Your Scope
 
@@ -42,13 +42,13 @@ The demo must prove this end-to-end in under 2 minutes:
 // 4. Wait for all results (poll GET /api/call/{id})
 // 5. Synthesize with Claude into a final recommendation
 
-import { swarmPlugin } from '@swarm/plugin-swarm'
+import { skillhivePlugin } from '@skillhive/plugin-skillhive'
 
 const orchestratorAgent = new AgentRuntime({
-  plugins: [swarmPlugin],
+  plugins: [skillhivePlugin],
   model: 'claude-sonnet-4-6',
   systemPrompt: `You are a financial research orchestrator. When asked about an investment,
-    discover relevant SWARM skills, call them in parallel, and synthesize the results
+    discover relevant SkillHive skills, call them in parallel, and synthesize the results
     into a clear recommendation with supporting data.`,
 })
 ```
@@ -155,7 +155,7 @@ ORCHESTRATOR_KEYPAIR=<base58 or path to keypair file>  # dev only; use Frames.ag
 SOLANA_RPC_URL=<helius_rpc_url>          # Helius devnet RPC for reliable throughput
 HELIUS_GRPC_URL=<yellowstone_grpc_url>   # Yellowstone gRPC endpoint (from Helius)
 ANTHROPIC_API_KEY=<for orchestrator synthesis>
-SWARM_API_URL=http://localhost:3000
+SKILLHIVE_API_URL=http://localhost:3000
 ```
 
 > **Agent Wallet:** In local dev, load from `ORCHESTRATOR_KEYPAIR`. In production demo deployments, use **Frames.ag** for OOTB agent wallet management — it handles key storage and signing without manual keypair files.

@@ -4,7 +4,7 @@ description: Use for all Helius webhook handler work in apps/web/app/api/webhook
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
-You are the indexer/sync specialist for SWARM Marketplace. The indexer is **not** a separate service — it is the `POST /api/webhooks/helius` route in `apps/web/app/api/webhooks/helius/route.ts`.
+You are the indexer/sync specialist for SkillHive. The indexer is **not** a separate service — it is the `POST /api/webhooks/helius` route in `apps/web/app/api/webhooks/helius/route.ts`.
 
 ## Architecture Change (Critical)
 

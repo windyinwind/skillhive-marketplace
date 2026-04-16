@@ -1,8 +1,8 @@
 ---
-description: ElizaOS 1.7.x patterns for building plugins, actions, providers, and agent runtimes in SWARM Marketplace. Use when writing plugin-swarm, skill-template, or any demo agent code.
+description: ElizaOS 1.7.x patterns for building plugins, actions, providers, and agent runtimes in SkillHive. Use when writing plugin-skillhive, skill-template, or any demo agent code.
 ---
 
-# ElizaOS 1.7.x Patterns for SWARM Marketplace
+# ElizaOS 1.7.x Patterns for SkillHive
 
 ## Core Concepts
 
@@ -17,12 +17,12 @@ ElizaOS agents are composed of:
 ## Plugin Structure
 
 ```typescript
-// packages/plugin-swarm/src/index.ts
+// packages/plugin-skillhive/src/index.ts
 import type { Plugin } from '@elizaos/core'
 
-export const swarmPlugin: Plugin = {
-  name: 'plugin-swarm',
-  description: 'SWARM Marketplace — discover, pay for, and provide AI skills on Solana',
+export const skillhivePlugin: Plugin = {
+  name: 'plugin-skillhive',
+  description: 'SkillHive — discover, pay for, and provide AI skills on Solana',
   actions: [
     discoverSkillsAction,
     callSkillAction,
@@ -34,7 +34,7 @@ export const swarmPlugin: Plugin = {
   services: [],
 }
 
-export default swarmPlugin
+export default skillhivePlugin
 ```
 
 ---
@@ -46,7 +46,7 @@ import type { Action, IAgentRuntime, Memory, State, HandlerCallback } from '@eli
 
 export const callSkillAction: Action = {
   name: 'CALL_SKILL',
-  description: 'Pay for and call a registered SWARM skill on Solana',
+  description: 'Pay for and call a registered SkillHive skill on Solana',
   similes: ['USE_SKILL', 'INVOKE_SKILL', 'PAY_FOR_SKILL'],
 
   // Validates whether this action should fire for a given message
@@ -70,7 +70,7 @@ export const callSkillAction: Action = {
       const input = message.content.text
 
       // Step 1: prepare unsigned tx
-      const { tx } = await fetch(`${runtime.getSetting('SWARM_API_URL')}/api/call/prepare`, {
+      const { tx } = await fetch(`${runtime.getSetting('SKILLHIVE_API_URL')}/api/call/prepare`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ skillId, input }),
@@ -80,7 +80,7 @@ export const callSkillAction: Action = {
       const signed = await signTransaction(tx, runtime)
 
       // Step 3: execute
-      const { result, callId } = await fetch(`${runtime.getSetting('SWARM_API_URL')}/api/call/execute`, {
+      const { result, callId } = await fetch(`${runtime.getSetting('SKILLHIVE_API_URL')}/api/call/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ skillId, signedTx: signed, input }),
@@ -122,10 +122,10 @@ export const walletBalanceProvider: Provider = {
 
 export const availableSkillsProvider: Provider = {
   get: async (runtime: IAgentRuntime): Promise<string> => {
-    const skills = await fetch(`${runtime.getSetting('SWARM_API_URL')}/api/skills`)
+    const skills = await fetch(`${runtime.getSetting('SKILLHIVE_API_URL')}/api/skills`)
       .then(r => r.json())
     const list = skills.map((s: any) => `- ${s.name} (${s.price_lamports / 1e9} SOL): ${s.description}`).join('\n')
-    return `Available SWARM skills:\n${list}`
+    return `Available SkillHive skills:\n${list}`
   },
 }
 ```
@@ -136,22 +136,22 @@ export const availableSkillsProvider: Provider = {
 
 ```typescript
 import { AgentRuntime, ModelProviderName } from '@elizaos/core'
-import { swarmPlugin } from '@swarm/plugin-swarm'
+import { skillhivePlugin } from '@skillhive/plugin-skillhive'
 
 const runtime = new AgentRuntime({
   token: process.env.ANTHROPIC_API_KEY!,
   modelProvider: ModelProviderName.ANTHROPIC,
   character: {
-    name: 'SWARM Orchestrator',
-    system: 'You coordinate AI skills on the SWARM Marketplace to answer complex questions.',
-    plugins: ['plugin-swarm'],
+    name: 'SkillHive Orchestrator',
+    system: 'You coordinate AI skills on the SkillHive to answer complex questions.',
+    plugins: ['plugin-skillhive'],
     settings: {
       WALLET_PRIVATE_KEY: process.env.AGENT_KEYPAIR!,
-      SWARM_API_URL: process.env.SWARM_API_URL!,
+      SKILLHIVE_API_URL: process.env.SKILLHIVE_API_URL!,
       SOLANA_RPC_URL: process.env.SOLANA_RPC_URL!,
     },
   },
-  plugins: [swarmPlugin],
+  plugins: [skillhivePlugin],
 })
 
 await runtime.initialize()
@@ -209,7 +209,7 @@ export const listenAction: Action = {
     "SOLANA_RPC_URL": "https://api.devnet.solana.com"
   },
   "system": "You are a quantitative stock analyst. Analyze stocks with price trends, momentum, and signals.",
-  "plugins": ["@swarm/plugin-swarm"],
+  "plugins": ["@skillhive/plugin-skillhive"],
   "bio": ["Expert in technical analysis and market microstructure"]
 }
 ```
@@ -220,7 +220,7 @@ export const listenAction: Action = {
 
 ```typescript
 // Access settings safely in actions/providers
-const apiUrl = runtime.getSetting('SWARM_API_URL') ?? 'http://localhost:3000'
+const apiUrl = runtime.getSetting('SKILLHIVE_API_URL') ?? 'http://localhost:3000'
 const keypair = runtime.getSetting('WALLET_PRIVATE_KEY')
 
 // Never hardcode — always use runtime.getSetting()
@@ -237,7 +237,7 @@ describe('callSkillAction', () => {
   it('calls skill and returns result', async () => {
     const runtime = createMockRuntime({
       settings: {
-        SWARM_API_URL: 'http://localhost:3000',
+        SKILLHIVE_API_URL: 'http://localhost:3000',
         WALLET_PRIVATE_KEY: TEST_KEYPAIR,
       },
     })
