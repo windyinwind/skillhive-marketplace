@@ -44,10 +44,12 @@ export function Navbar() {
         <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-3 px-4 sm:px-6">
 
           {/* ── Logo ── */}
-          <Link href="/" className="flex shrink-0 items-center gap-2.5 mr-2">
-            <Image src="/logo.png" alt="SkillHive" width={30} height={30} className="rounded-md" />
-            <span className="font-heading text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-              SkillHive<span className="text-[#9945FF]">.</span>
+          <Link href="/" className="group flex shrink-0 items-center gap-2.5 mr-2 transition-transform active:scale-[0.98]">
+            <div className="relative h-9 w-9 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-all group-hover:shadow-md group-hover:ring-[#9945FF]/20">
+              <Image src="/logo.png" alt="SkillHive" fill className="object-cover p-1" />
+            </div>
+            <span className="font-heading text-xl font-bold tracking-tight bg-gradient-to-r from-[#9945FF] to-[#14F195] bg-clip-text text-transparent">
+              SkillHive
             </span>
           </Link>
 

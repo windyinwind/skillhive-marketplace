@@ -63,10 +63,12 @@ export function Footer() {
 
           {/* Brand column */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="SkillHive" width={28} height={28} className="rounded-md" />
-              <span className="font-heading text-base font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                SkillHive<span className="text-[#9945FF]">.</span>
+            <Link href="/" className="group flex items-center gap-2.5 transition-opacity hover:opacity-90">
+              <div className="relative h-8 w-8 overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-black/5">
+                <Image src="/logo.png" alt="SkillHive" fill className="object-cover p-0.5" />
+              </div>
+              <span className="font-heading text-lg font-bold tracking-tight bg-gradient-to-r from-[#9945FF] to-[#14F195] bg-clip-text text-transparent">
+                SkillHive
               </span>
             </Link>
             <p className="mt-3 max-w-[220px] text-sm leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
