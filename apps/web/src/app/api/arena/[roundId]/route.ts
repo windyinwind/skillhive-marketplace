@@ -27,12 +27,26 @@ export async function GET(
       .from('arena_entries')
       .select(ENTRY_COLS)
       .eq('round_id', roundId)
-      .order('sol_earned', { ascending: false })
 
-    const total_sol_staked = (entries ?? []).reduce((s, e) => s + (e.sol_earned ?? 0), 0)
-    const total_votes      = (entries ?? []).reduce((s, e) => s + (e.votes ?? 0), 0)
+    const sorted = (entries ?? []).slice().sort((a, b) => {
+      const aCompleted = a.result != null && !a.error
+      const bCompleted = b.result != null && !b.error
+      const aError = !!a.error
+      const bError = !!b.error
 
-    return NextResponse.json({ ...round, entries: entries ?? [], total_sol_staked, total_votes })
+      if (aCompleted && bCompleted) return (b.sol_earned ?? 0) - (a.sol_earned ?? 0)
+      if (aCompleted) return -1
+      if (bCompleted) return 1
+      if (!aError && !bError) return 0
+      if (!aError) return -1
+      if (!bError) return 1
+      return 0
+    })
+
+    const total_sol_staked = sorted.reduce((s, e) => s + (e.sol_earned ?? 0), 0)
+    const total_votes      = sorted.reduce((s, e) => s + (e.votes ?? 0), 0)
+
+    return NextResponse.json({ ...round, entries: sorted, total_sol_staked, total_votes })
   } catch (err) {
     console.error('[GET /api/arena/[roundId]]', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

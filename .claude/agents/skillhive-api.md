@@ -1,5 +1,5 @@
 ---
-name: swarm-api
+name: skillhive-api
 description: Use for all Next.js API route work in apps/web/app/api/ and apps/web/pages/api/. Enforces server-side security: service-role client for private field lookups, skills_public view for public data, correct call path implementation (Path A, Path B, and Path C x402). Invoke when writing or reviewing API routes.
 tools: Read, Write, Edit, Glob, Grep
 ---

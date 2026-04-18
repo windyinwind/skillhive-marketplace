@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SWARM Marketplace — Rust Format Check (PostToolUse on Edit|Write, asyncRewake)
+# SkillHive Marketplace — Rust Format Check (PostToolUse on Edit|Write, asyncRewake)
 # Runs `cargo fmt --check` after editing .rs files in packages/contracts/.
 # Exits 2 (asyncRewake) to wake the model if formatting issues are found.
 
@@ -13,7 +13,7 @@ if ! printf '%s' "$FILE" | grep -qE 'packages/contracts/.*\.rs$'; then
   exit 0
 fi
 
-ROOT="/Users/weiliang/Code/SWARM-Marketplace"
+ROOT="/Users/weiliang/Code/SkillHive-Marketplace"
 
 # Skip gracefully if cargo not available or project not initialized
 if ! command -v cargo &>/dev/null || [ ! -f "$ROOT/packages/contracts/Cargo.toml" ]; then

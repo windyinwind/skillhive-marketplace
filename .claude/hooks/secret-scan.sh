@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SWARM Marketplace — Secret Scanner (PostToolUse on Edit|Write)
+# SkillHive Marketplace — Secret Scanner (PostToolUse on Edit|Write)
 # Scans the written file for common hardcoded secret patterns.
 # Outputs a systemMessage warning if secrets are detected (non-blocking).
 

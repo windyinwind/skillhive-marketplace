@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
+import { useWallet } from '@/hooks/useWalletAdapter'
 import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -34,9 +33,108 @@ function synthesisLabel(type: string | null): string {
   return ''
 }
 
+// Split result into preview (above ## Bottom Line) and locked (## Bottom Line onward)
+function splitResult(result: string): { preview: string; locked: string } {
+  const marker = /^## Bottom Line/im
+  const match = marker.exec(result)
+  if (!match || match.index === undefined) {
+    // No marker — show first 300 chars as preview, rest locked
+    const cut = Math.min(300, Math.floor(result.length * 0.4))
+    return { preview: result.slice(0, cut), locked: result.slice(cut) }
+  }
+  return {
+    preview: result.slice(0, match.index).trimEnd(),
+    locked: result.slice(match.index),
+  }
+}
+
+interface AnswerBodyProps {
+  result: string
+  paid: boolean
+  paying: boolean
+  payError: string | null
+  roundStatus: 'running' | 'open' | 'closed'
+  totalCost: number
+  isSynthesis: boolean
+  uniqueOwnerCount: number
+  owners: ContributingSkill[]
+  onPay: () => void
+}
+
+function AnswerBody({ result, paid, paying, payError, roundStatus, totalCost, isSynthesis, uniqueOwnerCount, owners, onPay }: AnswerBodyProps) {
+  const showPaywall = roundStatus === 'open' && !paid
+  const { preview, locked } = splitResult(result)
+
+  if (paid || roundStatus !== 'open') {
+    // Paid or closed — show full answer
+    return (
+      <div className="space-y-3">
+        <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed max-h-80 overflow-y-auto bg-muted rounded-lg p-3 border border-border">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{result}</ReactMarkdown>
+        </div>
+        {paid && (
+          <div className="flex items-start gap-2 text-sm text-[#14F195] bg-[#14F195]/5 border border-[#14F195]/20 rounded-lg px-3 py-2.5">
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium">
+                {formatSol(totalCost)} SOL sent to {isSynthesis ? `${uniqueOwnerCount} skill creator${uniqueOwnerCount !== 1 ? 's' : ''}` : 'skill owner'}.
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">Your payment counts as a vote and boosts these skills&apos; leaderboard ranking.</p>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Paywall mode — preview + locked bottom line
+  return (
+    <div className="space-y-0">
+      {/* Preview section */}
+      <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed bg-muted rounded-t-lg px-3 pt-3 pb-2 border border-b-0 border-border">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{preview}</ReactMarkdown>
+      </div>
+
+      {/* Locked section */}
+      {showPaywall && locked && (
+        <div className="relative overflow-hidden rounded-b-lg border border-t-0 border-[#9945FF]/30">
+          {/* Blurred text */}
+          <div className="select-none pointer-events-none px-3 py-3 bg-[#9945FF]/5">
+            <div className="blur-[5px] opacity-60 prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed line-clamp-4">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{locked}</ReactMarkdown>
+            </div>
+          </div>
+
+          {/* Gradient + pay CTA overlay */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-transparent via-card/60 to-card/95 px-4 py-3">
+            <p className="text-xs text-muted-foreground mb-2 text-center">
+              {isSynthesis
+                ? <>Pay <span className="text-foreground font-semibold">{formatSol(totalCost)} SOL</span> to unlock the verdict — split among {owners.length} creators</>
+                : <>Pay <span className="text-foreground font-semibold">{formatSol(totalCost)} SOL</span> to unlock the Bottom Line</>
+              }
+            </p>
+            <Button
+              onClick={onPay}
+              disabled={paying}
+              size="sm"
+              className="bg-[#9945FF] hover:bg-[#8a3ee8] text-white font-semibold px-5"
+            >
+              {paying
+                ? <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />Sending…</>
+                : <>Unlock Bottom Line · {formatSol(totalCost)} SOL</>
+              }
+            </Button>
+            {payError && <p className="text-xs text-red-400 mt-1.5">{payError}</p>}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryCardProps) {
   const { publicKey, sendTransaction } = useWallet()
-  const { setVisible } = useWalletModal()
+  const { openAuthModal: setVisible } = useWallet()
   const [expanded, setExpanded] = useState(rank <= 2)
   const [paying, setPaying] = useState(false)
   const [payError, setPayError] = useState<string | null>(null)
@@ -213,56 +311,21 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
               {entry.error}
             </div>
           ) : entry.result ? (
-            <div className="prose prose-sm dark:prose-invert max-w-none text-foreground leading-relaxed max-h-80 overflow-y-auto bg-muted rounded-lg p-3 border border-border">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{entry.result}</ReactMarkdown>
-            </div>
+            <AnswerBody
+              result={entry.result}
+              paid={paid}
+              paying={paying}
+              payError={payError}
+              roundStatus={roundStatus}
+              totalCost={totalCost}
+              isSynthesis={isSynthesis}
+              uniqueOwnerCount={uniqueOwnerCount}
+              owners={owners}
+              onPay={handlePay}
+            />
           ) : (
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Loader2 className="w-4 h-4 animate-spin" />Processing…
-            </div>
-          )}
-
-          {/* Pay CTA */}
-          {roundStatus === 'open' && entry.result && !entry.error && (
-            <div className="pt-1">
-              {paid ? (
-                <div className="flex items-start gap-2 text-sm text-[#14F195] bg-[#14F195]/5 border border-[#14F195]/20 rounded-lg px-3 py-2.5">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">
-                      {formatSol(totalCost)} SOL sent to {isSynthesis ? `${uniqueOwnerCount} skill creator${uniqueOwnerCount !== 1 ? 's' : ''}` : 'skill owner'}.
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Your payment counts as a vote and boosts these skills&apos; leaderboard ranking.</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-1.5">
-                  <p className="text-xs text-muted-foreground">
-                    {isSynthesis
-                      ? <>If this answer was useful, reward the {owners.length} contributing creators — <span className="text-foreground font-medium">{formatSol(totalCost)} SOL</span> split equally from your wallet to theirs.</>
-                      : <>If this answer was useful, reward the creator directly — <span className="text-foreground font-medium">{formatSol(totalCost)} SOL</span> sent from your wallet to theirs.</>
-                    }
-                  </p>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <Button
-                      onClick={handlePay}
-                      disabled={paying}
-                      className="bg-[#9945FF] hover:bg-[#8a3ee8] text-white font-semibold h-10 px-5"
-                    >
-                      {paying ? (
-                        <><Loader2 className="w-4 h-4 animate-spin mr-2" />Sending…</>
-                      ) : isSynthesis ? (
-                        <>Send {formatSol(totalCost)} SOL to {uniqueOwnerCount} creators</>
-                      ) : (
-                        <>Send {formatSol(totalCost)} SOL to creator</>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              )}
-              {payError && (
-                <p className="text-xs text-red-400 mt-2">{payError}</p>
-              )}
             </div>
           )}
         </div>

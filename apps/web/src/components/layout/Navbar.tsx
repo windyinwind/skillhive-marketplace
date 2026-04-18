@@ -3,20 +3,33 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import { useIsLoggedIn, useDynamicContext, DynamicUserProfile } from '@dynamic-labs/sdk-react-core'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './ThemeToggle'
 import { LanguageSwitcher } from './LanguageSwitcher'
-import { LayoutDashboard, Plus, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Plus, Menu, X, UserCircle2 } from 'lucide-react'
 import { useState } from 'react'
 
 export function Navbar() {
   const pathname = usePathname()
   const t = useTranslations('nav')
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { connected } = useWallet()
+  const connected = useIsLoggedIn()
+  const { setShowAuthFlow, setShowDynamicUserProfile, primaryWallet, user } = useDynamicContext()
+
+  const shortAddress = primaryWallet?.address
+    ? `${primaryWallet.address.slice(0, 4)}…${primaryWallet.address.slice(-4)}`
+    : 'Wallet'
+
+  // Initials: prefer name > email initial > null (fall back to icon)
+  const initials = user?.firstName && user?.lastName
+    ? (user.firstName[0] + user.lastName[0]).toUpperCase()
+    : user?.firstName
+    ? user.firstName[0].toUpperCase()
+    : user?.email
+    ? user.email[0].toUpperCase()
+    : null
 
   const isActive = (href: string) => {
     if (!pathname) return false
@@ -112,23 +125,27 @@ export function Navbar() {
             )}
 
             {/* Wallet — identity + connect */}
-            <div dir="ltr" className="flex">
-              <WalletMultiButton
-                style={{
-                  background: connected
-                    ? 'var(--bg-elevated)'
-                    : 'linear-gradient(135deg, #9945FF, #14F195)',
-                  border: connected ? '1px solid var(--border-subtle)' : 'none',
-                  borderRadius: '10px',
-                  fontSize: '13px',
-                  height: '36px',
-                  padding: '0 14px',
-                  color: connected ? 'var(--text-primary)' : '#0f1117',
-                  fontWeight: '600',
-                  flexShrink: 0,
-                }}
-              />
-            </div>
+            {connected ? (
+              <button
+                onClick={() => setShowDynamicUserProfile(true)}
+                title={shortAddress}
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] transition-all hover:border-[#9945FF]/30 active:scale-[0.97]"
+              >
+                {initials ? (
+                  <span className="text-xs font-bold text-[#9945FF]">{initials}</span>
+                ) : (
+                  <UserCircle2 className="h-5 w-5 text-[var(--text-secondary)]" />
+                )}
+                <span className="absolute bottom-1 right-1 h-2 w-2 rounded-full bg-[#14F195] ring-1 ring-[var(--bg-elevated)]" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowAuthFlow(true)}
+                className="flex h-9 items-center justify-center rounded-xl bg-[#9945FF] px-4 text-sm font-semibold text-white transition-all hover:bg-[#8535EF] active:scale-[0.97]"
+              >
+                Login
+              </button>
+            )}
 
             {/* Mobile hamburger */}
             <button
@@ -240,6 +257,8 @@ export function Navbar() {
           </div>
         )}
       </nav>
+      {/* Dynamic account/profile modal — needed since we don't use DynamicWidget */}
+      <DynamicUserProfile />
     </>
   )
 }

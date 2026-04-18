@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useWallet, useConnection } from '@solana/wallet-adapter-react'
+import { useWallet } from '@/hooks/useWalletAdapter'
+import { useConnection } from '@solana/wallet-adapter-react'
 import { Transaction, SendTransactionError } from '@solana/web3.js'
+import bs58 from 'bs58'
 import { Loader2, Sparkles } from 'lucide-react'
 import { lamportsToSol, lamportsToUsd } from '@/lib/format'
 import { useSolPrice } from '@/hooks/useSkills'
@@ -12,7 +14,7 @@ type Step = 1 | 2 | 3
 
 export default function CreatePage() {
   const router = useRouter()
-  const { wallet, publicKey, signTransaction, connected } = useWallet()
+  const { wallet, publicKey, signTransaction, signMessage, connected } = useWallet()
   const { connection } = useConnection()
   const { data: priceData } = useSolPrice()
 
@@ -31,15 +33,28 @@ export default function CreatePage() {
   const [mcpToken, setMcpToken] = useState('')
   const [assistLoading, setAssistLoading] = useState(false)
   const [assistError, setAssistError] = useState<string | null>(null)
+  const [tagError, setTagError] = useState<string | null>(null)
 
   const priceLamports = Math.round(parseFloat(priceSol || '0') * 1_000_000_000)
 
   const addTag = () => {
     const t = tagInput.trim().toLowerCase()
-    if (t && !tags.includes(t) && tags.length < 8) {
-      setTags([...tags, t])
-      setTagInput('')
+    if (!t) return
+    if (tags.length >= 8) {
+      setTagError('Maximum 8 tags allowed')
+      return
     }
+    if (t.length > 20) {
+      setTagError('Tags must be 20 characters or fewer')
+      return
+    }
+    if (tags.includes(t)) {
+      setTagError('Tag already added')
+      return
+    }
+    setTagError(null)
+    setTags([...tags, t])
+    setTagInput('')
   }
 
   const aiAssist = async () => {
@@ -62,10 +77,15 @@ export default function CreatePage() {
   }
 
   const handleSubmit = async () => {
-    if (!publicKey || !signTransaction || !connected) return
+    if (!publicKey || !signTransaction || !signMessage || !connected) return
     setLoading(true)
     setError(null)
     try {
+      // Generate nonce, sign it to prove wallet ownership (transparent to user — one wallet popup)
+      const nonce = String(Date.now())
+      const sigBytes = await signMessage(new TextEncoder().encode(nonce))
+      const signature = bs58.encode(sigBytes)
+
       const res = await fetch('/api/create-skill', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,6 +96,8 @@ export default function CreatePage() {
           priceLamports,
           ownerWallet: publicKey.toBase58(),
           systemPrompt,
+          nonce,
+          signature,
           ...(tier === 2 && mcpUrl ? { mcpConfig: { mcpUrl, ...(mcpToken ? { mcpToken } : {}) } } : {}),
         }),
       })
@@ -167,11 +189,16 @@ export default function CreatePage() {
           </div>
 
           <div>
-            <label className={labelCls}>Tags</label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className={labelCls.replace('mb-1.5 ', '')}>Tags</label>
+              <span className={`text-xs ${tags.length >= 8 ? 'text-red-400' : 'text-muted-foreground'}`}>
+                {tags.length}/8 tags
+              </span>
+            </div>
             <div className="flex gap-2">
               <input
                 value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
+                onChange={(e) => { setTagInput(e.target.value); setTagError(null) }}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                 placeholder="finance, stocks…"
                 className={inputCls}
@@ -184,6 +211,9 @@ export default function CreatePage() {
                 Add
               </button>
             </div>
+            {tagError && (
+              <p className="mt-1 text-xs text-red-400">{tagError}</p>
+            )}
             <div className="mt-2 flex flex-wrap gap-2">
               {tags.map((t) => (
                 <button

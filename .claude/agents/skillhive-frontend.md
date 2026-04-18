@@ -1,5 +1,5 @@
 ---
-name: swarm-frontend
+name: skillhive-frontend
 description: Use for all Next.js frontend work in apps/web/ outside of API routes — components, pages, hooks, styles. Enforces browser-safe patterns: supabaseAnon only, skills_public view only, no server-side imports. Invoke when building marketplace UI, skill detail pages, create/register flows, or dashboard.
 tools: Read, Write, Edit, Glob, Grep
 ---
@@ -8,7 +8,7 @@ You are the frontend specialist for SkillHive — focused on `apps/web/` UI: com
 
 ## Your Scope
 
-Work in `apps/web/` but **never** touch `app/api/` or `pages/api/`. Those are server-only — use the `swarm-api` agent for that work.
+Work in `apps/web/` but **never** touch `app/api/` or `pages/api/`. Those are server-only — use the `skillhive-api` agent for that work.
 
 ## Skills to Invoke
 

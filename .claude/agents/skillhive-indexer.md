@@ -1,5 +1,5 @@
 ---
-name: swarm-indexer
+name: skillhive-indexer
 description: Use for all Helius webhook handler work in apps/web/app/api/webhooks/helius/. Handles on-chain SkillAccount and CallAccount change events pushed by Helius, syncing state to Supabase. Enforces correct sync patterns, webhook signature verification, and idempotent upserts. Invoke when building or debugging the Helius webhook integration.
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---

@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useWallet, useConnection } from '@solana/wallet-adapter-react'
+import { useWallet } from '@/hooks/useWalletAdapter'
+import { useConnection } from '@solana/wallet-adapter-react'
 import { Transaction, SendTransactionError } from '@solana/web3.js'
 import { Loader2, Shield, Server, CheckCircle2, Code2 } from 'lucide-react'
 import bs58 from 'bs58'
@@ -119,7 +120,13 @@ export default function RegisterPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Registration failed')
 
-      router.push(`/skill/${skillId}`)
+      if (data.warning) {
+        setError(`Warning: ${data.warning}`)
+        // Still redirect after a short delay so user can read the warning
+        setTimeout(() => router.push(`/skill/${skillId}`), 4000)
+      } else {
+        router.push(`/skill/${skillId}`)
+      }
     } catch (e) {
       setError((e as Error).message)
     } finally {

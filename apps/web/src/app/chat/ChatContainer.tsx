@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useCallback, type FormEvent } from 'react'
-import { useWallet, useConnection } from '@solana/wallet-adapter-react'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
+import { useWallet } from '@/hooks/useWalletAdapter'
+import { useConnection } from '@solana/wallet-adapter-react'
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
-import { Bot, Wallet } from 'lucide-react'
+import { Wallet } from 'lucide-react'
+import Image from 'next/image'
 import { MessageList } from './MessageList'
 import { ChatInput } from './ChatInput'
 import type { ChatMessage, ToolStep, SSEEvent, SkillDebt } from './types'
@@ -21,7 +22,7 @@ export function ChatContainer() {
   const [freeUsesRemaining, setFreeUsesRemaining] = useState<number | null>(null)
   const { publicKey, signTransaction, connected } = useWallet()
   const { connection } = useConnection()
-  const { setVisible } = useWalletModal()
+  const { openAuthModal: setVisible } = useWallet()
 
   const settleDebts = useCallback(async (msgId: string, debts: SkillDebt[]): Promise<boolean> => {
     if (!publicKey || !signTransaction || !connected || debts.length === 0) return false
@@ -78,6 +79,7 @@ export function ChatContainer() {
         const collectedDebts: SkillDebt[] = []
         let finalText = ''
         let responseWasFree = false
+        let quotaReceived = false
 
         while (true) {
           const { done, value } = await reader.read()
@@ -103,6 +105,12 @@ export function ChatContainer() {
             setMessages((prev) =>
               prev.map((m) => {
                 if (m.id !== assistantId) return m
+
+                if (event.type === 'quota' && !quotaReceived) {
+                  quotaReceived = true
+                  responseWasFree = event.isFree
+                  return { ...m, isFree: event.isFree }
+                }
 
                 if (event.type === 'tool-call') {
                   const step: ToolStep = {
@@ -186,8 +194,8 @@ export function ChatContainer() {
   if (!connected) {
     return (
       <div className="flex h-[calc(100vh-64px)] flex-col items-center justify-center gap-4 bg-background px-4 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#9945FF]/30 bg-[#9945FF]/10">
-          <Bot className="h-7 w-7 text-[#9945FF]" />
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#9945FF]/30 bg-[#9945FF]/10 overflow-hidden">
+          <Image src="/logo.png" alt="SkillHive Logo" width={56} height={56} className="object-cover" />
         </div>
         <div>
           <h2 className="text-lg font-semibold text-foreground">SkillHive Chat</h2>
@@ -200,7 +208,7 @@ export function ChatContainer() {
           className="flex items-center gap-2 rounded-xl bg-[#9945FF] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#8535EF] active:scale-[0.97]"
         >
           <Wallet className="h-4 w-4" />
-          Connect Wallet
+          Login
         </button>
       </div>
     )

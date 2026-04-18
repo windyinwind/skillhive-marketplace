@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useWallet } from '@/hooks/useWalletAdapter'
+import { useOpenFundingOptions } from '@dynamic-labs/sdk-react-core'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -42,7 +43,8 @@ interface ArenaRoundsResponse {
 export default function ArenaPage() {
   const t = useTranslations('arena')
   const router = useRouter()
-  const { publicKey } = useWallet()
+  const { publicKey, connected } = useWallet()
+  const { openFundingOptions } = useOpenFundingOptions()
 
   const [query, setQuery] = useState('')
   const [selectionMode, setSelectionMode] = useState<SelectionMode>('auto')
@@ -245,6 +247,20 @@ export default function ArenaPage() {
         </Button>
 
         <p className="text-xs text-center text-muted-foreground">{t('subsidy')}</p>
+
+        {connected && publicKey && (
+          <p className="text-xs text-center text-muted-foreground">
+            Low on SOL?{' '}
+            <button
+              type="button"
+              onClick={openFundingOptions}
+              className="text-[#9945FF] hover:underline font-medium"
+            >
+              Top Up
+            </button>
+            {' '}with Apple Pay, Google Pay, or card.
+          </p>
+        )}
       </form>
 
       {/* Feed */}

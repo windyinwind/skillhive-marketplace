@@ -20,7 +20,7 @@
 
 import 'dotenv/config'
 import { AgentRuntime, ModelProviderName } from '@elizaos/core'
-import { swarmPlugin } from '@skillhive/plugin-skillhive'
+import { skillhivePlugin } from '@skillhive/plugin-skillhive'
 
 async function main() {
   console.log('[skill-template] Starting SkillHive Skill Agent...')
@@ -38,7 +38,7 @@ async function main() {
       adjectives: [],
       style: { all: [], chat: [], post: [] },
     },
-    plugins: [swarmPlugin],
+    plugins: [skillhivePlugin],
     providers: [],
     actions: [],
     services: [],

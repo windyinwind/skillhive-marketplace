@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search, SlidersHorizontal, SearchX } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SkillCard } from '@/components/SkillCard'
 import { useSkills } from '@/hooks/useSkills'
@@ -197,10 +197,21 @@ export default function MarketplacePage() {
         </div>
       ) : skills.length === 0 ? (
         <div className="rounded-xl border border-border bg-card py-20 text-center">
-          <p className="text-muted-foreground">{t('noSkillsMatch')}</p>
-          <button onClick={clearFilters} className="mt-3 text-sm text-[#9945FF] transition-opacity hover:opacity-80">
-            {t('clearFilters')}
-          </button>
+          <SearchX className="mx-auto mb-4 h-10 w-10 text-muted-foreground/40" />
+          <p className="font-medium text-foreground">{t('noSkillsMatch')}</p>
+          {debouncedSearch && (
+            <p className="mt-1 text-sm text-muted-foreground">
+              No results for <span className="font-medium text-foreground">&ldquo;{debouncedSearch}&rdquo;</span>
+            </p>
+          )}
+          {isFiltered && (
+            <button
+              onClick={clearFilters}
+              className="mt-4 rounded-lg border border-border bg-card px-4 py-2 text-sm text-[#9945FF] transition-colors hover:border-[#9945FF]/25"
+            >
+              {t('clearFilters')}
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

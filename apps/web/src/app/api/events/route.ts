@@ -24,6 +24,8 @@ export async function GET(req: NextRequest) {
       controller.enqueue(encoder.encode(': keepalive\n\n'))
 
       let done = false
+      let consecutiveErrors = 0
+      const MAX_ERRORS = 5
       const intervalId = setInterval(async () => {
         if (done) return
         try {
@@ -41,6 +43,7 @@ export async function GET(req: NextRequest) {
               clearInterval(intervalId)
               controller.close()
             }
+            consecutiveErrors = 0
             return
           }
 
@@ -61,8 +64,16 @@ export async function GET(req: NextRequest) {
             clearInterval(intervalId)
             controller.close()
           }
+          consecutiveErrors = 0
         } catch (err) {
           console.error('[SSE poll error]', err)
+          consecutiveErrors++
+          if (consecutiveErrors >= MAX_ERRORS) {
+            send({ status: 'error', message: 'Result polling failed — please refresh and try again' })
+            done = true
+            clearInterval(intervalId)
+            controller.close()
+          }
         }
       }, 3000) // 3s poll — balances responsiveness vs. Redis load
 

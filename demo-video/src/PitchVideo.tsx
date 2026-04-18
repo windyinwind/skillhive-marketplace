@@ -15,30 +15,43 @@ export const PitchVideo: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Common transition timings
-  const SCENE_DURATION = 450; // 15 seconds each
-  
-  // Scene 1: Introduction (0s - 15s)
-  const introOpacity = interpolate(frame, [0, 30, SCENE_DURATION - 30, SCENE_DURATION], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  // Timing configuration (1800 frames total @ 30fps)
+  const INTRO_END = 210;        // 0-7s
+  const MARKETPLACE_END = 510;   // 7-17s
+  const CHAT_END = 810;          // 17-27s
+  const ARENA_END = 1110;        // 27-37s
+  const DASHBOARD_END = 1410;    // 37-47s
+  const ROADMAP_END = 1800;      // 47-60s
+
+  // Scene 1: Introduction (0s - 7s)
+  const introOpacity = interpolate(frame, [0, 30, INTRO_END - 30, INTRO_END], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
   const introY = spring({ fps, frame, config: { damping: 12 } });
   
-  // Scene 2: Platform (15s - 30s)
-  const platformOpacity = interpolate(frame, [SCENE_DURATION, SCENE_DURATION + 30, SCENE_DURATION * 2 - 30, SCENE_DURATION * 2], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
-  const platformImgY = spring({ fps, frame: frame - (SCENE_DURATION + 60), config: { damping: 15 } });
+  // Scene 2: Marketplace (7s - 17s)
+  const marketOpacity = interpolate(frame, [INTRO_END, INTRO_END + 30, MARKETPLACE_END - 30, MARKETPLACE_END], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const marketImgY = spring({ fps, frame: frame - (INTRO_END + 45), config: { damping: 15 } });
 
-  // Scene 3: Arena (30s - 45s)
-  const arenaOpacity = interpolate(frame, [SCENE_DURATION * 2, SCENE_DURATION * 2 + 30, SCENE_DURATION * 3 - 30, SCENE_DURATION * 3], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
-  const arenaImgScale = spring({ fps, frame: frame - (SCENE_DURATION * 2 + 60), config: { damping: 12 } });
+  // Scene 3: Chat (17s - 27s)
+  const chatOpacity = interpolate(frame, [MARKETPLACE_END, MARKETPLACE_END + 30, CHAT_END - 30, CHAT_END], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const chatImgScale = spring({ fps, frame: frame - (MARKETPLACE_END + 45), config: { damping: 12 } });
 
-  // Scene 4: Roadmap (45s - 60s)
-  const roadmapOpacity = interpolate(frame, [SCENE_DURATION * 3, SCENE_DURATION * 3 + 30], [0, 1], { extrapolateLeft: "clamp" });
+  // Scene 4: Arena (27s - 37s)
+  const arenaOpacity = interpolate(frame, [CHAT_END, CHAT_END + 30, ARENA_END - 30, ARENA_END], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const arenaImgX = spring({ fps, frame: frame - (CHAT_END + 45), config: { damping: 14 } });
+
+  // Scene 5: Dashboard (37s - 47s)
+  const dashboardOpacity = interpolate(frame, [ARENA_END, ARENA_END + 30, DASHBOARD_END - 30, DASHBOARD_END], [0, 1, 1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const dashboardImgY = spring({ fps, frame: frame - (ARENA_END + 45), config: { damping: 15 } });
+
+  // Scene 6: Roadmap (47s - 60s)
+  const roadmapOpacity = interpolate(frame, [DASHBOARD_END, DASHBOARD_END + 30], [0, 1], { extrapolateLeft: "clamp" });
   const roadmapItems = [
     { text: "Next.js 15 Frontend", done: true },
     { text: "Multi-provider LLM routing", done: true },
     { text: "Arena (compare & pay)", done: true },
-    { text: "Anchor Smart Contracts", done: "in-progress" },
-    { text: "x402 Instant Payments", done: "in-progress" },
-    { text: "ElizaOS Plugin Integration", done: "in-progress" }
+    { text: "Leaderboard & Reputation", done: true },
+    { text: "Anchor Smart Contracts", done: true },
+    { text: "ElizaOS Plugin Integration", done: true }
   ];
 
   return (
@@ -62,22 +75,8 @@ export const PitchVideo: React.FC = () => {
           left: -300,
       }} />
 
-      {/* Audio Tracks */}
-      <Sequence from={0} durationInFrames={SCENE_DURATION}>
-        <Audio src={staticFile("intro.wav")} />
-      </Sequence>
-      <Sequence from={SCENE_DURATION} durationInFrames={SCENE_DURATION}>
-        <Audio src={staticFile("platform.wav")} />
-      </Sequence>
-      <Sequence from={SCENE_DURATION * 2} durationInFrames={SCENE_DURATION}>
-        <Audio src={staticFile("arena.wav")} />
-      </Sequence>
-      <Sequence from={SCENE_DURATION * 3} durationInFrames={SCENE_DURATION}>
-        <Audio src={staticFile("roadmap.wav")} />
-      </Sequence>
-
       {/* Scene 1: Introduction */}
-      <Sequence from={0} durationInFrames={SCENE_DURATION}>
+      <Sequence from={0} durationInFrames={INTRO_END}>
         <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", opacity: introOpacity }}>
           <div style={{ textAlign: "center", transform: `translateY(${interpolate(introY, [0, 1], [50, 0])}px)` }}>
             <h1 style={{ 
@@ -111,99 +110,130 @@ export const PitchVideo: React.FC = () => {
         </AbsoluteFill>
       </Sequence>
 
-      {/* Scene 2: Platform Screenshot */}
-      <Sequence from={SCENE_DURATION} durationInFrames={SCENE_DURATION}>
-        <AbsoluteFill style={{ opacity: platformOpacity }}>
-          <div style={{ padding: 120 }}>
-            <h2 style={{ fontFamily: spaceGrotesk, fontSize: 90, fontWeight: 700, marginBottom: 10, color: "#38bdf8", letterSpacing: "-0.02em" }}>The Platform</h2>
-            <p style={{ fontSize: 40, color: "#94a3b8", marginBottom: 60 }}>Explore 27+ live agentic skills ready to use.</p>
+      {/* Scene 2: Marketplace */}
+      <Sequence from={INTRO_END} durationInFrames={MARKETPLACE_END - INTRO_END}>
+        <AbsoluteFill style={{ opacity: marketOpacity }}>
+          <div style={{ padding: "80px 120px" }}>
+            <h2 style={{ fontFamily: spaceGrotesk, fontSize: 80, fontWeight: 700, marginBottom: 10, color: "#38bdf8", letterSpacing: "-0.02em" }}>Marketplace</h2>
+            <p style={{ fontSize: 36, color: "#94a3b8", marginBottom: 40 }}>Browse and compare 27+ live agentic skills.</p>
             
             <div style={{
-              transform: `translateY(${interpolate(platformImgY, [0, 1], [400, 0])}px)`,
+              transform: `translateY(${interpolate(marketImgY, [0, 1], [400, 0])}px)`,
               boxShadow: "0 50px 100px -20px rgba(0, 0, 0, 0.8)",
-              borderRadius: 32,
+              borderRadius: 24,
               overflow: "hidden",
               border: "1px solid rgba(255, 255, 255, 0.15)"
             }}>
-              <Img src={staticFile("marketplace.jpeg")} style={{ width: "100%", borderRadius: 32 }} />
+              <Img src={staticFile("marketplace.png")} style={{ width: "100%", borderRadius: 24 }} />
             </div>
           </div>
         </AbsoluteFill>
       </Sequence>
 
-      {/* Scene 3: Arena Screenshot */}
-      <Sequence from={SCENE_DURATION * 2} durationInFrames={SCENE_DURATION}>
-        <AbsoluteFill style={{ opacity: arenaOpacity, justifyContent: "center", alignItems: "center" }}>
-          <div style={{ textAlign: "center", marginBottom: 60, zIndex: 10 }}>
-            <h2 style={{ fontFamily: spaceGrotesk, fontSize: 90, fontWeight: 700, color: "#f472b6", letterSpacing: "-0.02em" }}>The Arena</h2>
-            <p style={{ fontSize: 44, color: "#94a3b8" }}>Compare answers from multiple skills. Pay for the best.</p>
+      {/* Scene 3: Chat */}
+      <Sequence from={MARKETPLACE_END} durationInFrames={CHAT_END - MARKETPLACE_END}>
+        <AbsoluteFill style={{ opacity: chatOpacity, justifyContent: "center", alignItems: "center" }}>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <h2 style={{ fontFamily: spaceGrotesk, fontSize: 80, fontWeight: 700, color: "#818cf8", letterSpacing: "-0.02em" }}>Orchestrator Chat</h2>
+            <p style={{ fontSize: 36, color: "#94a3b8" }}>One interface to rule them all. Discovers and calls skills for you.</p>
           </div>
           
           <div style={{
-            width: "85%",
-            transform: `scale(${interpolate(arenaImgScale, [0, 1], [0.85, 1])})`,
+            width: "80%",
+            transform: `scale(${interpolate(chatImgScale, [0, 1], [0.9, 1])})`,
             boxShadow: "0 60px 120px -20px rgba(0, 0, 0, 0.8)",
-            borderRadius: 32,
+            borderRadius: 24,
             border: "1px solid rgba(255, 255, 255, 0.15)",
             overflow: "hidden"
           }}>
-            <Img src={staticFile("dashboard.jpeg")} style={{ width: "100%", borderRadius: 32 }} />
+            <Img src={staticFile("chat.png")} style={{ width: "100%", borderRadius: 24 }} />
           </div>
         </AbsoluteFill>
       </Sequence>
 
-      {/* Scene 4: Roadmap */}
-      <Sequence from={SCENE_DURATION * 3} durationInFrames={SCENE_DURATION}>
-        <AbsoluteFill style={{ opacity: roadmapOpacity, padding: 100, justifyContent: "center" }}>
-          <h2 style={{ fontFamily: spaceGrotesk, fontSize: 110, fontWeight: 700, marginBottom: 80, textAlign: "center", letterSpacing: "-0.03em" }}>Roadmap</h2>
+      {/* Scene 4: Arena */}
+      <Sequence from={CHAT_END} durationInFrames={ARENA_END - CHAT_END}>
+        <AbsoluteFill style={{ opacity: arenaOpacity }}>
+          <div style={{ padding: "80px 120px", textAlign: "right" }}>
+            <h2 style={{ fontFamily: spaceGrotesk, fontSize: 80, fontWeight: 700, marginBottom: 10, color: "#f472b6", letterSpacing: "-0.02em" }}>The Arena</h2>
+            <p style={{ fontSize: 36, color: "#94a3b8", marginBottom: 40 }}>Multi-agent competition. Pay only for what helped.</p>
+            
+            <div style={{
+              transform: `translateX(${interpolate(arenaImgX, [0, 1], [400, 0])}px)`,
+              boxShadow: "0 50px 100px -20px rgba(0, 0, 0, 0.8)",
+              borderRadius: 24,
+              overflow: "hidden",
+              border: "1px solid rgba(255, 255, 255, 0.15)"
+            }}>
+              <Img src={staticFile("arena.png")} style={{ width: "100%", borderRadius: 24 }} />
+            </div>
+          </div>
+        </AbsoluteFill>
+      </Sequence>
+
+      {/* Scene 5: Dashboard */}
+      <Sequence from={ARENA_END} durationInFrames={DASHBOARD_END - ARENA_END}>
+        <AbsoluteFill style={{ opacity: dashboardOpacity }}>
+          <div style={{ padding: "80px 120px" }}>
+            <h2 style={{ fontFamily: spaceGrotesk, fontSize: 80, fontWeight: 700, marginBottom: 10, color: "#fbbf24", letterSpacing: "-0.02em" }}>Creator Dashboard</h2>
+            <p style={{ fontSize: 36, color: "#94a3b8", marginBottom: 40 }}>Manage skills, track earnings, and build your reputation.</p>
+            
+            <div style={{
+              transform: `translateY(${interpolate(dashboardImgY, [0, 1], [400, 0])}px)`,
+              boxShadow: "0 50px 100px -20px rgba(0, 0, 0, 0.8)",
+              borderRadius: 24,
+              overflow: "hidden",
+              border: "1px solid rgba(255, 255, 255, 0.15)"
+            }}>
+              <Img src={staticFile("dashboard.png")} style={{ width: "100%", borderRadius: 24 }} />
+            </div>
+          </div>
+        </AbsoluteFill>
+      </Sequence>
+
+      {/* Scene 6: Roadmap */}
+      <Sequence from={DASHBOARD_END} durationInFrames={ROADMAP_END - DASHBOARD_END}>
+        <AbsoluteFill style={{ opacity: roadmapOpacity, padding: 80, justifyContent: "center" }}>
+          <h2 style={{ fontFamily: spaceGrotesk, fontSize: 90, fontWeight: 700, marginBottom: 60, textAlign: "center", letterSpacing: "-0.03em" }}>Built for Solana</h2>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 30, maxWidth: 1400, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, maxWidth: 1400, margin: "0 auto" }}>
             {roadmapItems.map((item, i) => {
-              const itemSpring = spring({ fps, frame: frame - (SCENE_DURATION * 3 + 60 + i * 15), config: { damping: 14 } });
+              const itemSpring = spring({ fps, frame: frame - (DASHBOARD_END + 45 + i * 12), config: { damping: 14 } });
               return (
                 <div key={i} style={{ 
                   display: "flex", 
                   alignItems: "center", 
-                  gap: 30, 
-                  fontSize: 36, 
+                  gap: 24, 
+                  fontSize: 32, 
                   backgroundColor: "rgba(255, 255, 255, 0.03)", 
-                  padding: "40px 50px", 
-                  borderRadius: 24,
+                  padding: "30px 40px", 
+                  borderRadius: 20,
                   border: "1px solid rgba(255, 255, 255, 0.1)",
                   opacity: itemSpring,
-                  transform: `translateX(${interpolate(itemSpring, [0, 1], [-50, 0])}px)`
+                  transform: `translateX(${interpolate(itemSpring, [0, 1], [-40, 0])}px)`
                 }}>
                   <div style={{ 
-                    width: 44, 
-                    height: 44, 
+                    width: 36, 
+                    height: 36, 
                     borderRadius: "50%", 
-                    backgroundColor: item.done === true ? "#34d399" : "transparent",
-                    border: item.done === true ? "3px solid #34d399" : "3px solid #64748b",
+                    backgroundColor: "#34d399",
+                    border: "3px solid #34d399",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
                     flexShrink: 0
                   }}>
-                    {item.done === true ? (
-                      <div style={{ width: 18, height: 18, borderRadius: "50%", backgroundColor: "white" }} />
-                    ) : item.done === "in-progress" ? (
-                       <div style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: "#64748b" }} />
-                    ) : null}
+                    <div style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: "white" }} />
                   </div>
-                  <span style={{ color: item.done === true ? "white" : "#64748b", fontWeight: 600 }}>{item.text}</span>
-                  {item.done === "in-progress" && (
-                    <span style={{ fontSize: 20, color: "#64748b", border: "1px solid #64748b", padding: "4px 12px", borderRadius: 100, marginLeft: "auto", textTransform: "uppercase", letterSpacing: 1 }}>
-                      Next
-                    </span>
-                  )}
+                  <span style={{ color: "white", fontWeight: 600 }}>{item.text}</span>
                 </div>
               );
             })}
           </div>
 
-          <div style={{ marginTop: 120, textAlign: "center" }}>
-             <p style={{ fontSize: 36, color: "#38bdf8", fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", fontFamily: spaceGrotesk }}>
-               Built for Solana Renaissance
+          <div style={{ marginTop: 80, textAlign: "center" }}>
+             <p style={{ fontSize: 32, color: "#38bdf8", fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", fontFamily: spaceGrotesk }}>
+               Join the Hive Today
              </p>
           </div>
         </AbsoluteFill>
@@ -212,3 +242,4 @@ export const PitchVideo: React.FC = () => {
     </AbsoluteFill>
   );
 };
+

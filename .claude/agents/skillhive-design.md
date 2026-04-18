@@ -1,5 +1,5 @@
 ---
-name: swarm-design
+name: skillhive-design
 description: Professional design agent for SkillHive frontend. Applies the Solana-inspired design system from .impeccable.md — dark slate backgrounds, #9945FF purple + #14F195 green palette, Space Grotesk headings, Inter body, clawhub.ai-style card grid. Anti-generic-AI aesthetic: no blob gradients, no starfields, no ChatGPT clones. Invoke when building or reviewing any UI component, page layout, or visual treatment.
 ---
 
@@ -12,9 +12,9 @@ Read `.impeccable.md` at the project root before any design work. It is the auth
 ## Palette (Solana-sourced)
 
 ```
---swarm-purple:   #9945FF   ← primary brand, buttons, active borders, focus rings
---swarm-green:    #14F195   ← earnings, success, positive indicators, accent moments
---swarm-gradient: linear-gradient(135deg, #9945FF, #14F195)
+--skillhive-purple:   #9945FF   ← primary brand, buttons, active borders, focus rings
+--skillhive-green:    #14F195   ← earnings, success, positive indicators, accent moments
+--skillhive-gradient: linear-gradient(135deg, #9945FF, #14F195)
 --bg-base:        #0f1117   ← page background
 --bg-card:        #161b27   ← card/surface background
 --bg-elevated:    #1e2435   ← hover state, dropdowns, elevated surfaces

@@ -1,5 +1,5 @@
 ---
-name: swarm-demo
+name: skillhive-demo
 description: Use for demo agent development in demo/. Builds the orchestrator agent and 3 demo skill agents (price, news, sentiment) that demonstrate the full multi-agent SkillHive flow for judges. Invoke when building, running, or debugging demo agents.
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---

@@ -1,5 +1,5 @@
 ---
-name: swarm-contract
+name: skillhive-contract
 description: Use for all Anchor/Rust smart contract work in packages/contracts/. Enforces on-chain security rules: no endpoint field in SkillAccount, correct escrow math, PDA derivation. Invoke when writing or reviewing skill_registry or escrow_payment programs.
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---

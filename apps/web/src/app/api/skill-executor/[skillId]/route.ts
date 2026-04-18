@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateText, tool, jsonSchema } from 'ai'
 import { supabaseServiceRole } from '@/lib/supabase'
 import { getModel, type ModelConfig } from '@/lib/ai-providers'
+import { createHmac } from 'crypto'
+
+function validToken(token: string, skillId: string): boolean {
+  const key = process.env.INTERNAL_API_KEY ?? ''
+  const windows = [Math.floor(Date.now() / 30000), Math.floor(Date.now() / 30000) - 1]
+  return windows.some(w => {
+    const expected = createHmac('sha256', key).update(`${skillId}:${w}`).digest('hex')
+    return token === expected
+  })
+}
 
 export const runtime = 'nodejs'
 
@@ -89,12 +99,11 @@ export async function POST(
   { params }: { params: Promise<{ skillId: string }> }
 ) {
   try {
-    const internalKey = req.headers.get('x-internal-key')
-    if (internalKey !== process.env.INTERNAL_API_KEY) {
+    const { skillId } = await params
+    const internalKey = req.headers.get('x-internal-key') ?? ''
+    if (!validToken(internalKey, skillId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const { skillId } = await params
     const { input } = (await req.json()) as { input: string; callId: string }
     if (!input) return NextResponse.json({ error: 'input required' }, { status: 400 })
 

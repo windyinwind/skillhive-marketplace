@@ -22,7 +22,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
       .from('skills_public')
       .select(COLS)
       .eq('id', id)
-      .eq('is_active', true)
       .single()
 
     if (error || !skill) {
@@ -39,13 +38,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
 
     // Fetch average rating
     const { data: ratings } = await supabaseAnon
-      .from('skill_ratings')
-      .select('score')
+      .from('ratings')
+      .select('rating')
       .eq('skill_id', id)
 
     let avgRating: number | null = null
     if (ratings && ratings.length > 0) {
-      const sum = ratings.reduce((acc, r) => acc + (r.score ?? 0), 0)
+      const sum = ratings.reduce((acc, r) => acc + (r.rating ?? 0), 0)
       avgRating = Math.round((sum / ratings.length) * 10) / 10
     }
 

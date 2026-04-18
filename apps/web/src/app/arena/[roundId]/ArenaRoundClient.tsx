@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useWallet } from '@/hooks/useWalletAdapter'
+import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
 import { Badge } from '@/components/ui/badge'
 import { ArenaEntryCard } from '@/components/ArenaEntryCard'
 import { Loader2, RefreshCw, Clock, Zap, Trophy, XCircle } from 'lucide-react'
@@ -21,12 +22,16 @@ const statusConfig = {
 
 export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps) {
   const { publicKey } = useWallet()
+  const isLoggedIn = useIsLoggedIn()
   const [data, setData] = useState<ArenaRoundWithEntries>(initialData)
   const [refreshing, setRefreshing] = useState(false)
   const [closing, setClosing] = useState(false)
   const [closeError, setCloseError] = useState<string | null>(null)
 
+  // Only gate the Close Round button behind wallet ownership
   const isCreator = !data.creator_wallet || publicKey?.toBase58() === data.creator_wallet
+  // Any logged-in user can see answers and pay creators
+  const canInteract = isLoggedIn
 
   const refresh = useCallback(async () => {
     setRefreshing(true)
@@ -140,8 +145,8 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
         </div>
       )}
 
-      {/* How it works — only shown to the creator */}
-      {data.status === 'open' && answeredCount > 0 && isCreator && (
+      {/* How it works — shown to any logged-in user */}
+      {data.status === 'open' && answeredCount > 0 && canInteract && (
         <div className="rounded-xl border border-[#9945FF]/20 bg-[#9945FF]/5 px-4 py-3 text-sm text-foreground space-y-1">
           <p className="font-semibold text-foreground">Multi-skill synthesized answers</p>
           <p className="text-muted-foreground">
@@ -152,10 +157,10 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
         </div>
       )}
 
-      {/* Non-creator view */}
-      {data.status === 'open' && !isCreator && (
+      {/* Not logged in nudge */}
+      {data.status === 'open' && !canInteract && (
         <div className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-          This is a private comparison. Connect the wallet that created this round to pay for an answer.
+          Sign in to pay for an answer and reward the skill creator directly.
         </div>
       )}
 
@@ -173,7 +178,7 @@ export function ArenaRoundClient({ roundId, initialData }: ArenaRoundClientProps
               key={entry.id}
               entry={entry}
               rank={i + 1}
-              roundStatus={isCreator ? data.status : 'closed'}
+              roundStatus={canInteract ? data.status : 'closed'}
               onPaid={refresh}
             />
           ))}

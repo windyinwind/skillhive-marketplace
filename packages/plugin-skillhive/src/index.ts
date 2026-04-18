@@ -11,8 +11,8 @@
  *
  * Usage in an ElizaOS agent:
  *
- *   import { swarmPlugin } from '@skillhive/plugin-skillhive'
- *   const agent = new AgentRuntime({ plugins: [swarmPlugin], ... })
+ *   import { skillhivePlugin } from '@skillhive/plugin-skillhive'
+ *   const agent = new AgentRuntime({ plugins: [skillhivePlugin], ... })
  */
 
 import type { Plugin } from '@elizaos/core'
@@ -28,7 +28,7 @@ export { completeAction } from './actions/complete.js'
 export { getAgentKeypair, signTransaction, signAndSerialize } from './wallet.js'
 export * from './types.js'
 
-export const swarmPlugin: Plugin = {
+export const skillhivePlugin: Plugin = {
   name: 'skillhive-marketplace',
   description:
     'SkillHive Marketplace plugin — discover, call, listen, and complete AI skills on Solana',
@@ -37,4 +37,4 @@ export const swarmPlugin: Plugin = {
   providers: [],
 }
 
-export default swarmPlugin
+export default skillhivePlugin

@@ -3,6 +3,9 @@ import { supabaseServiceRole } from '@/lib/supabase'
 import { buildRegisterSkillTx } from '@/app/api/_lib/tx-builder'
 import { validateWebhookUrl, checkRateLimit } from '@/lib/security'
 import { DEFAULT_PROVIDER, DEFAULT_MODEL } from '@/lib/ai-providers'
+import { PublicKey } from '@solana/web3.js'
+import nacl from 'tweetnacl'
+import bs58 from 'bs58'
 
 export const runtime = 'nodejs'
 
@@ -13,6 +16,8 @@ interface CreateSkillBody {
   priceLamports: number
   ownerWallet: string
   systemPrompt: string
+  signature: string
+  nonce: string
   mcpConfig?: {
     mcpUrl: string
     mcpToken?: string
@@ -28,7 +33,20 @@ function validateBody(body: unknown): body is CreateSkillBody {
   if (typeof b.priceLamports !== 'number' || b.priceLamports < 0) return false
   if (typeof b.ownerWallet !== 'string' || b.ownerWallet.trim() === '') return false
   if (typeof b.systemPrompt !== 'string' || b.systemPrompt.trim() === '') return false
+  if (typeof b.signature !== 'string' || b.signature.trim() === '') return false
+  if (typeof b.nonce !== 'string' || b.nonce.trim() === '') return false
   return true
+}
+
+function verifySkillSignature(ownerWallet: string, signature: string, nonce: string): boolean {
+  try {
+    const pubkey = new PublicKey(ownerWallet).toBytes()
+    const sigBytes = bs58.decode(signature)
+    const msgBytes = new TextEncoder().encode(nonce)
+    return nacl.sign.detached.verify(msgBytes, sigBytes, pubkey)
+  } catch {
+    return false
+  }
 }
 
 function buildSkillRow(params: {
@@ -53,7 +71,7 @@ function buildSkillRow(params: {
     description: params.description,
     tags: params.tags,
     price_lamports: params.priceLamports,
-    is_active: false,
+    is_active: true,
     created_at: new Date().toISOString(),
   }
   // Platform-controlled model config — never user-supplied
@@ -80,10 +98,32 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { name, description, tags, priceLamports, ownerWallet, systemPrompt, mcpConfig } = body
+    const { name, description, tags, priceLamports, ownerWallet, systemPrompt, signature, nonce, mcpConfig } = body
+
+    // Verify nonce is within 5 minutes
+    if (Math.abs(Date.now() - Number(nonce)) >= 5 * 60 * 1000) {
+      return NextResponse.json({ error: 'invalid_signature' }, { status: 401 })
+    }
+
+    // Verify Ed25519 wallet signature of the nonce
+    if (!verifySkillSignature(ownerWallet, signature, nonce)) {
+      return NextResponse.json({ error: 'invalid_signature' }, { status: 401 })
+    }
 
     // Rate limit: 10 skill creations per wallet per hour
     await checkRateLimit(`rate:create-skill:${ownerWallet}`, 10, 3600)
+
+    // Idempotency: check for existing skill with same owner + name (case-insensitive)
+    const { data: existing } = await supabaseServiceRole
+      .from('skills')
+      .select('id')
+      .eq('owner_wallet', ownerWallet)
+      .ilike('name', name.trim())
+      .maybeSingle()
+
+    if (existing) {
+      return NextResponse.json({ error: 'duplicate_skill', existingId: existing.id }, { status: 409 })
+    }
 
     // SSRF prevention: validate MCP server URL before storing
     if (mcpConfig?.mcpUrl) {

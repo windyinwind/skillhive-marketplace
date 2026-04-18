@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SWARM Marketplace — TypeScript Type Check (PostToolUse on Edit|Write, asyncRewake)
+# SkillHive Marketplace — TypeScript Type Check (PostToolUse on Edit|Write, asyncRewake)
 # Runs tsc --noEmit after editing .ts/.tsx files in apps/web/.
 # Exits 2 (asyncRewake) to wake the model if type errors are found.
 
@@ -13,7 +13,7 @@ if ! printf '%s' "$FILE" | grep -qE 'apps/web/.*\.(ts|tsx)$'; then
   exit 0
 fi
 
-ROOT="/Users/weiliang/Code/SWARM-Marketplace"
+ROOT="/Users/weiliang/Code/SkillHive-Marketplace"
 
 # Skip gracefully if project is not yet initialized (Phase 1–3)
 if [ ! -f "$ROOT/apps/web/tsconfig.json" ] || [ ! -d "$ROOT/apps/web/node_modules" ]; then

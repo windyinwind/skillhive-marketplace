@@ -1,8 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { useWalletModal } from '@solana/wallet-adapter-react-ui'
+import { useWallet } from '@/hooks/useWalletAdapter'
 import { useQuery } from '@tanstack/react-query'
 import { TrendingUp, Zap, Star, Plus, Wallet, ExternalLink } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -61,7 +60,7 @@ function StatCard({ label, value, icon: Icon, color, loading }: {
 
 export default function DashboardPage() {
   const { publicKey, connected } = useWallet()
-  const { setVisible } = useWalletModal()
+  const { openAuthModal: setVisible } = useWallet()
 
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ['dashboard', publicKey?.toBase58()],

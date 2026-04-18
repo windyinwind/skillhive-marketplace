@@ -1,17 +1,12 @@
 'use client'
 
-import { useMemo, type ReactNode } from 'react'
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets'
+import { type ReactNode } from 'react'
+import { ConnectionProvider } from '@solana/wallet-adapter-react'
 import { clusterApiUrl } from '@solana/web3.js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-import '@solana/wallet-adapter-react-ui/styles.css'
+import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core'
+import { SolanaWalletConnectors } from '@dynamic-labs/solana'
+import { Toaster } from '@/components/ui/toast'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,21 +15,46 @@ const queryClient = new QueryClient({
 })
 
 export function Providers({ children }: { children: ReactNode }) {
-  const network = WalletAdapterNetwork.Devnet
-  const endpoint = process.env.NEXT_PUBLIC_SOLANA_RPC ?? clusterApiUrl(network)
-
-  const wallets = useMemo(
-    () => [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
-    []
-  )
+  const endpoint = process.env.NEXT_PUBLIC_SOLANA_RPC ?? clusterApiUrl('devnet')
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={wallets} autoConnect>
-          <WalletModalProvider>{children}</WalletModalProvider>
-        </WalletProvider>
-      </ConnectionProvider>
+      <DynamicContextProvider
+        settings={{
+          environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID!,
+          walletConnectors: [SolanaWalletConnectors],
+
+          // Branding — shown in the auth modal header
+          appName: 'SkillHive',
+          appLogoUrl: '/logo.png',
+
+          // Show all social providers enabled in the Dynamic dashboard
+          socialProvidersFilter: (providers) => providers,
+
+          // Auth mode: show both social login and wallet connect options
+          initialAuthenticationMode: 'connect-and-sign',
+
+          // Surface auth events to console in dev so we can diagnose failures
+          events: {
+            onAuthSuccess: ({ user, primaryWallet }) => {
+              if (process.env.NODE_ENV === 'development') {
+                console.log('[Dynamic] auth success', user?.email ?? primaryWallet?.address)
+              }
+            },
+            onAuthFailure: (data, reason) => {
+              console.warn('[Dynamic] auth failure', data, reason)
+            },
+            onWalletConnectionFailed: (connector, error) => {
+              console.warn('[Dynamic] wallet connection failed', connector?.name, error)
+            },
+          },
+        }}
+      >
+        <ConnectionProvider endpoint={endpoint}>
+          {children}
+          <Toaster />
+        </ConnectionProvider>
+      </DynamicContextProvider>
     </QueryClientProvider>
   )
 }

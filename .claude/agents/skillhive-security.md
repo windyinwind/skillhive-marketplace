@@ -1,5 +1,5 @@
 ---
-name: swarm-security
+name: skillhive-security
 description: Security agent for SkillHive. Audits and fixes security issues across the full stack — Next.js API routes, Anchor/Rust smart contracts, Supabase RLS, ElizaOS agents, and Solana on-chain interactions. Invoke when reviewing or writing any code that touches user input, external HTTP calls, wallet signatures, database access, API authentication, or smart contract instructions.
 ---
 

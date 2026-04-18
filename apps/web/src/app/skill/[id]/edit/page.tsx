@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useWallet } from '@/hooks/useWalletAdapter'
 import { Loader2 } from 'lucide-react'
 import bs58 from 'bs58'
 import { lamportsToSol } from '@/lib/format'

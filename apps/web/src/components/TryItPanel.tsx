@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, Share2 } from 'lucide-react'
+import { Loader2, Share2, Zap } from 'lucide-react'
+
+const DAILY_PREVIEW_LIMIT = 3
 
 interface TryItPanelProps {
   skillId: string
@@ -14,6 +16,7 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [previewsUsed, setPreviewsUsed] = useState(0)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -22,7 +25,10 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
     if (encoded) {
       try { setInput(atob(encoded)) } catch { setInput(encoded) }
     }
-  }, [])
+    // Restore session-local count from sessionStorage (best-effort UX indicator)
+    const stored = sessionStorage.getItem(`preview-used-${skillId}`)
+    if (stored) setPreviewsUsed(parseInt(stored, 10) || 0)
+  }, [skillId])
 
   const copyResultLink = () => {
     if (!input.trim()) return
@@ -50,6 +56,10 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
       if (!res.ok) throw new Error(data.error ?? 'Preview failed')
       setResult(data.result)
       setTruncated(data.truncated ?? false)
+      // Track usage locally for UX feedback
+      const used = Math.min(previewsUsed + 1, DAILY_PREVIEW_LIMIT)
+      setPreviewsUsed(used)
+      sessionStorage.setItem(`preview-used-${skillId}`, String(used))
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -57,9 +67,28 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
     }
   }
 
+  const remaining = DAILY_PREVIEW_LIMIT - previewsUsed
+  const quotaExhausted = remaining <= 0
+
   return (
     <div className="rounded-xl border border-border bg-card p-5">
-      <h3 className="mb-4 font-heading font-semibold text-foreground">Try it</h3>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="font-heading font-semibold text-foreground">Try it</h3>
+        {/* Preview quota indicator */}
+        <div className="flex items-center gap-1.5 text-xs">
+          {quotaExhausted ? (
+            <span className="text-amber-500">Daily limit reached</span>
+          ) : (
+            <>
+              <Zap className="h-3 w-3 text-[#14F195]" />
+              <span className="text-muted-foreground">
+                <span className="font-semibold text-foreground">{remaining}</span>
+                {' '}free preview{remaining === 1 ? '' : 's'} left today
+              </span>
+            </>
+          )}
+        </div>
+      </div>
 
       <textarea
         placeholder="Enter your input..."
@@ -70,10 +99,16 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
 
       <button
         onClick={runPreview}
-        disabled={loading || !input.trim()}
+        disabled={loading || !input.trim() || quotaExhausted}
         className="w-full rounded-lg border border-border bg-secondary py-2 text-sm font-medium text-muted-foreground transition-all active:scale-[0.97] hover:border-[#9945FF]/40 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {loading ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : 'Try for free'}
+        {loading ? (
+          <Loader2 className="mx-auto h-4 w-4 animate-spin" />
+        ) : quotaExhausted ? (
+          'Daily preview limit reached'
+        ) : (
+          'Try for free'
+        )}
       </button>
 
       {/* Loading skeleton */}

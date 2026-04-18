@@ -203,7 +203,7 @@ Path B uses **Yellowstone gRPC** (via Helius) for real-time `CallAccount` detect
 // HELIUS_GRPC_URL env var provides the endpoint (from Helius dashboard)
 const stream = await yellowstoneClient.subscribe({
   accounts: {
-    swarm: {
+    skillhive: {
       account: [],
       filters: [{
         memcmp: {

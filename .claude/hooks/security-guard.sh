@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SWARM Marketplace — Security Guard (PreToolUse on Edit|Write)
+# SkillHive Marketplace — Security Guard (PreToolUse on Edit|Write)
 # Blocks 3 critical violations from CLAUDE.md before they're written to disk.
 # Exits 0 with deny decision JSON to block; exits 0 silently to allow.
 

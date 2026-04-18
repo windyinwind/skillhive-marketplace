@@ -1,6 +1,6 @@
 'use client'
 
-import { Star, Users, Zap, ArrowLeft, Copy } from 'lucide-react'
+import { Star, Users, Zap, ArrowLeft, Copy, PauseCircle } from 'lucide-react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TryItPanel } from '@/components/TryItPanel'
@@ -60,6 +60,21 @@ export function SkillDetailClient({ id }: SkillDetailClientProps) {
       >
         <ArrowLeft className="h-4 w-4" /> Marketplace
       </Link>
+
+      {!skill.is_active && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-yellow-500/20 bg-yellow-500/5 px-4 py-3">
+          <div className="flex items-center gap-2 text-sm text-yellow-400">
+            <PauseCircle className="h-4 w-4 shrink-0" />
+            This skill is currently paused by its provider and cannot be called.
+          </div>
+          <Link
+            href="/marketplace"
+            className="shrink-0 rounded-lg border border-yellow-500/30 px-3 py-1.5 text-xs font-medium text-yellow-400 transition-colors hover:bg-yellow-500/10"
+          >
+            Browse alternatives →
+          </Link>
+        </div>
+      )}
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Skill info */}

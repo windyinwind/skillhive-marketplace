@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Bot, Sparkles, Zap, CheckCircle2 } from 'lucide-react'
+import { Zap, CheckCircle2, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { SkillCallCard } from './SkillCallCard'
@@ -75,8 +76,8 @@ export function MessageList({ messages, isLoading, onPrompt, onSettle }: Message
   if (messages.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-16">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#9945FF]/30 bg-[#9945FF]/10">
-          <Bot className="h-8 w-8 text-[#9945FF]" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#9945FF]/30 bg-[#9945FF]/10 overflow-hidden">
+          <Image src="/logo.png" alt="SkillHive Logo" width={64} height={64} className="object-cover" />
         </div>
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground">{t('emptyTitle')}</h2>
@@ -115,28 +116,66 @@ export function MessageList({ messages, isLoading, onPrompt, onSettle }: Message
 
           return (
             <div key={message.id} className="flex gap-3">
-              <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#9945FF]/20">
-                <Sparkles className="h-3.5 w-3.5 text-[#9945FF]" />
+              <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#9945FF]/20 overflow-hidden">
+                <Image src="/logo.png" alt="SkillHive" width={28} height={28} className="object-cover" />
               </div>
               <div className="flex-1">
                 {(message.toolSteps ?? []).map((step) => (
                   <SkillCallCard key={step.id} step={step} />
                 ))}
-                {message.content && (
-                  <div className="rounded-2xl rounded-tl-sm border border-border bg-card px-4 py-3 text-sm text-foreground">
-                    <div className="prose prose-sm max-w-none leading-relaxed dark:prose-invert
-                      prose-headings:font-semibold prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0
-                      prose-p:my-1.5
-                      prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
-                      prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:rounded-lg
-                      prose-a:text-[#9945FF] prose-a:no-underline hover:prose-a:underline
-                      prose-li:my-0.5">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {message.content}
-                      </ReactMarkdown>
+                {message.content && (() => {
+                  const hasUnpaidDebt = !message.isFree && !message.paid && (message.skillDebts?.length ?? 0) > 0
+                  const totalLamports = message.skillDebts?.reduce((s, d) => s + d.costLamports, 0) ?? 0
+
+                  // Split at ~40% for the paywall preview
+                  const cut = Math.min(320, Math.floor(message.content.length * 0.4))
+                  const preview = hasUnpaidDebt ? message.content.slice(0, cut) : message.content
+                  const locked  = hasUnpaidDebt ? message.content.slice(cut) : ''
+
+                  const proseClass = `prose prose-sm max-w-none leading-relaxed dark:prose-invert
+                    prose-headings:font-semibold prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0
+                    prose-p:my-1.5
+                    prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs
+                    prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:rounded-lg
+                    prose-a:text-[#9945FF] prose-a:no-underline hover:prose-a:underline
+                    prose-li:my-0.5`
+
+                  return (
+                    <div className="rounded-2xl rounded-tl-sm border border-border bg-card text-sm text-foreground overflow-hidden">
+                      {/* Preview (always visible) */}
+                      <div className="px-4 py-3">
+                        <div className={proseClass}>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{preview}</ReactMarkdown>
+                        </div>
+                      </div>
+
+                      {/* Locked section — blurred until paid */}
+                      {hasUnpaidDebt && locked && (
+                        <div className="relative border-t border-[#9945FF]/20">
+                          {/* Blurred text */}
+                          <div className="select-none pointer-events-none px-4 py-3 bg-[#9945FF]/5">
+                            <div className={`blur-[5px] opacity-50 ${proseClass} line-clamp-4`}>
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>{locked}</ReactMarkdown>
+                            </div>
+                          </div>
+                          {/* Gradient + pay CTA */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-transparent via-card/70 to-card/95 px-4 py-3 gap-2">
+                            <p className="text-xs text-muted-foreground text-center">
+                              Pay <span className="font-semibold text-foreground">{lamportsToSol(totalLamports)} SOL</span> to unlock the full response
+                            </p>
+                            <button
+                              onClick={async () => { await onSettle(message.id, message.skillDebts!) }}
+                              className="flex items-center gap-1.5 rounded-lg bg-[#9945FF] px-4 py-1.5 text-xs font-semibold text-white transition-all hover:bg-[#8535EF] active:scale-[0.97]"
+                            >
+                              <Zap className="h-3 w-3" />
+                              Unlock · {lamportsToSol(totalLamports)} SOL
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
+                  )
+                })()}
                 {!message.content && (message.toolSteps ?? []).length === 0 && (
                   <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-border bg-card px-4 py-3">
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#9945FF]" style={{ animationDelay: '0ms' }} />

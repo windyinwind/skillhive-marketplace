@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SWARM Marketplace — Build/Deploy Notification (PostToolUse on Bash)
+# SkillHive Marketplace — Build/Deploy Notification (PostToolUse on Bash)
 # Shows a systemMessage when anchor deploy, anchor build, or pnpm build completes.
 
 set -uo pipefail

@@ -1,5 +1,5 @@
 ---
-name: swarm-plugin
+name: skillhive-plugin
 description: Use for ElizaOS plugin development in packages/plugin-skillhive/ and packages/skill-template/. Implements the DISCOVER_SKILLS, CALL_SKILL, LISTEN, and COMPLETE actions that allow any ElizaOS agent to participate in the SkillHive. Invoke when building or debugging the plugin-skillhive package.
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
@@ -90,7 +90,7 @@ await sendAndConfirmTransaction(connection, tx, [agentKeypair])
 // Skill agent: subscribes via Yellowstone gRPC (Helius) — real-time, no polling
 const stream = await yellowstoneClient.subscribe({
   accounts: {
-    swarm: {
+    skillhive: {
       account: [],
       filters: [{ memcmp: { offset: SKILL_ID_OFFSET, data: mySkillIdBase58 } }]
     }

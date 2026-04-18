@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useWallet } from '@/hooks/useWalletAdapter'
 import bs58 from 'bs58'
+import { toast } from '@/hooks/use-toast'
 
 interface StarRatingProps {
   callId: string
@@ -45,9 +46,11 @@ export function StarRating({ callId, skillId, callerWallet, onDone, size = 'md' 
         return
       }
       setSubmitted(true)
+      toast({ variant: 'success', title: 'Rating submitted', description: 'Thanks for helping the community!' })
       onDone?.()
     } catch {
       setError('Wallet signing cancelled')
+      toast({ variant: 'destructive', title: 'Rating cancelled', description: 'Wallet signing was rejected.' })
     } finally {
       setLoading(false)
     }

@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     let q = supabaseAnon
       .from('arena_rounds')
-      .select('*', { count: 'exact' })
+      .select('*, entries:arena_entries(round_id, votes, sol_earned)', { count: 'exact' })
       .eq('status', status)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
@@ -26,28 +26,15 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error
 
-    // Attach aggregate stats for each round
-    const roundIds = (rounds ?? []).map((r) => r.id)
-    let statsMap: Record<string, { total_sol_staked: number; total_votes: number; entry_count: number }> = {}
-
-    if (roundIds.length > 0) {
-      const { data: entries } = await supabaseAnon
-        .from('arena_entries')
-        .select('round_id, votes, sol_earned')
-        .in('round_id', roundIds)
-
-      for (const e of entries ?? []) {
-        if (!statsMap[e.round_id]) statsMap[e.round_id] = { total_sol_staked: 0, total_votes: 0, entry_count: 0 }
-        statsMap[e.round_id].total_sol_staked += e.sol_earned
-        statsMap[e.round_id].total_votes += e.votes
-        statsMap[e.round_id].entry_count += 1
-      }
-    }
-
-    const enriched = (rounds ?? []).map((r) => ({
-      ...r,
-      ...(statsMap[r.id] ?? { total_sol_staked: 0, total_votes: 0, entry_count: 0 }),
-    }))
+    const enriched = (rounds ?? []).map((r) => {
+      const entries = (r.entries ?? []) as { votes: number; sol_earned: number }[]
+      const total_sol_staked = entries.reduce((s: number, e) => s + (e.sol_earned ?? 0), 0)
+      const total_votes = entries.reduce((s: number, e) => s + (e.votes ?? 0), 0)
+      const entry_count = entries.length
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { entries: _entries, ...roundData } = r
+      return { ...roundData, total_sol_staked, total_votes, entry_count }
+    })
 
     return NextResponse.json({
       rounds: enriched,

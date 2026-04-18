@@ -9,6 +9,10 @@ export async function POST(
   { params }: { params: Promise<{ skillId: string }> }
 ) {
   try {
+    if (!process.env.X402_FACILITATOR_URL) {
+      return Response.json({ error: 'x402_not_configured' }, { status: 503 })
+    }
+
     const { skillId } = await params
     const paymentHeader = req.headers.get('x402-payment')
 
@@ -47,16 +51,13 @@ export async function POST(
     }
 
     // ── Verify payment via x402 facilitator ───────────────────────────────
-    const facilitatorUrl = process.env.X402_FACILITATOR_URL
-    if (facilitatorUrl) {
-      const verification = await fetch(`${facilitatorUrl}/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payment: paymentHeader, resource: req.url }),
-      })
-      if (!verification.ok) {
-        return NextResponse.json({ error: 'Payment verification failed' }, { status: 402 })
-      }
+    const verification = await fetch(`${process.env.X402_FACILITATOR_URL}/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payment: paymentHeader, resource: req.url }),
+    })
+    if (!verification.ok) {
+      return NextResponse.json({ error: 'Payment verification failed' }, { status: 402 })
     }
 
     // ── Fetch endpoint and call skill ─────────────────────────────────────

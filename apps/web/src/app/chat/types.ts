@@ -20,9 +20,11 @@ export interface ChatMessage {
   toolSteps?: ToolStep[]
   skillDebts?: SkillDebt[]   // skills used but not yet paid — shown after response
   paid?: boolean
+  isFree?: boolean           // true = no payment required for this response
 }
 
 export type SSEEvent =
+  | { type: 'quota'; isFree: boolean }
   | { type: 'tool-call'; toolCallId: string; toolName: string; args: Record<string, unknown> }
   | { type: 'tool-result'; toolCallId?: string; toolName: string; result: Record<string, unknown> }
   | { type: 'text-delta'; text: string }

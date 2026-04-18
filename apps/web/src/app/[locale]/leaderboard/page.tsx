@@ -126,7 +126,7 @@ export default function LeaderboardPage() {
                       ) : rank}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2.5">
+                      <Link href={`/skill/${row.skill_id}`} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
                         {row.logo_url ? (
                           <img src={row.logo_url} alt="" className="w-7 h-7 rounded-lg object-cover flex-shrink-0" />
                         ) : (
@@ -134,7 +134,7 @@ export default function LeaderboardPage() {
                         )}
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-medium text-foreground group-hover:text-foreground transition-colors">
+                            <span className="font-medium text-foreground group-hover:text-violet-400 transition-colors">
                               {row.name}
                             </span>
                             <Badge className={`text-xs px-1.5 py-0 ${tierColor(row.tier)}`}>
@@ -150,7 +150,7 @@ export default function LeaderboardPage() {
                             ))}
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     </td>
                     <td className="px-4 py-3 text-right font-semibold text-foreground hidden md:table-cell">
                       {row.wins}

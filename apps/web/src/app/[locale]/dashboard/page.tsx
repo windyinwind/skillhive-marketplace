@@ -1,13 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { useQuery } from '@tanstack/react-query'
-import { TrendingUp, Zap, Star, Wallet } from 'lucide-react'
+import { useState } from 'react'
+import { useWallet } from '@/hooks/useWalletAdapter'
+import { useOpenFundingOptions } from '@dynamic-labs/sdk-react-core'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { TrendingUp, Zap, Star, Wallet, Loader2 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { lamportsToSol, truncateWallet, formatDate, reputationToStars } from '@/lib/format'
 import { StarRating } from '@/components/StarRating'
 import { useTranslations } from 'next-intl'
+import bs58 from 'bs58'
+import { toast } from '@/hooks/use-toast'
 
 interface UnratedCall {
   call_id: string
@@ -42,7 +47,45 @@ interface DashboardData {
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard')
-  const { publicKey, connected } = useWallet()
+  const { publicKey, connected, openAuthModal, signMessage } = useWallet()
+  const { openFundingOptions } = useOpenFundingOptions()
+  const queryClient = useQueryClient()
+  const [togglingId, setTogglingId] = useState<string | null>(null)
+  const [confirmSkill, setConfirmSkill] = useState<{ id: string; name: string; isActive: boolean } | null>(null)
+
+  const toggleSkill = async (skillId: string) => {
+    if (!publicKey || !signMessage || togglingId) return
+    setConfirmSkill(null)
+    setTogglingId(skillId)
+    const skill = data?.skills.find((s) => s.id === skillId)
+    const wasActive = skill?.is_active ?? true
+    try {
+      const nonce = Date.now()
+      const sigBytes = await signMessage(new TextEncoder().encode(`${skillId}${nonce}`))
+      const signature = bs58.encode(sigBytes)
+      const res = await fetch(`/api/skills/${skillId}/toggle`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress: publicKey.toBase58(), signature, nonce }),
+      })
+      if (res.ok) {
+        await queryClient.invalidateQueries({ queryKey: ['dashboard', publicKey.toBase58()] })
+        toast({
+          variant: 'success',
+          title: wasActive ? 'Skill paused' : 'Skill activated',
+          description: wasActive
+            ? 'Your skill is now hidden from the marketplace.'
+            : 'Your skill is live and callable again.',
+        })
+      } else {
+        toast({ variant: 'destructive', title: 'Toggle failed', description: 'Please try again.' })
+      }
+    } catch {
+      toast({ variant: 'destructive', title: 'Cancelled', description: 'Wallet sign was cancelled.' })
+    } finally {
+      setTogglingId(null)
+    }
+  }
 
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ['dashboard', publicKey?.toBase58()],
@@ -66,14 +109,68 @@ export default function DashboardPage() {
 
   if (!connected) {
     return (
-      <div className="mx-auto max-w-[1200px] px-4 py-20 text-center sm:px-6">
-        <p className="text-muted-foreground">{t('connectWallet')}</p>
+      <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center">
+          <Wallet className="mx-auto mb-4 h-10 w-10 text-[#9945FF]" />
+          <h2 className="mb-2 font-heading text-xl font-bold text-foreground">{t('connectWallet')}</h2>
+          <ul className="mb-6 space-y-2 text-left text-sm text-muted-foreground">
+            <li className="flex items-start gap-2">
+              <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-[#14F195]" />
+              Earn SOL every time someone calls your published skills
+            </li>
+            <li className="flex items-start gap-2">
+              <Zap className="mt-0.5 h-4 w-4 shrink-0 text-[#9945FF]" />
+              Track call history and monitor usage across all your skills
+            </li>
+            <li className="flex items-start gap-2">
+              <Star className="mt-0.5 h-4 w-4 shrink-0 text-[#14F195]" />
+              Manage, pause, or update your skills from one place
+            </li>
+          </ul>
+          <button
+            onClick={() => openAuthModal()}
+            className="w-full rounded-lg bg-[#9945FF] py-2.5 text-sm font-semibold text-white transition-all active:scale-[0.97] hover:bg-[#8535EF]"
+          >
+            Connect to get started
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6">
+      {/* Pause / activate confirmation dialog */}
+      <Dialog open={!!confirmSkill} onOpenChange={(open) => { if (!open) setConfirmSkill(null) }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>
+              {confirmSkill?.isActive ? 'Pause skill?' : 'Activate skill?'}
+            </DialogTitle>
+            <DialogDescription>
+              {confirmSkill?.isActive
+                ? `"${confirmSkill.name}" will be hidden from the marketplace and cannot be called until reactivated.`
+                : `"${confirmSkill?.name}" will go live and be callable by anyone on the marketplace.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 pt-2">
+            <button
+              onClick={() => setConfirmSkill(null)}
+              className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => confirmSkill && toggleSkill(confirmSkill.id)}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all active:scale-[0.97] ${
+                confirmSkill?.isActive ? 'bg-amber-500 hover:bg-amber-600' : 'bg-[#9945FF] hover:bg-[#8535EF]'
+              }`}
+            >
+              {confirmSkill?.isActive ? 'Yes, pause it' : 'Yes, activate it'}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="font-heading text-3xl font-bold text-foreground">{t('title')}</h1>
@@ -81,11 +178,21 @@ export default function DashboardPage() {
             {truncateWallet(publicKey?.toBase58() ?? '')}
           </p>
         </div>
-        <Link href="/create">
-          <button className="rounded-lg bg-[#9945FF] px-4 py-2 text-sm font-semibold text-white transition-all active:scale-[0.97] hover:bg-[#8535EF]">
-            {t('newSkill')}
-          </button>
-        </Link>
+        <div className="flex items-center gap-2">
+          {publicKey && (
+            <button
+              onClick={openFundingOptions}
+              className="rounded-lg border border-[#9945FF]/40 px-4 py-2 text-sm font-semibold text-[#9945FF] transition-all active:scale-[0.97] hover:bg-[#9945FF]/10"
+            >
+              Top Up
+            </button>
+          )}
+          <Link href="/create">
+            <button className="rounded-lg bg-[#9945FF] px-4 py-2 text-sm font-semibold text-white transition-all active:scale-[0.97] hover:bg-[#8535EF]">
+              {t('newSkill')}
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats */}
@@ -157,15 +264,21 @@ export default function DashboardPage() {
                   </p>
                 </Link>
                 <div className="flex items-center gap-2 ml-3 shrink-0">
-                  <span
-                    className={`rounded-md border px-2 py-0.5 text-xs ${
+                  <button
+                    onClick={(e) => { e.preventDefault(); setConfirmSkill({ id: skill.id, name: skill.name, isActive: skill.is_active }) }}
+                    disabled={togglingId === skill.id}
+                    title={skill.is_active ? 'Click to pause' : 'Click to activate'}
+                    className={`rounded-md border px-2 py-0.5 text-xs transition-all hover:opacity-80 disabled:cursor-wait ${
                       skill.is_active
                         ? 'border-[#14F195]/30 bg-[#14F195]/10 text-[#14F195]'
                         : 'border-border bg-muted text-muted-foreground'
                     }`}
                   >
-                    {skill.is_active ? t('skillActive') : t('skillPaused')}
-                  </span>
+                    {togglingId === skill.id
+                      ? <Loader2 className="h-3 w-3 animate-spin" />
+                      : skill.is_active ? t('skillActive') : t('skillPaused')
+                    }
+                  </button>
                   <Link
                     href={`/skill/${skill.id}/edit`}
                     className="rounded-md border border-border bg-card px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:border-[#9945FF]/25 hover:text-[#9945FF]"

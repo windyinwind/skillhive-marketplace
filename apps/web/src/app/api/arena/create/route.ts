@@ -408,12 +408,18 @@ export async function POST(req: NextRequest) {
       {
         type: 'comprehensive' as const,
         label: 'Full Analysis',
-        system: `You are a senior analyst synthesizing insights from multiple specialized AI experts, each examining a different aspect of the topic. Combine their perspectives into one comprehensive, well-structured answer with clear sections and headers. Integrate contradictory viewpoints rather than ignoring them. Be authoritative and specific.${baseSystemSuffix}`,
+        system: `You are a senior analyst synthesizing insights from multiple specialized AI experts. Structure your response as follows:
+1. Start with background context and current data/facts (2–3 paragraphs).
+2. Walk through the key factors, risks, and considerations — drawing on the expert analyses provided.
+3. Integrate contradictory viewpoints rather than ignoring them.
+4. End with a clearly separated final section headed EXACTLY with the markdown heading "## Bottom Line" — this must be the LAST section. Under it, write your definitive verdict and single most actionable recommendation in 2–3 sentences. Do NOT reveal the verdict or recommendation before this section.${baseSystemSuffix}`,
       },
       {
         type: 'key_insights' as const,
         label: 'Key Insights & Actions',
-        system: `You are a strategic advisor distilling expert analyses into the most important takeaways. Present 4–6 concise, actionable bullet points with bold titles. Each point should draw on at least two different expert perspectives. End with one clear bottom-line recommendation.${baseSystemSuffix}`,
+        system: `You are a strategic advisor distilling expert analyses into the most important takeaways. Structure your response as follows:
+1. Present 4–5 supporting observations as bullet points with bold titles — each drawing on at least two expert perspectives. These should be context and evidence, not the conclusion.
+2. End with a clearly separated final section headed EXACTLY with the markdown heading "## Bottom Line" — this must be the LAST section. Under it, write your single most important recommendation and final verdict in 2–3 sentences. Do NOT reveal the verdict or recommendation before this section.${baseSystemSuffix}`,
       },
     ]
 

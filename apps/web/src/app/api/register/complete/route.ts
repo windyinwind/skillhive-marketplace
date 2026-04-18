@@ -130,6 +130,22 @@ export async function POST(req: NextRequest) {
     // Rate limit: 10 completions per wallet per hour
     await checkRateLimit(`rate:register-complete:${ownerWallet}`, 10, 3600)
 
+    // Endpoint reachability check — probe with HEAD (5s timeout).
+    // 4xx/5xx responses are acceptable (auth required, method not allowed, etc.) — they prove
+    // the server is up. Only network-level failures (ECONNREFUSED, DNS, timeout) are flagged.
+    let endpointReachable = true
+    try {
+      const probe = await fetch(safeEndpoint, {
+        method: 'HEAD',
+        signal: AbortSignal.timeout(5000),
+      })
+      // Any HTTP response (even 401/405/500) means the server is reachable
+      endpointReachable = true
+      void probe // suppress unused warning
+    } catch {
+      endpointReachable = false
+    }
+
     // Write private fields via computed keys so no bare private-field name
     // appears as an object key in source — guard-safe pattern.
     const privateFields: Record<string, unknown> = {}
@@ -158,7 +174,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to store skill configuration' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({
+      success: true,
+      ...(!endpointReachable && {
+        warning: 'Endpoint registered but could not be reached. Verify it is publicly accessible before callers use it.',
+      }),
+    })
   } catch (err) {
     console.error('[POST /api/register/complete] Unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
