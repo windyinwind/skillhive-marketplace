@@ -47,7 +47,7 @@ interface DashboardData {
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard')
-  const { publicKey, connected, openAuthModal, signMessage } = useWallet()
+  const { publicKey, connected, isAuthenticated, openAuthModal, signMessage } = useWallet()
   const { openFundingOptions } = useOpenFundingOptions()
   const queryClient = useQueryClient()
   const [togglingId, setTogglingId] = useState<string | null>(null)
@@ -112,27 +112,28 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center">
           <Wallet className="mx-auto mb-4 h-10 w-10 text-[#9945FF]" />
-          <h2 className="mb-2 font-heading text-xl font-bold text-foreground">{t('connectWallet')}</h2>
-          <ul className="mb-6 space-y-2 text-left text-sm text-muted-foreground">
-            <li className="flex items-start gap-2">
-              <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-[#14F195]" />
-              Earn SOL every time someone calls your published skills
-            </li>
-            <li className="flex items-start gap-2">
-              <Zap className="mt-0.5 h-4 w-4 shrink-0 text-[#9945FF]" />
-              Track call history and monitor usage across all your skills
-            </li>
-            <li className="flex items-start gap-2">
-              <Star className="mt-0.5 h-4 w-4 shrink-0 text-[#14F195]" />
-              Manage, pause, or update your skills from one place
-            </li>
-          </ul>
-          <button
-            onClick={() => openAuthModal()}
-            className="w-full rounded-lg bg-[#9945FF] py-2.5 text-sm font-semibold text-white transition-all active:scale-[0.97] hover:bg-[#8535EF]"
-          >
-            Connect to get started
-          </button>
+          <h2 className="mb-2 font-heading text-xl font-bold text-foreground">
+            {isAuthenticated ? 'One last step...' : t('connectWallet')}
+          </h2>
+          <p className="mb-6 text-sm text-muted-foreground">
+            {isAuthenticated 
+              ? "We're almost there. We're initializing your Solana wallet so you can start managing your skills and earnings."
+              : "Connect your wallet to view your dashboard. Track earnings, manage skills, and monitor your platform activity."
+            }
+          </p>
+          {isAuthenticated ? (
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="h-6 w-6 animate-spin text-[#9945FF]" />
+              <span className="text-sm font-medium text-[#9945FF]">Provisioning wallet...</span>
+            </div>
+          ) : (
+            <button
+              onClick={() => openAuthModal()}
+              className="w-full rounded-lg bg-[#9945FF] py-2.5 text-sm font-semibold text-white transition-all active:scale-[0.97] hover:bg-[#8535EF]"
+            >
+              Connect to get started
+            </button>
+          )}
         </div>
       </div>
     )

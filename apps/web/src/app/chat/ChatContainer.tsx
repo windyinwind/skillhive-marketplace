@@ -4,7 +4,7 @@ import { useState, useCallback, type FormEvent } from 'react'
 import { useWallet } from '@/hooks/useWalletAdapter'
 import { useConnection } from '@solana/wallet-adapter-react'
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
-import { Wallet } from 'lucide-react'
+import { Wallet, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { MessageList } from './MessageList'
 import { ChatInput } from './ChatInput'
@@ -20,7 +20,7 @@ export function ChatContainer() {
   const [isLoading, setIsLoading] = useState(false)
   const [hasPendingDebt, setHasPendingDebt] = useState(false)
   const [freeUsesRemaining, setFreeUsesRemaining] = useState<number | null>(null)
-  const { publicKey, signTransaction, connected } = useWallet()
+  const { publicKey, signTransaction, connected, isAuthenticated } = useWallet()
   const { connection } = useConnection()
   const { openAuthModal: setVisible } = useWallet()
 
@@ -200,16 +200,26 @@ export function ChatContainer() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">SkillHive Chat</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Connect your wallet to use Chat. Skills are called on your behalf and you pay skill owners directly after each response.
+            {isAuthenticated 
+              ? "We're setting up your secure Solana wallet. This only takes a moment..."
+              : "Connect your wallet to use Chat. Skills are called on your behalf and you pay skill owners directly after each response."
+            }
           </p>
         </div>
-        <button
-          onClick={() => setVisible(true)}
-          className="flex items-center gap-2 rounded-xl bg-[#9945FF] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#8535EF] active:scale-[0.97]"
-        >
-          <Wallet className="h-4 w-4" />
-          Login
-        </button>
+        {isAuthenticated ? (
+          <div className="flex items-center gap-2 text-[#9945FF] text-sm font-medium animate-pulse">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Initializing wallet...
+          </div>
+        ) : (
+          <button
+            onClick={() => setVisible(true)}
+            className="flex items-center gap-2 rounded-xl bg-[#9945FF] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#8535EF] active:scale-[0.97]"
+          >
+            <Wallet className="h-4 w-4" />
+            Login
+          </button>
+        )}
       </div>
     )
   }
