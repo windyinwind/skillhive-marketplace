@@ -6,6 +6,7 @@ import { clusterApiUrl } from '@solana/web3.js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core'
 import { SolanaWalletConnectors } from '@dynamic-labs/solana'
+import { analytics } from '@/lib/analytics'
 import { Toaster } from '@/components/ui/toast'
 
 const queryClient = new QueryClient({
@@ -37,6 +38,12 @@ export function Providers({ children }: { children: ReactNode }) {
           // Surface auth events to console in dev so we can diagnose failures
           events: {
             onAuthSuccess: ({ user, primaryWallet }) => {
+              if (primaryWallet?.address) {
+                analytics.trackWalletConnect(
+                  primaryWallet.address,
+                  primaryWallet.connector?.name ?? 'unknown'
+                )
+              }
               if (process.env.NODE_ENV === 'development') {
                 console.log('[Dynamic] auth success', user?.email ?? primaryWallet?.address)
               }

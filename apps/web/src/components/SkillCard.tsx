@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Star, Zap } from 'lucide-react'
+import { analytics } from '@/lib/analytics'
 import { lamportsToSol, reputationToStars } from '@/lib/format'
 
 interface Skill {
@@ -31,7 +32,11 @@ export function SkillCard({ skill, featured = false }: { skill: Skill; featured?
   const fullStars = Math.floor(displayRating)
 
   return (
-    <Link href={`/skill/${skill.id}`} className="block h-full">
+    <Link
+      href={`/skill/${skill.id}`}
+      className="block h-full"
+      onClick={() => analytics.trackViewSkill(skill.id, skill.name)}
+    >
       <div
         className="skill-card group flex h-full flex-col rounded-xl p-6 transition-all"
         style={{

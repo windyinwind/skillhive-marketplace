@@ -1,8 +1,8 @@
 # Environment variables — never commit secrets
 .env
 .env.local
-.env.*.local
-apps/web/.env.local
+.env.production
+.env.*
 # apps/indexer is eliminated — Helius webhooks replaced it
 
 # Claude Code local settings (personal overrides)
@@ -29,3 +29,6 @@ supabase/.temp/
 # Misc
 .DS_Store
 *.log
+
+# Marketing assets (local only)
+demo-video/

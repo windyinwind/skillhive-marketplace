@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Loader2, Share2, Zap } from 'lucide-react'
+import { analytics } from '@/lib/analytics'
 
 const DAILY_PREVIEW_LIMIT = 3
 
@@ -56,6 +57,10 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
       if (!res.ok) throw new Error(data.error ?? 'Preview failed')
       setResult(data.result)
       setTruncated(data.truncated ?? false)
+
+      // Track conversion metric
+      analytics.trackSkillCall(skillId, 'preview_mode', 0)
+
       // Track usage locally for UX feedback
       const used = Math.min(previewsUsed + 1, DAILY_PREVIEW_LIMIT)
       setPreviewsUsed(used)
