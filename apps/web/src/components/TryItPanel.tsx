@@ -32,7 +32,7 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
   }, [skillId])
 
   const copyResultLink = () => {
-    if (!input.trim()) return
+    if (!input?.trim()) return
     const url = new URL(window.location.href)
     url.searchParams.set('input', btoa(input))
     navigator.clipboard.writeText(url.toString()).then(() => {
@@ -42,7 +42,7 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
   }
 
   const runPreview = async () => {
-    if (!input.trim()) return
+    if (!input?.trim()) return
     setLoading(true)
     setResult(null)
     setTruncated(false)
@@ -104,7 +104,7 @@ export function TryItPanel({ skillId }: TryItPanelProps) {
 
       <button
         onClick={runPreview}
-        disabled={loading || !input.trim() || quotaExhausted}
+        disabled={loading || !input?.trim() || quotaExhausted}
         className="w-full rounded-lg border border-border bg-secondary py-2 text-sm font-medium text-muted-foreground transition-all active:scale-[0.97] hover:border-[#9945FF]/40 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {loading ? (

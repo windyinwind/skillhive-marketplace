@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { ChatContainer } from '@/app/chat/ChatContainer'
+import { ChatContainer } from '@/components/chat/ChatContainer'
 
 export const metadata: Metadata = {
   title: 'SkillHive Chat — Multi-Agent Orchestration',

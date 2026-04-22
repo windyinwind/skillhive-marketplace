@@ -19,6 +19,8 @@ interface Skill {
   tier: number
   skill_type: string
   provider_name: string | null
+  category: string | null
+  is_featured?: boolean
 }
 
 const TIER_LABELS: Record<number, string> = {
@@ -27,7 +29,8 @@ const TIER_LABELS: Record<number, string> = {
   3: 'Agent',
 }
 
-export function SkillCard({ skill, featured = false }: { skill: Skill; featured?: boolean }) {
+export function SkillCard({ skill, featured: manualFeatured = false }: { skill: Skill; featured?: boolean }) {
+  const isFeatured = manualFeatured || skill.is_featured === true
   const displayRating = skill.rating_count > 0 ? skill.rating_avg : reputationToStars(skill.reputation_score)
   const fullStars = Math.floor(displayRating)
 
@@ -41,10 +44,10 @@ export function SkillCard({ skill, featured = false }: { skill: Skill; featured?
         className="skill-card group flex h-full flex-col rounded-xl p-6 transition-all"
         style={{
           background: 'var(--bg-card)',
-          border: featured
-            ? '1px solid rgba(153,69,255,0.3)'
+          border: isFeatured
+            ? '1px solid rgba(153,69,255,0.4)'
             : '1px solid var(--border-subtle)',
-          boxShadow: featured ? '0 0 0 1px rgba(153,69,255,0.1)' : 'none',
+          boxShadow: isFeatured ? '0 0 15px -5px rgba(153,69,255,0.2)' : 'none',
         }}
       >
         {/* Header */}
@@ -55,16 +58,30 @@ export function SkillCard({ skill, featured = false }: { skill: Skill; featured?
           >
             {skill.name}
           </h3>
-          <span
-            className="shrink-0 rounded-md px-2 py-0.5 text-xs"
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            {TIER_LABELS[skill.tier] ?? `Tier ${skill.tier}`}
-          </span>
+          <div className="flex shrink-0 items-center gap-1.5">
+            {skill.category && (
+              <span
+                className="rounded-md px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider"
+                style={{
+                  background: 'rgba(20, 241, 149, 0.1)',
+                  border: '1px solid rgba(20, 241, 149, 0.2)',
+                  color: '#14F195',
+                }}
+              >
+                {skill.category}
+              </span>
+            )}
+            <span
+              className="rounded-md px-2 py-0.5 text-xs"
+              style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              {TIER_LABELS[skill.tier] ?? `Tier ${skill.tier}`}
+            </span>
+          </div>
         </div>
 
         {/* Description */}

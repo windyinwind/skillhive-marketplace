@@ -12,7 +12,7 @@ interface ChatInputProps {
   onSubmit: (e: FormEvent) => void
 }
 
-export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputProps) {
+export function ChatInput({ input = '', isLoading, onChange, onSubmit }: ChatInputProps) {
   const t = useTranslations('chat')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -26,7 +26,7 @@ export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputPro
   function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      if (!isLoading && input.trim()) {
+      if (!isLoading && input?.trim()) {
         onSubmit(e as unknown as FormEvent)
       }
     }
@@ -49,7 +49,7 @@ export function ChatInput({ input, isLoading, onChange, onSubmit }: ChatInputPro
         />
         <Button
           type="submit"
-          disabled={isLoading || !input.trim()}
+          disabled={isLoading || !input?.trim()}
           className="h-12 w-12 shrink-0 rounded-xl bg-[#9945FF] p-0 hover:bg-[#8535EF] disabled:opacity-40"
         >
           {isLoading ? (

@@ -20,6 +20,8 @@ export interface SkillPublic {
   logo_url: string | null
   provider_name: string | null
   long_description: string | null
+  category: string | null
+  is_featured: boolean
 }
 
 export interface SkillsResponse {
@@ -35,6 +37,8 @@ export interface SkillFilters {
   minReputation?: number
   maxPrice?: number
   search?: string
+  category?: string
+  isFeatured?: boolean
   page?: number
   limit?: number
 }
@@ -46,6 +50,8 @@ function buildParams(filters: SkillFilters): string {
   if (filters.minReputation) p.set('minReputation', String(filters.minReputation))
   if (filters.maxPrice) p.set('maxPrice', String(filters.maxPrice))
   if (filters.search) p.set('search', filters.search)
+  if (filters.category) p.set('category', filters.category)
+  if (filters.isFeatured) p.set('isFeatured', 'true')
   if (filters.page) p.set('page', String(filters.page))
   if (filters.limit) p.set('limit', String(filters.limit))
   return p.toString()

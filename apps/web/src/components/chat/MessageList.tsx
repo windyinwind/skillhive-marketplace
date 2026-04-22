@@ -5,6 +5,8 @@ import { Zap, CheckCircle2, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import { SkillCallCard } from './SkillCallCard'
 import { CostTally } from './CostTally'
 import { lamportsToSol } from '@/lib/format'
@@ -25,7 +27,8 @@ function SettleBar({ msgId, debts, onSettle, alreadyPaid }: {
   onSettle: (msgId: string, debts: SkillDebt[]) => Promise<boolean>
   alreadyPaid: boolean
 }) {
-  const [retrying, setRetrying] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [paying, setPaying] = useState(false)
   const totalLamports = debts.reduce((sum, d) => sum + d.costLamports, 0)
 
   if (alreadyPaid) {
@@ -37,25 +40,69 @@ function SettleBar({ msgId, debts, onSettle, alreadyPaid }: {
     )
   }
 
-  // Payment was auto-triggered but user cancelled — show retry
+  async function handleConfirm() {
+    setPaying(true)
+    try {
+      await onSettle(msgId, debts)
+      setOpen(false)
+    } finally {
+      setPaying(false)
+    }
+  }
+
   return (
-    <div className="mt-2 flex items-center gap-3 rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-3 py-2">
-      <Zap className="h-3.5 w-3.5 shrink-0 text-yellow-400" />
-      <div className="flex-1 text-xs text-muted-foreground">
-        Payment cancelled · {debts.length} skill{debts.length !== 1 ? 's' : ''} ·{' '}
-        <span className="font-medium text-foreground">{lamportsToSol(totalLamports)} SOL</span> owed
+    <>
+      <div className="mt-2 flex items-center gap-3 rounded-lg border border-[#9945FF]/20 bg-[#9945FF]/5 px-3 py-2">
+        <Zap className="h-3.5 w-3.5 shrink-0 text-[#9945FF]" />
+        <div className="flex-1 text-xs text-muted-foreground">
+          {debts.length} skill{debts.length !== 1 ? 's' : ''} used ·{' '}
+          <span className="font-medium text-foreground">{lamportsToSol(totalLamports)} SOL</span>
+        </div>
+        <button
+          onClick={() => setOpen(true)}
+          className="rounded-md bg-[#9945FF] px-3 py-1 text-xs font-semibold text-white transition-all hover:bg-[#8535EF] active:scale-[0.97]"
+        >
+          Pay {lamportsToSol(totalLamports)} SOL
+        </button>
       </div>
-      <button
-        onClick={async () => {
-          setRetrying(true)
-          try { await onSettle(msgId, debts) } finally { setRetrying(false) }
-        }}
-        disabled={retrying}
-        className="rounded-md border border-yellow-500/30 px-2.5 py-1 text-xs font-medium text-yellow-400 transition-all hover:bg-yellow-500/10 disabled:opacity-50 active:scale-[0.97]"
-      >
-        {retrying ? 'Retrying…' : 'Retry payment'}
-      </button>
-    </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Confirm Payment</DialogTitle>
+            <DialogDescription>
+              You are about to pay skill creator{debts.length !== 1 ? 's' : ''} on Solana.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2 py-2">
+            {debts.map((d, i) => (
+              <div key={i} className="flex items-center justify-between rounded-lg border border-border bg-muted px-3 py-2 text-sm">
+                <span className="text-foreground font-medium">{d.skillName || 'Skill'}</span>
+                <span className="font-mono text-[#14F195]">{lamportsToSol(d.costLamports)} SOL</span>
+              </div>
+            ))}
+            <div className="flex items-center justify-between px-1 pt-1 text-sm font-semibold">
+              <span>Total</span>
+              <span className="font-mono text-[#14F195]">{lamportsToSol(totalLamports)} SOL</span>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={paying}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              disabled={paying}
+              className="bg-[#9945FF] hover:bg-[#8535EF] text-white"
+            >
+              {paying ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Sending…</> : 'Confirm & Pay'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 

@@ -12,11 +12,14 @@ export async function GET(req: NextRequest) {
     const minReputation = searchParams.get('minReputation')
     const maxPrice = searchParams.get('maxPrice')
     const search = searchParams.get('search')
+    const category = searchParams.get('category')
+    const isFeatured = searchParams.get('isFeatured') === 'true'
+    
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') ?? '20', 10)))
     const offset = (page - 1) * limit
 
-    const COLS = 'id, owner_wallet, skill_type, tier, name, description, tags, price_lamports, reputation_score, total_calls, rating_count, rating_avg, is_active, created_at, logo_url, provider_name, long_description'
+    const COLS = 'id, owner_wallet, skill_type, tier, name, description, tags, price_lamports, reputation_score, total_calls, is_active, created_at, logo_url, provider_name, long_description'
 
     let query = supabaseAnon
       .from('skills_public')

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { createClient } from '@supabase/supabase-js'
-import { SkillDetailClient } from '@/app/skill/[id]/SkillDetailClient'
+import { SkillDetailClient } from '@/components/skill/SkillDetailClient'
 
 interface Props {
   params: Promise<{ locale: string; id: string }>

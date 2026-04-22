@@ -17,6 +17,7 @@ interface CompleteBody {
   skillEndpoint: string
   nonce: number
   walletSignature: string
+  category?: string
   endpointToken?: string
 }
 
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { skillId, skillEndpoint, nonce, walletSignature, endpointToken } = body
+    const { skillId, skillEndpoint, nonce, walletSignature, category, endpointToken } = body
 
     // SSRF prevention: validate agent endpoint before storing
     let safeEndpoint: string
@@ -163,6 +164,7 @@ export async function POST(req: NextRequest) {
         owner_wallet: ownerWallet,
         skill_type: 'custom_agent',
         tier: 3,
+        category: category || 'General',
         is_active: true,
         ...privateFields,
       },

@@ -2,16 +2,19 @@
  * Drop-in replacement for `useWallet()` from @solana/wallet-adapter-react.
  * Maps Dynamic's auth/wallet API to the same shape the rest of the app expects.
  */
-import { useDynamicContext, useIsLoggedIn } from '@dynamic-labs/sdk-react-core'
+import { useDynamicContext, useIsLoggedIn, useUserWallets } from '@dynamic-labs/sdk-react-core'
 import { isSolanaWallet } from '@dynamic-labs/solana'
 import { Connection, PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js'
 
 export function useWallet() {
-  const { primaryWallet, setShowAuthFlow } = useDynamicContext()
+  const { primaryWallet, setShowAuthFlow, user } = useDynamicContext()
   const isAuthenticated = useIsLoggedIn()
+  const wallets = useUserWallets()
 
-  // Find the Solana wallet.
-  const solanaWallet = primaryWallet && isSolanaWallet(primaryWallet) ? primaryWallet : null
+  // Robustly find the Solana wallet. If primary isn't Solana, check the full list.
+  const solanaWallet = primaryWallet && isSolanaWallet(primaryWallet) 
+    ? primaryWallet 
+    : wallets.find(w => isSolanaWallet(w)) ?? null
 
   const publicKey = solanaWallet?.address ? new PublicKey(solanaWallet.address) : null
   const connected = !!solanaWallet
@@ -42,10 +45,14 @@ export function useWallet() {
     return connection.sendRawTransaction(raw, { skipPreflight: false })
   }
 
+  // Stable user identifier — wallet address if available, else Dynamic user ID (for social login users without a Solana wallet yet)
+  const userId = publicKey?.toBase58() ?? user?.userId ?? null
+
   return {
     connected,
     publicKey,
     isAuthenticated,
+    userId,
     signTransaction,
     signAllTransactions,
     signMessage,

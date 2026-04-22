@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Loader2, Trophy, Zap, TrendingUp, Clock, Search, ExternalLink } from 'lucide-react'
 import { tierLabel, tierColor, formatCallCount } from '@/lib/format'
 import { useTranslations } from 'next-intl'
-import type { LeaderboardRow } from '@/app/arena/types'
+import type { LeaderboardRow } from '@/components/arena/types'
 
 type SortKey = 'total_sol_earned' | 'wins' | 'win_rate' | 'total_calls' | 'reputation_score' | 'total_votes'
 

@@ -22,6 +22,7 @@ interface CreateSkillBody {
     mcpUrl: string
     mcpToken?: string
   }
+  category: string
 }
 
 function validateBody(body: unknown): body is CreateSkillBody {
@@ -35,6 +36,7 @@ function validateBody(body: unknown): body is CreateSkillBody {
   if (typeof b.systemPrompt !== 'string' || b.systemPrompt.trim() === '') return false
   if (typeof b.signature !== 'string' || b.signature.trim() === '') return false
   if (typeof b.nonce !== 'string' || b.nonce.trim() === '') return false
+  if (typeof b.category !== 'string' || b.category.trim() === '') return false
   return true
 }
 
@@ -60,6 +62,7 @@ function buildSkillRow(params: {
   priceLamports: number
   internalEndpoint: string
   systemPrompt: string
+  category: string
   mcpConfig: CreateSkillBody['mcpConfig'] | null
 }): Record<string, unknown> {
   const row: Record<string, unknown> = {
@@ -70,6 +73,7 @@ function buildSkillRow(params: {
     name: params.name,
     description: params.description,
     tags: params.tags,
+    category: params.category,
     price_lamports: params.priceLamports,
     is_active: true,
     created_at: new Date().toISOString(),
@@ -98,7 +102,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { name, description, tags, priceLamports, ownerWallet, systemPrompt, signature, nonce, mcpConfig } = body
+    const { name, description, tags, priceLamports, ownerWallet, systemPrompt, signature, nonce, mcpConfig, category } = body
 
     // Verify nonce is within 5 minutes
     if (Math.abs(Date.now() - Number(nonce)) >= 5 * 60 * 1000) {
@@ -147,6 +151,7 @@ export async function POST(req: NextRequest) {
       priceLamports,
       internalEndpoint,
       systemPrompt,
+      category,
       mcpConfig: mcpConfig ?? null,
     })
 

@@ -12,11 +12,14 @@ interface SkillCallCardProps {
 export function SkillCallCard({ step }: SkillCallCardProps) {
   const t = useTranslations('skillCall')
   const isDiscovery = step.toolName === 'discover_skills'
-  const isLoading = step.state === 'calling'
-  const hasError = step.state === 'error'
+  // Support both AI SDK v6 states (input-streaming, output-available) and legacy (call, result)
+  const isLoading = step.state === 'input-streaming' || step.state === 'input-available' ||
+    step.state === 'call' || step.state === 'calling' || step.state === 'partial-call'
+  const isDone = step.state === 'output-available' || step.state === 'result' || step.state === 'done'
+  const hasError = step.state === 'output-error' || step.state === 'error'
 
   if (step.toolName === 'search_web') {
-    const query = step.args.query as string
+    const query = (step.args?.query as string) ?? ''
     const count = step.result ? (step.result.results as unknown[])?.length : null
     const searchedAt = step.result?.searchedAt as string | undefined
     return (
@@ -36,7 +39,7 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
   }
 
   if (step.toolName === 'get_live_data') {
-    const symbols = (step.args.symbols as string[])?.join(', ') ?? ''
+    const symbols = (step.args?.symbols as string[])?.join(', ') ?? ''
     const fetchedAt = step.result ? (step.result.fetchedAt as string) : null
     return (
       <div className="my-1.5 flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs">
@@ -56,7 +59,7 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
 
   if (isDiscovery) {
     const count = step.result ? (step.result.count as number) : null
-    const query = step.args.query as string
+    const query = (step.args?.query as string) ?? ''
     return (
       <div className="my-1.5 flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs">
         {isLoading ? (
@@ -73,7 +76,7 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
     )
   }
 
-  const skillName = (step.args.skillName as string) ?? 'Skill'
+  const skillName = (step.args?.skillName as string) ?? 'Skill'
   const costLamports = step.result ? (step.result.costLamports as number | undefined) : undefined
 
   return (
@@ -81,7 +84,7 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
       className={`my-1.5 flex items-center gap-2.5 rounded-lg border px-3 py-2 text-xs transition-colors ${
         hasError
           ? 'border-red-500/30 bg-red-900/10'
-          : step.state === 'done'
+          : isDone
           ? 'border-[#14F195]/20 bg-[#14F195]/5'
           : 'border-[#9945FF]/30 bg-[#9945FF]/5'
       }`}
@@ -94,7 +97,7 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
         <Zap className="h-3.5 w-3.5 shrink-0 text-[#14F195]" />
       )}
 
-      <span className={`font-medium ${hasError ? 'text-red-300' : step.state === 'done' ? 'text-foreground' : 'text-[#9945FF]'}`}>
+      <span className={`font-medium ${hasError ? 'text-red-300' : isDone ? 'text-foreground' : 'text-[#9945FF]'}`}>
         {skillName}
       </span>
 
@@ -108,3 +111,4 @@ export function SkillCallCard({ step }: SkillCallCardProps) {
     </div>
   )
 }
+

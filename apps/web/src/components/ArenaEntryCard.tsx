@@ -9,7 +9,7 @@ import { Clock, Zap, Trophy, ChevronDown, ChevronUp, Loader2, CheckCircle2, Laye
 import { tierLabel, tierColor, formatSol } from '@/lib/format'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import type { ArenaEntry, ContributingSkill } from '@/app/arena/types'
+import type { ArenaEntry, ContributingSkill } from '@/components/arena/types'
 
 interface ArenaEntryCardProps {
   entry: ArenaEntry

@@ -26,11 +26,12 @@ export default function CreatePage() {
   const [description, setDescription] = useState('')
   const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState<string[]>([])
-  const [tier, setTier] = useState<1 | 2>(1)
-  const [systemPrompt, setSystemPrompt] = useState('')
+  const [category, setCategory] = useState('Utility')
   const [priceSol, setPriceSol] = useState('0.001')
   const [mcpUrl, setMcpUrl] = useState('')
   const [mcpToken, setMcpToken] = useState('')
+  const [tier, setTier] = useState<1 | 2>(1)
+  const [systemPrompt, setSystemPrompt] = useState('')
   const [assistLoading, setAssistLoading] = useState(false)
   const [assistError, setAssistError] = useState<string | null>(null)
   const [tagError, setTagError] = useState<string | null>(null)
@@ -98,6 +99,7 @@ export default function CreatePage() {
           systemPrompt,
           nonce,
           signature,
+          category,
           ...(tier === 2 && mcpUrl ? { mcpConfig: { mcpUrl, ...(mcpToken ? { mcpToken } : {}) } } : {}),
         }),
       })
@@ -223,6 +225,26 @@ export default function CreatePage() {
                   className="rounded-md border border-border bg-secondary px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:border-red-500/30 hover:text-red-400"
                 >
                   {t} ×
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>Category</label>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {['General', 'Finance', 'Code', 'Creative', 'Social', 'Research', 'Productivity', 'Utility'].map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCategory(c)}
+                  className={`rounded-lg border px-3 py-2 text-xs transition-all ${
+                    category === c
+                      ? 'border-[#9945FF] bg-[#9945FF]/10 text-[#9945FF]'
+                      : 'border-border bg-card text-muted-foreground hover:border-[#9945FF40] hover:text-foreground'
+                  }`}
+                >
+                  {c}
                 </button>
               ))}
             </div>
@@ -410,11 +432,12 @@ export default function CreatePage() {
               <span className="text-muted-foreground">{name}</span>
               <span className="text-muted-foreground">Type</span>
               <span className="text-muted-foreground">Tier {tier} — {tier === 1 ? 'Prompt' : 'MCP'}</span>
-              <span className="text-muted-foreground">Price</span>
-              <span className="font-semibold text-[#14F195]">
+               <span className="text-muted-foreground font-semibold text-[#14F195]">
                 {lamportsToSol(priceLamports)} SOL
                 {priceData?.solUsd ? ` (${lamportsToUsd(priceLamports, priceData.solUsd)})` : ''}
               </span>
+              <span className="text-muted-foreground">Category</span>
+              <span className="text-muted-foreground">{category}</span>
             </div>
           </div>
 

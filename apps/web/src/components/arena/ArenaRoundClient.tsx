@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { ArenaEntryCard } from '@/components/ArenaEntryCard'
 import { Loader2, RefreshCw, Clock, Zap, Trophy, XCircle } from 'lucide-react'
 import { formatDate } from '@/lib/format'
-import type { ArenaRoundWithEntries } from '@/app/arena/types'
+import type { ArenaRoundWithEntries } from '@/components/arena/types'
 
 interface ArenaRoundClientProps {
   roundId: string

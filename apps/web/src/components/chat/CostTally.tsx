@@ -9,7 +9,7 @@ interface CostTallyProps {
 
 export function CostTally({ toolSteps }: CostTallyProps) {
   const total = toolSteps
-    .filter((s) => s.toolName === 'call_skill' && s.state === 'done')
+    .filter((s) => s.toolName === 'call_skill' && (s.state === 'done' || s.state === 'result'))
     .reduce((sum, s) => sum + ((s.result?.costLamports as number) ?? 0), 0)
 
   if (total === 0) return null

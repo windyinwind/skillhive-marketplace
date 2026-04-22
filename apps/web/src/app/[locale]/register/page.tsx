@@ -28,7 +28,8 @@ export default function RegisterPage() {
   const [description, setDescription] = useState('')
   const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState<string[]>([])
-  const [priceSol, setPriceSol] = useState('0.001')
+  const [priceSol, setPriceSol] = useState('0.1')
+  const [category, setCategory] = useState('General')
 
   // Step 2 / Step 3 state (from prepare response)
   const [skillId, setSkillId] = useState<string | null>(null)
@@ -114,6 +115,7 @@ export default function RegisterPage() {
           skillEndpoint: agentEndpoint,
           nonce,
           walletSignature,
+          category,
           ...(endpointToken ? { endpointToken } : {}),
         }),
       })
@@ -265,6 +267,26 @@ Authorization: Bearer <your-token>  // only if you set one
           </div>
 
           <div>
+            <label className={labelCls}>Category</label>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {['General', 'Finance', 'Code', 'Creative', 'Social', 'Research', 'Productivity', 'Utility'].map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCategory(c)}
+                  className={`rounded-lg border px-3 py-2 text-xs transition-all ${
+                    category === c
+                      ? 'border-[#9945FF] bg-[#9945FF]/10 text-[#9945FF]'
+                      : 'border-border bg-card text-muted-foreground hover:border-[#9945FF40] hover:text-foreground'
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <label className={labelCls}>Price per call (SOL)</label>
             <input
               type="number"
@@ -339,6 +361,9 @@ Authorization: Bearer <your-token>  // only if you set one
 
               <span className="text-muted-foreground">Tier</span>
               <span className="text-muted-foreground">3 — Custom Agent</span>
+
+              <span className="text-muted-foreground">Category</span>
+              <span className="text-muted-foreground">{category}</span>
             </div>
           </div>
 

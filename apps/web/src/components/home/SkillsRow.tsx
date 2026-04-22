@@ -44,16 +44,29 @@ function SkillMiniCard({ skill, showStaffBadge = false }: { skill: SkillPublic; 
           >
             {skill.name}
           </h3>
-          <span
-            className="shrink-0 rounded-md px-2 py-0.5 text-xs"
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            {TIER_LABELS[skill.tier] ?? `Tier ${skill.tier}`}
-          </span>
+          <div className="flex gap-1.5">
+            {skill.category && (
+              <span
+                className="shrink-0 rounded-md px-2 py-0.5 text-[10px] font-medium uppercase tracking-tight"
+                style={{
+                  background: 'rgba(153,69,255,0.1)',
+                  border: '1px solid rgba(153,69,255,0.2)',
+                  color: '#9945FF',
+                }}
+              >
+                {skill.category}
+              </span>
+            )}
+            <span
+              className="shrink-0 rounded-md px-2 py-0.5 text-xs text-muted-foreground"
+              style={{
+                background: 'var(--bg-elevated)',
+                border: '1px solid var(--border-subtle)',
+              }}
+            >
+              {TIER_LABELS[skill.tier] ?? `Tier ${skill.tier}`}
+            </span>
+          </div>
         </div>
 
         <p

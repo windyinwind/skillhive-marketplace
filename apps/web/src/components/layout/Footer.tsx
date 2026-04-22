@@ -6,13 +6,10 @@ import { useTranslations } from 'next-intl'
 
 const YEAR = new Date().getFullYear()
 
-const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet-beta'
-  ? 'mainnet'
-  : 'devnet'
-
 export function Footer() {
   const t = useTranslations('footer')
 
+  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet-beta' ? 'mainnet' : 'devnet'
   const networkLabel = network === 'mainnet' ? t('networkMainnet') : t('networkDevnet')
 
   const columns = [

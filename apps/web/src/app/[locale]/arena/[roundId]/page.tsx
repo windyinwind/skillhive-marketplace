@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
-import { ArenaRoundClient } from '@/app/arena/[roundId]/ArenaRoundClient'
-import type { ArenaRoundWithEntries } from '@/app/arena/types'
+import { ArenaRoundClient } from '@/components/arena/ArenaRoundClient'
+import type { ArenaRoundWithEntries } from '@/components/arena/types'
 
 interface PageProps {
   params: Promise<{ locale: string; roundId: string }>
