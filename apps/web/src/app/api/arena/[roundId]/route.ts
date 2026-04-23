@@ -4,7 +4,7 @@ import { supabaseAnon } from '@/lib/supabase'
 export const runtime = 'nodejs'
 
 const ROUND_COLS  = 'id, query, tags, creator_wallet, selection_mode, sort_mode, competitor_count, status, closes_at, created_at'
-const ENTRY_COLS  = 'id, round_id, skill_id, skill_name, skill_tier, owner_wallet, result, error, response_ms, cost_lamports, votes, sol_earned, created_at, synthesis_type, contributing_skill_ids, contributing_owners'
+const ENTRY_COLS  = 'id, round_id, skill_id, skill_name, skill_tier, owner_wallet, result, error, response_ms, cost_lamports, votes, sol_earned, helpful_votes, unhelpful_votes, created_at, synthesis_type, contributing_skill_ids, contributing_owners'
 
 export async function GET(
   _req: NextRequest,

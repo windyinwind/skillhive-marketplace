@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Zap, CheckCircle2, Loader2 } from 'lucide-react'
+import { Zap, CheckCircle2, Loader2, ThumbsUp, ThumbsDown } from 'lucide-react'
 import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -29,25 +29,56 @@ function SettleBar({ msgId, debts, onSettle, alreadyPaid }: {
 }) {
   const [open, setOpen] = useState(false)
   const [paying, setPaying] = useState(false)
+  const [paid, setPaid] = useState(alreadyPaid)
+  const [rated, setRated] = useState(false)
   const totalLamports = debts.reduce((sum, d) => sum + d.costLamports, 0)
-
-  if (alreadyPaid) {
-    return (
-      <div className="mt-2 flex items-center gap-1.5 text-xs text-[#14F195]">
-        <CheckCircle2 className="h-3.5 w-3.5" />
-        Paid {lamportsToSol(totalLamports)} SOL to {debts.length} skill{debts.length !== 1 ? 's' : ''}
-      </div>
-    )
-  }
 
   async function handleConfirm() {
     setPaying(true)
     try {
-      await onSettle(msgId, debts)
-      setOpen(false)
+      const ok = await onSettle(msgId, debts)
+      if (ok) { setPaid(true); setOpen(false) }
     } finally {
       setPaying(false)
     }
+  }
+
+  async function handleRate(helpful: boolean) {
+    setRated(true)
+    // Rate each contributing skill with the same signal (best-effort)
+    await Promise.allSettled(
+      debts.map(d =>
+        fetch(`/api/skills/${d.skillId}/rate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ helpful }),
+        })
+      )
+    )
+  }
+
+  if (paid) {
+    return (
+      <div className="mt-2 space-y-2">
+        <div className="flex items-center gap-1.5 text-xs text-[#14F195]">
+          <CheckCircle2 className="h-3.5 w-3.5" />
+          Paid {lamportsToSol(totalLamports)} SOL to {debts.length} skill{debts.length !== 1 ? 's' : ''}
+        </div>
+        {!rated ? (
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
+            <p className="flex-1 text-xs text-muted-foreground">Was this response helpful?</p>
+            <button onClick={() => handleRate(true)} className="flex items-center gap-1 rounded px-2 py-0.5 text-xs text-muted-foreground border border-border hover:bg-[#14F195]/10 hover:text-[#14F195] hover:border-[#14F195]/30 transition-colors">
+              <ThumbsUp className="h-3 w-3" /> Yes
+            </button>
+            <button onClick={() => handleRate(false)} className="flex items-center gap-1 rounded px-2 py-0.5 text-xs text-muted-foreground border border-border hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-colors">
+              <ThumbsDown className="h-3 w-3" /> No
+            </button>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground px-1">Thanks for your feedback.</p>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -174,8 +205,8 @@ export function MessageList({ messages, isLoading, onPrompt, onSettle }: Message
                   const hasUnpaidDebt = !message.isFree && !message.paid && (message.skillDebts?.length ?? 0) > 0
                   const totalLamports = message.skillDebts?.reduce((s, d) => s + d.costLamports, 0) ?? 0
 
-                  // Split at ~40% for the paywall preview
-                  const cut = Math.min(320, Math.floor(message.content.length * 0.4))
+                  // Split at ~75% so users can read most of the response before paying
+                  const cut = Math.min(Math.floor(message.content.length * 0.75), message.content.lastIndexOf('\n', Math.floor(message.content.length * 0.75)) || Math.floor(message.content.length * 0.75))
                   const preview = hasUnpaidDebt ? message.content.slice(0, cut) : message.content
                   const locked  = hasUnpaidDebt ? message.content.slice(cut) : ''
 

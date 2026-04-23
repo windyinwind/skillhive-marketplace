@@ -31,6 +31,8 @@ export interface ArenaEntry {
   cost_lamports: number
   votes: number
   sol_earned: number
+  helpful_votes: number
+  unhelpful_votes: number
   created_at: string
   // synthesis fields (populated on multi-skill answers)
   synthesis_type: 'comprehensive' | 'key_insights' | null

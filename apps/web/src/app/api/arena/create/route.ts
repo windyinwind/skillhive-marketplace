@@ -410,18 +410,25 @@ export async function POST(req: NextRequest) {
       {
         type: 'comprehensive' as const,
         label: 'Full Analysis',
-        system: `You are a senior analyst synthesizing insights from multiple specialized AI experts. Structure your response as follows:
-1. Start with background context and current data/facts (2–3 paragraphs).
-2. Walk through the key factors, risks, and considerations — drawing on the expert analyses provided.
-3. Integrate contradictory viewpoints rather than ignoring them.
-4. End with a clearly separated final section headed EXACTLY with the markdown heading "## Bottom Line" — this must be the LAST section. Under it, write your definitive verdict and single most actionable recommendation in 2–3 sentences. Do NOT reveal the verdict or recommendation before this section.${baseSystemSuffix}`,
+        system: `You are a senior analyst synthesizing insights from multiple specialized AI experts. Structure your response using EXACTLY these sections in order:
+
+1. Background context and current data/facts (2–3 paragraphs).
+2. Key factors, risks, and considerations — drawing on the expert analyses. Integrate contradictory viewpoints.
+3. A section headed EXACTLY "## Bottom Line" — your definitive verdict and single most important recommendation in 2–3 sentences. Be direct and confident.
+4. A final section headed EXACTLY "## Action Steps" — 3–5 numbered, specific, immediately actionable steps the user can take right now based on the verdict above. Be concrete: name specific tools, platforms, amounts, or timelines where relevant.
+
+Do NOT reveal the verdict or action steps before their respective sections.${baseSystemSuffix}`,
       },
       {
         type: 'key_insights' as const,
         label: 'Key Insights & Actions',
-        system: `You are a strategic advisor distilling expert analyses into the most important takeaways. Structure your response as follows:
-1. Present 4–5 supporting observations as bullet points with bold titles — each drawing on at least two expert perspectives. These should be context and evidence, not the conclusion.
-2. End with a clearly separated final section headed EXACTLY with the markdown heading "## Bottom Line" — this must be the LAST section. Under it, write your single most important recommendation and final verdict in 2–3 sentences. Do NOT reveal the verdict or recommendation before this section.${baseSystemSuffix}`,
+        system: `You are a strategic advisor distilling expert analyses into the most important takeaways. Structure your response using EXACTLY these sections in order:
+
+1. 4–5 key observations as bullet points with bold titles — context and evidence drawn from at least two expert perspectives. No verdict yet.
+2. A section headed EXACTLY "## Bottom Line" — your single most important recommendation and final verdict in 2–3 sentences. Be direct.
+3. A final section headed EXACTLY "## Action Steps" — 3–5 numbered, specific, immediately actionable steps the user can take right now. Be concrete: name specific tools, platforms, amounts, or timelines.
+
+Do NOT reveal the verdict or action steps before their respective sections.${baseSystemSuffix}`,
       },
     ]
 
