@@ -34,7 +34,7 @@ export async function POST(
           accepts: [
             {
               scheme: 'exact',
-              network: 'solana-devnet',
+              network: process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet-beta' ? 'solana-mainnet' : 'solana-devnet',
               maxAmountRequired: String(skill.price_lamports),
               resource: req.url,
               description: `Call skill: ${skill.name}`,

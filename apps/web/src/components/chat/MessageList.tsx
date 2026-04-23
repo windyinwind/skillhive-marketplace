@@ -205,18 +205,12 @@ export function MessageList({ messages, isLoading, onPrompt, onSettle }: Message
                               <ReactMarkdown remarkPlugins={[remarkGfm]}>{locked}</ReactMarkdown>
                             </div>
                           </div>
-                          {/* Gradient + pay CTA */}
+                          {/* Gradient overlay — payment handled by SettleBar below */}
                           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-transparent via-card/70 to-card/95 px-4 py-3 gap-2">
                             <p className="text-xs text-muted-foreground text-center">
                               Pay <span className="font-semibold text-foreground">{lamportsToSol(totalLamports)} SOL</span> to unlock the full response
                             </p>
-                            <button
-                              onClick={async () => { await onSettle(message.id, message.skillDebts!) }}
-                              className="flex items-center gap-1.5 rounded-lg bg-[#9945FF] px-4 py-1.5 text-xs font-semibold text-white transition-all hover:bg-[#8535EF] active:scale-[0.97]"
-                            >
-                              <Zap className="h-3 w-3" />
-                              Unlock · {lamportsToSol(totalLamports)} SOL
-                            </button>
+                            <p className="text-[11px] text-muted-foreground/70">Use the Pay button below to confirm</p>
                           </div>
                         </div>
                       )}

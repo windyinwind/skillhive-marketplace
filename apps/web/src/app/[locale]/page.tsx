@@ -69,7 +69,9 @@ export default function HomePage() {
         <div className="mb-8 flex justify-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#9945FF]/20 bg-[#9945FF]/5 px-4 py-1.5 text-sm font-medium text-[#9945FF]">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#14F195]" />
-            {t('status')}
+            {process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet-beta'
+              ? 'Live on Solana Mainnet'
+              : 'Live on Solana Devnet'}
           </div>
         </div>
 

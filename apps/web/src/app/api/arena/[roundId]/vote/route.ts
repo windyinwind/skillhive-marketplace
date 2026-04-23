@@ -185,15 +185,16 @@ export async function POST(
       return NextResponse.json({ error: 'Payment could not be verified on-chain — vote recorded as pending.' }, { status: 202 })
     }
 
-    // Update entry stats atomically
+    // Update entry stats atomically via RPC to avoid read-modify-write race
+    await supabaseServiceRole.rpc('increment_entry_stats', {
+      p_entry_id: entryId,
+      p_lamports: amountLamports,
+    })
+
     const { data: updated } = await supabaseServiceRole
       .from('arena_entries')
-      .update({
-        votes:       entry.votes + 1,
-        sol_earned:  entry.sol_earned + amountLamports,
-      })
-      .eq('id', entryId)
       .select()
+      .eq('id', entryId)
       .single()
 
     return NextResponse.json({ entry: updated, verified })

@@ -277,7 +277,7 @@ export async function POST(req: NextRequest) {
               },
               required: ['skillId', 'skillName', 'input', 'priceLamports'],
             }),
-            execute: async ({ skillId, input, priceLamports }) => {
+            execute: async ({ skillId, skillName, input, priceLamports }) => {
               const res = await fetch(`${baseUrl}/api/skill-executor/${skillId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-internal-key': makeInternalToken(skillId) },
@@ -291,7 +291,7 @@ export async function POST(req: NextRequest) {
               const ownerWallet = (skillData as any)?.owner_wallet
               if (!res.ok) return { error: `Skill call failed`, costLamports: 0 }
               const data = await res.json()
-              const output = { result: data.result ?? data.error ?? 'No result', costLamports: priceLamports, skillId, ownerWallet }
+              const output = { result: data.result ?? data.error ?? 'No result', costLamports: priceLamports, skillId, skillName, ownerWallet }
               // 2. Write tool result to data channel so client can track skill debts in real-time
               writer.write({ type: 'data-tool-result', data: { type: 'tool-result', ...output }, transient: true })
               return output

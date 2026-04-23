@@ -26,10 +26,9 @@ export function ChatContainer() {
   const [freeUsesRemaining, setFreeUsesRemaining] = useState<number | null>(null)
   const [hasPendingDebt, setHasPendingDebt] = useState(false)
   const [input, setInput] = useState('')
-  const [streamData, setStreamData] = useState<any[]>([])
-
-  // Load existing messages when conversationId changes
-  const [initialMessages, setInitialMessages] = useState<ChatMessage[]>([])
+  // Per-message data: keyed by message ID so debts never bleed across messages
+  const [messageDataMap, setMessageDataMap] = useState<Record<string, any[]>>({})
+  const pendingDataRef = useRef<any[]>([])
 
   const walletStrRef = useRef(userIdentifier)
   walletStrRef.current = userIdentifier
@@ -42,23 +41,30 @@ export function ChatContainer() {
   } = useChat({
     onData: (dataPart: any) => {
       if (dataPart.type?.startsWith('data-')) {
-        setStreamData(prev => [...prev, dataPart.data])
+        pendingDataRef.current = [...pendingDataRef.current, dataPart.data]
+        // Update free-uses badge in real time
+        if (dataPart.data?.type === 'quota' && typeof dataPart.data.remaining === 'number') {
+          setFreeUsesRemaining(dataPart.data.remaining)
+        }
       }
     },
     onFinish: async ({ message }: any) => {
+      const msgData = pendingDataRef.current
+      // Persist this message's data keyed by its ID so formattedMessages stays correct
+      setMessageDataMap(prev => ({ ...prev, [message.id]: msgData }))
+      pendingDataRef.current = []
+
       if (conversationId) {
         const content = Array.isArray(message.parts)
           ? message.parts.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('')
           : (message.content ?? '')
         await saveMessageToDb(conversationId, 'assistant', content)
       }
-      // Mark pending debt so the pay button appears — user must click to confirm
-      const lastDebts = (streamData as any[])?.filter(d => d.type === 'tool-result' && d.skillId && d.ownerWallet)
-      if (lastDebts?.length > 0) {
-        const quota = (streamData as any[])?.find(d => d.type === 'quota')
-        if (quota && !quota.isFree) {
-          setHasPendingDebt(true)
-        }
+      // Mark pending debt — user must click Pay to confirm
+      const debts = msgData.filter(d => d.type === 'tool-result' && d.skillId && d.ownerWallet)
+      const quota = msgData.find(d => d.type === 'quota')
+      if (debts.length > 0 && quota && !quota.isFree) {
+        setHasPendingDebt(true)
       }
     }
   })
@@ -107,9 +113,11 @@ export function ChatContainer() {
         });
       }
 
-      const quota = (streamData as any[])?.find(d => d.type === 'quota')
+      // Use per-message data so debts from one message never bleed into another
+      const msgData = messageDataMap[m.id] ?? []
+      const quota = msgData.find(d => d.type === 'quota')
       const skillDebts = m.role === 'assistant'
-        ? (streamData as any[])?.filter(d => d.type === 'tool-result' && d.skillId)
+        ? msgData.filter(d => d.type === 'tool-result' && d.skillId)
         : []
       return {
         id: m.id,
@@ -120,16 +128,7 @@ export function ChatContainer() {
         skillDebts,
       }
     })
-  }, [aiMessages, streamData])
-
-  // Sync quota info from stream data
-  useEffect(() => {
-    if (!streamData) return
-    const quota = (streamData as any[]).find(d => d.type === 'quota')
-    if (quota && typeof quota.remaining === 'number') {
-      setFreeUsesRemaining(quota.remaining)
-    }
-  }, [streamData])
+  }, [aiMessages, messageDataMap])
 
   // Handle conversation switching
   useEffect(() => {
@@ -234,6 +233,9 @@ export function ChatContainer() {
       await saveMessageToDb(currentConvId, 'user', input || '')
     }
 
+    // Reset pending data accumulator before new stream starts
+    pendingDataRef.current = []
+
     // Trigger AI SDK sendMessage
     sendMessage({ text: input }, { headers: { 'x-wallet-address': userIdentifier } })
     setInput('')
@@ -295,7 +297,7 @@ export function ChatContainer() {
         <MessageList
           messages={formattedMessages as any}
           isLoading={isLoading}
-          onPrompt={(t) => sendMessage({ text: t }, { body: { walletAddress: walletStr } })}
+          onPrompt={(t) => { pendingDataRef.current = []; sendMessage({ text: t }, { headers: { 'x-wallet-address': userIdentifier ?? '' } }) }}
           onSettle={settleDebts}
           walletConnected={connected}
         />

@@ -274,8 +274,10 @@ export async function POST(req: NextRequest) {
       price_lamports: number; tags: string[] | null
     }[] = []
 
+    const autoTags = selectionMode === 'auto' ? await extractTags(query) : []
+
     if (selectionMode === 'auto') {
-      const tags = await extractTags(query)
+      const tags = autoTags
       const sortColumn: Record<string, string> = {
         reputation: 'reputation_score',
         usage:      'total_calls',
@@ -325,7 +327,7 @@ export async function POST(req: NextRequest) {
 
     // ── 2. Create arena round ─────────────────────────────────────────────────
     const roundTags = selectionMode === 'auto'
-      ? await extractTags(query)
+      ? autoTags
       : [...new Set(skills.flatMap((s) => s.tags ?? []))]
 
     const { data: round, error: roundErr } = await supabaseServiceRole

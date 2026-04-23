@@ -5,6 +5,7 @@ import { useWallet } from '@/hooks/useWalletAdapter'
 import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Clock, Zap, Trophy, ChevronDown, ChevronUp, Loader2, CheckCircle2, Layers } from 'lucide-react'
 import { tierLabel, tierColor, formatSol } from '@/lib/format'
 import ReactMarkdown from 'react-markdown'
@@ -136,6 +137,7 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
   const { publicKey, sendTransaction } = useWallet()
   const { openAuthModal: setVisible } = useWallet()
   const [expanded, setExpanded] = useState(rank <= 2)
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const [paying, setPaying] = useState(false)
   const [payError, setPayError] = useState<string | null>(null)
   const [paid, setPaid] = useState(false)
@@ -153,9 +155,14 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
 
   const uniqueOwnerCount = Object.keys(contributingByWallet).length
 
-  async function handlePay() {
+  function handlePayClick() {
     if (!publicKey) { setVisible(true); return }
+    setConfirmOpen(true)
+  }
 
+  async function handlePay() {
+    if (!publicKey) return
+    setConfirmOpen(false)
     setPaying(true)
     setPayError(null)
     try {
@@ -216,6 +223,46 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
   }
 
   return (
+    <>
+    <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Confirm Payment</DialogTitle>
+          <DialogDescription>
+            You are about to pay skill creator{isSynthesis && Object.keys(contributingByWallet).length !== 1 ? 's' : ''} on Solana.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2 py-2">
+          {isSynthesis ? (
+            Object.entries(contributingByWallet).map(([wallet, lamports]) => {
+              const owner = owners.find(o => o.wallet === wallet)
+              return (
+                <div key={wallet} className="flex items-center justify-between rounded-lg border border-border bg-muted px-3 py-2 text-sm">
+                  <span className="text-foreground font-medium truncate max-w-[160px]">{owner?.skillName ?? wallet.slice(0, 8) + '…'}</span>
+                  <span className="font-mono text-[#14F195] shrink-0">{formatSol(lamports)} SOL</span>
+                </div>
+              )
+            })
+          ) : (
+            <div className="flex items-center justify-between rounded-lg border border-border bg-muted px-3 py-2 text-sm">
+              <span className="text-foreground font-medium">{entry.skill_name}</span>
+              <span className="font-mono text-[#14F195]">{formatSol(totalCost)} SOL</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between px-1 pt-1 text-sm font-semibold">
+            <span>Total</span>
+            <span className="font-mono text-[#14F195]">{formatSol(totalCost)} SOL</span>
+          </div>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={paying}>Cancel</Button>
+          <Button onClick={handlePay} disabled={paying} className="bg-[#9945FF] hover:bg-[#8535EF] text-white">
+            {paying ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Sending…</> : 'Confirm & Pay'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
     <div className={`rounded-xl border transition-all ${
       paid
         ? 'border-[#14F195]/40 bg-[#14F195]/5'
@@ -321,7 +368,7 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
               isSynthesis={isSynthesis}
               uniqueOwnerCount={uniqueOwnerCount}
               owners={owners}
-              onPay={handlePay}
+              onPay={handlePayClick}
             />
           ) : (
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -331,5 +378,6 @@ export function ArenaEntryCard({ entry, rank, roundStatus, onPaid }: ArenaEntryC
         </div>
       )}
     </div>
+    </>
   )
 }
