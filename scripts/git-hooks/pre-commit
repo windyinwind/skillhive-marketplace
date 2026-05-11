@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Block accidental commits of env files containing real secrets.
+# Allows .env.example / .env.*.example / .env.local.example.
+# To enable: git config core.hooksPath scripts/git-hooks
+
+set -euo pipefail
+
+BAD=$(git diff --cached --name-only --diff-filter=AM \
+  | grep -E '(^|/)\.env(\..*)?$' \
+  | grep -vE '\.example$' || true)
+
+if [ -n "$BAD" ]; then
+  echo "ERROR: refusing to commit env file(s):" >&2
+  echo "$BAD" | sed 's/^/  - /' >&2
+  echo "" >&2
+  echo "These files typically contain secrets. If you really mean to commit," >&2
+  echo "rename to *.example with placeholder values, or bypass with --no-verify" >&2
+  echo "(NOT recommended)." >&2
+  exit 1
+fi
