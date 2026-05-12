@@ -127,27 +127,35 @@ export function verifyWalletSignature(
 
 // ── Rate Limiting ──────────────────────────────────────────────────────────
 
+export class RateLimitError extends Error {
+  constructor(public readonly limit: number, public readonly windowSec: number) {
+    super(`Rate limit exceeded — max ${limit} requests per ${windowSec}s. Try again later.`)
+    this.name = 'RateLimitError'
+  }
+}
+
 /**
- * Increments a Redis counter for `key` and throws if `limit` is exceeded
- * within `windowSec` seconds.
- *
- * Suggested key formats:
- *   `rate:create-skill:${walletAddress}`
- *   `rate:register:${walletAddress}`
- *   `rate:rate-call:${walletAddress}`
+ * Increments a Redis counter for `key` and throws `RateLimitError` if `limit`
+ * is exceeded within `windowSec` seconds. If Upstash Redis is not configured,
+ * rate limiting is silently skipped (logged once) so the call path still works
+ * in dev/preview environments without Redis.
  */
 export async function checkRateLimit(
   key: string,
   limit: number,
   windowSec: number,
 ): Promise<void> {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    console.warn('[security] Redis not configured — rate limiting disabled for', key)
+    return
+  }
   const redis = getRedis()
   const count = await redis.incr(key)
   if (count === 1) {
     await redis.expire(key, windowSec)
   }
   if (count > limit) {
-    throw new Error(`Rate limit exceeded — max ${limit} requests per ${windowSec}s. Try again later.`)
+    throw new RateLimitError(limit, windowSec)
   }
 }
 
