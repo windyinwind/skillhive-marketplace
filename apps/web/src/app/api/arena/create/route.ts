@@ -3,7 +3,7 @@ import { generateText } from 'ai'
 import { tavily } from '@tavily/core'
 import { supabaseAnon, supabaseServiceRole } from '@/lib/supabase'
 import { getModel } from '@/lib/ai-providers'
-import { checkRateLimit, RateLimitError } from '@/lib/security'
+import { checkRateLimit, RateLimitError, makeInternalSkillToken } from '@/lib/security'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -226,16 +226,24 @@ interface SkillCallResult { result?: string; error?: string; responseMs: number;
 
 async function callSkillEndpoint(
   url: string,
+  skillId: string,
   input: string,
   callId: string
 ): Promise<SkillCallResult> {
   const start = Date.now()
   try {
+    // Hosted skills (Tier 1/2) live at /api/skill-executor/[skillId] and require
+    // a rotating per-skill HMAC token. Tier 3 self-hosted endpoints just verify
+    // the raw INTERNAL_API_KEY per the documented call contract.
+    const isInternal = url.includes('/api/skill-executor/')
+    const internalKey = isInternal
+      ? makeInternalSkillToken(skillId)
+      : (process.env.INTERNAL_API_KEY ?? '')
     const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-internal-key': process.env.INTERNAL_API_KEY ?? '',
+        'x-internal-key': internalKey,
       },
       body: JSON.stringify({ input, callId }),
       signal: AbortSignal.timeout(45_000),
@@ -378,7 +386,7 @@ export async function POST(req: NextRequest) {
         const url = urlMap[skill.id]
         if (!url) return { skillId: skill.id, result: undefined, error: 'No endpoint registered', responseMs: 0 }
         const callId = `arena-${roundId}-${skill.id}`
-        const res = await callSkillEndpoint(url, enrichedInput, callId)
+        const res = await callSkillEndpoint(url, skill.id, enrichedInput, callId)
         return { skillId: skill.id, ...res }
       })
     )

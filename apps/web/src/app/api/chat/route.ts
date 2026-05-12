@@ -4,13 +4,7 @@ import { google } from '@ai-sdk/google'
 import { tavily } from '@tavily/core'
 import { supabaseAnon, supabaseServiceRole } from '@/lib/supabase'
 import { getModel, DEFAULT_PROVIDER } from '@/lib/ai-providers'
-import { createHmac } from 'crypto'
-
-function makeInternalToken(skillId: string): string {
-  const key = process.env.INTERNAL_API_KEY ?? ''
-  const window = Math.floor(Date.now() / 30000)
-  return createHmac('sha256', key).update(`${skillId}:${window}`).digest('hex')
-}
+import { makeInternalSkillToken } from '@/lib/security'
 
 const CHAT_FREE_LIMIT = 3
 
@@ -280,7 +274,7 @@ export async function POST(req: NextRequest) {
             execute: async ({ skillId, skillName, input, priceLamports }) => {
               const res = await fetch(`${baseUrl}/api/skill-executor/${skillId}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'x-internal-key': makeInternalToken(skillId) },
+                headers: { 'Content-Type': 'application/json', 'x-internal-key': makeInternalSkillToken(skillId) },
                 body: JSON.stringify({ input }),
               })
               const { data: skillData } = await supabaseAnon

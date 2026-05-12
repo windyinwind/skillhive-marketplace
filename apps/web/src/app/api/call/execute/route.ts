@@ -3,6 +3,7 @@ import { createHash } from 'crypto'
 import { Connection } from '@solana/web3.js'
 import { supabaseAnon, supabaseServiceRole } from '@/lib/supabase'
 import { getRpcConnection } from '@/lib/solana'
+import { makeInternalSkillToken } from '@/lib/security'
 
 export const runtime = 'nodejs'
 
@@ -95,9 +96,12 @@ export async function POST(req: NextRequest) {
     // ── Call the skill ─────────────────────────────────────────────────────
     const effectiveCallId = callId ?? crypto.randomUUID()
     const endpointToken = (skillPrivate.tool_config as Record<string, unknown> | null)?.endpointToken as string | undefined
+    const isInternal = skillPrivate.endpoint.includes('/api/skill-executor/')
     const callHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
-      'x-internal-key': process.env.INTERNAL_API_KEY ?? '',
+      'x-internal-key': isInternal
+        ? makeInternalSkillToken(skillId)
+        : (process.env.INTERNAL_API_KEY ?? ''),
     }
     if (endpointToken) callHeaders['Authorization'] = `Bearer ${endpointToken}`
     const skillRes = await fetch(skillPrivate.endpoint, {

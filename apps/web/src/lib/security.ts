@@ -1,11 +1,13 @@
 /**
  * SkillHive Marketplace — Security utilities
  *
- * Centralizes: SSRF prevention, wallet signature verification, rate limiting.
+ * Centralizes: SSRF prevention, wallet signature verification, rate limiting,
+ * internal skill-executor token issuance/verification.
  * Import from API routes only — never from client components.
  */
 
 import { URL } from 'url'
+import { createHmac } from 'crypto'
 import nacl from 'tweetnacl'
 import bs58 from 'bs58'
 import { PublicKey } from '@solana/web3.js'
@@ -179,4 +181,44 @@ export function validateNonce(nonce: number): void {
   if (age < 0 || age > NONCE_WINDOW_MS) {
     throw new Error('Request expired — nonce is outside the 5-minute window. Please retry.')
   }
+}
+
+// ── Internal skill-executor token ──────────────────────────────────────────
+//
+// /api/skill-executor/[skillId] is the platform-managed executor for hosted
+// (Tier 1/2) skills. Callers (chat, arena, call/execute, x402) must prove
+// they're acting on behalf of the platform by sending a per-skill HMAC token
+// in the `x-internal-key` header. The token rotates every 30s and the verifier
+// accepts the current and previous window to tolerate clock skew.
+
+const INTERNAL_TOKEN_WINDOW_MS = 30_000
+
+/**
+ * Generate the `x-internal-key` header value for an internal skill-executor call.
+ * Throws if INTERNAL_API_KEY is not configured so misconfigurations surface
+ * immediately instead of producing a 401 at the receiver.
+ */
+export function makeInternalSkillToken(skillId: string): string {
+  const key = process.env.INTERNAL_API_KEY
+  if (!key) {
+    throw new Error('[security] INTERNAL_API_KEY is not set — cannot issue internal skill token')
+  }
+  const window = Math.floor(Date.now() / INTERNAL_TOKEN_WINDOW_MS)
+  return createHmac('sha256', key).update(`${skillId}:${window}`).digest('hex')
+}
+
+/**
+ * Verify an `x-internal-key` header value against the current and previous
+ * 30-second window. Returns false if the token doesn't match either window
+ * or if INTERNAL_API_KEY is unset.
+ */
+export function verifyInternalSkillToken(token: string, skillId: string): boolean {
+  const key = process.env.INTERNAL_API_KEY
+  if (!key || !token) return false
+  const current = Math.floor(Date.now() / INTERNAL_TOKEN_WINDOW_MS)
+  for (const w of [current, current - 1]) {
+    const expected = createHmac('sha256', key).update(`${skillId}:${w}`).digest('hex')
+    if (token === expected) return true
+  }
+  return false
 }
