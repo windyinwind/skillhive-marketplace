@@ -3,7 +3,7 @@ import { generateText } from 'ai'
 import { tavily } from '@tavily/core'
 import { supabaseAnon, supabaseServiceRole } from '@/lib/supabase'
 import { getModel } from '@/lib/ai-providers'
-import { checkRateLimit } from '@/lib/security'
+import { checkRateLimit, RateLimitError } from '@/lib/security'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -344,7 +344,10 @@ export async function POST(req: NextRequest) {
       .select('id')
       .single()
 
-    if (roundErr || !round) throw new Error('Failed to create round')
+    if (roundErr || !round) {
+      console.error('[arena/create] arena_rounds insert failed:', roundErr)
+      throw new Error(`Failed to create round: ${roundErr?.message ?? 'unknown DB error'}`)
+    }
     const roundId: string = round.id
 
     // ── 3. Fetch skill execution URLs (service role — never returned to browser)
@@ -531,6 +534,10 @@ Do NOT reveal the verdict or action steps before their respective sections.${bas
     return NextResponse.json({ roundId }, { status: 201 })
   } catch (err) {
     console.error('[POST /api/arena/create]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    if (err instanceof RateLimitError) {
+      return NextResponse.json({ error: err.message }, { status: 429 })
+    }
+    const message = err instanceof Error ? err.message : 'Internal server error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
