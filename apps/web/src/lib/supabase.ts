@@ -7,13 +7,27 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 let _anon: SupabaseClient | null = null
 let _serviceRole: SupabaseClient | null = null
 
+// Strip whitespace and reject anything after a newline — guards against env-var
+// paste mistakes (e.g. another `KEY=value` line appended to a Supabase JWT)
+// that would otherwise propagate as an invalid HTTP header at request time.
+function cleanEnvKey(name: string, raw: string | undefined): string {
+  if (!raw) {
+    throw new Error(`[supabase] ${name} is not set`)
+  }
+  const firstLine = raw.split('\n')[0].trim()
+  if (firstLine !== raw.trim()) {
+    console.warn(`[supabase] ${name} contained a newline — using first line only. Fix the env var.`)
+  }
+  return firstLine
+}
+
 // ── Browser-safe client (RLS enforced, anon key) ──────────────────────────────
 // Use for all browser-side queries. Always query skills_public view, never skills.
 export function getSupabaseAnon(): SupabaseClient {
   if (!_anon) {
     _anon = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      cleanEnvKey('NEXT_PUBLIC_SUPABASE_URL', process.env.NEXT_PUBLIC_SUPABASE_URL),
+      cleanEnvKey('NEXT_PUBLIC_SUPABASE_ANON_KEY', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
     )
   }
   return _anon
@@ -25,8 +39,8 @@ export function getSupabaseAnon(): SupabaseClient {
 export function getSupabaseServiceRole(): SupabaseClient {
   if (!_serviceRole) {
     _serviceRole = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      cleanEnvKey('NEXT_PUBLIC_SUPABASE_URL', process.env.NEXT_PUBLIC_SUPABASE_URL),
+      cleanEnvKey('SUPABASE_SERVICE_ROLE_KEY', process.env.SUPABASE_SERVICE_ROLE_KEY),
       {
         auth: {
           autoRefreshToken: false,
