@@ -136,9 +136,9 @@ export class RateLimitError extends Error {
 
 /**
  * Increments a Redis counter for `key` and throws `RateLimitError` if `limit`
- * is exceeded within `windowSec` seconds. If Upstash Redis is not configured,
- * rate limiting is silently skipped (logged once) so the call path still works
- * in dev/preview environments without Redis.
+ * is exceeded within `windowSec` seconds. If Upstash Redis is not configured
+ * or is unreachable, rate limiting is silently skipped (fail-open) so transient
+ * Redis outages or dev/preview environments don't break the call path.
  */
 export async function checkRateLimit(
   key: string,
@@ -149,10 +149,16 @@ export async function checkRateLimit(
     console.warn('[security] Redis not configured — rate limiting disabled for', key)
     return
   }
-  const redis = getRedis()
-  const count = await redis.incr(key)
-  if (count === 1) {
-    await redis.expire(key, windowSec)
+  let count: number
+  try {
+    const redis = getRedis()
+    count = await redis.incr(key)
+    if (count === 1) {
+      await redis.expire(key, windowSec)
+    }
+  } catch (err) {
+    console.warn('[security] Redis unreachable — rate limiting skipped for', key, err)
+    return
   }
   if (count > limit) {
     throw new RateLimitError(limit, windowSec)
